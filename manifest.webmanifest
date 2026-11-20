@@ -1,0 +1,17 @@
+{
+  "name": "CLF-C02 Study — Ôn thi AWS Cloud Practitioner",
+  "short_name": "CLF-C02",
+  "description": "Ôn thi AWS Certified Cloud Practitioner (CLF-C02): bài học, SRS, thi thử. Dùng được offline.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#232f3e",
+  "theme_color": "#232f3e",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
