@@ -1,6 +1,25 @@
 (() => {
   'use strict';
   const D = window.CLF;
+
+  /* ───────── Task statements (Exam Guide CLF-C02) + gắn nhãn câu hỏi ───────── */
+  const TASKS = {
+    '1.1': 'Lợi ích của AWS Cloud', '1.2': 'Well-Architected Framework', '1.3': 'Migration & AWS CAF', '1.4': 'Kinh tế học cloud',
+    '2.1': 'Shared responsibility', '2.2': 'Bảo mật, quản trị, tuân thủ', '2.3': 'Quản lý truy cập (IAM)', '2.4': 'Dịch vụ & tài nguyên bảo mật',
+    '3.1': 'Cách triển khai & vận hành', '3.2': 'Hạ tầng toàn cầu', '3.3': 'Compute', '3.4': 'Database', '3.5': 'Network',
+    '3.6': 'Storage', '3.7': 'AI/ML & Analytics', '3.8': 'Nhóm dịch vụ khác',
+    '4.1': 'Mô hình giá', '4.2': 'Billing & quản lý chi phí', '4.3': 'Support & tài nguyên'
+  };
+  (() => {
+    const tags = window.CLF_TAGS || {};
+    const lessons = new Map((D.course || []).map(l => [l.id, l]));
+    [...D.questions, ...(D.examPool || [])].forEach(q => {
+      const tg = tags[q.id]; if (!tg) return;
+      if (TASKS[tg[0]]) q.t = tg[0];
+      const l = !String(q.id).startsWith('x') && tg[1] && lessons.get(tg[1]);
+      if (l) { l.qids = l.qids || []; if (!l.qids.includes(q.id)) l.qids.push(q.id); }
+    });
+  })();
   const KEY = 'clf-c02-study-v1';
   const MIN = 60e3, DAY = 864e5;
   const $app = document.getElementById('app');
@@ -14,6 +33,8 @@
     newLog: { date: '', count: 0 },
     activity: {},       // 'YYYY-MM-DD' → số lượt ôn
     done: {},           // lessonId → thời điểm đánh dấu đã học
+    examSeen: {},       // questionId → số lần xuất hiện trong thi thử
+    examStats: {},      // questionId (kho thi thử) → { a, c }
     exam: null,         // bài thi thử đang làm dở
     exams: []           // lịch sử thi thử (mới nhất trước)
   };
@@ -143,7 +164,7 @@
     `<button class="btn ${GL[g][1]}" data-g="${g}">${GL[g][0]}<small>${fmtIvl(nextCard(S.cards[id], g))}</small></button>`).join('')}</div>`;
 
   /* ───────── Session ───────── */
-  function runSession(items, title) {
+  function runSession(items, title, opt = {}) {
     const st = { queue: items.slice(), i: 0, right: 0, wrong: 0, again: {} };
     next();
     function next() {
@@ -156,7 +177,8 @@
         if (g === 1 && (st.again[it.id] || 0) < 2) { st.again[it.id] = (st.again[it.id] || 0) + 1; st.queue.push(it); }
         st.i++; next();
       };
-      (it.type === 'q' ? renderQuestion : renderFlash)(it, header, done);
+      if (opt.read && it.type === 'q') renderRead(it, header, done);
+      else (it.type === 'q' ? renderQuestion : renderFlash)(it, header, done);
       window.scrollTo(0, 0);
     }
     function finish() {
@@ -202,7 +224,7 @@
           <div class="row"><button class="btn primary" data-a="next">Tiếp tục (Enter)</button>${viBtn}</div>`;
       }
       $app.innerHTML = `${header}<div class="card ${multi ? 'multi' : ''} ${answered ? 'done' : ''}">
-        <div class="qmeta"><span>Domain ${q.d} · ${esc(dom(q.d).vi)}</span>
+        <div class="qmeta"><span>Domain ${q.d} · ${esc(dom(q.d).vi)}${q.t ? ` · Task ${q.t}` : ''}</span>
           <span>${q.lvl === 2 ? '<span class="tag">🔥 Nâng cao</span> ' : ''}${isNew ? '<span class="tag">Mới</span> ' : ''}${multi ? `<span class="tag">Chọn ${need}</span>` : ''}</span></div>
         <div class="qtext">${hl(q.en)}</div>${vi ? `<div class="vi">${esc(q.vi)}</div>` : ''}
         <ul class="opts">${opts}</ul>${bottom}</div>`;
@@ -302,7 +324,7 @@
         <div class="card stat"><b>${learned}/${ITEMS.length}</b><span class="muted small">thẻ đã học</span></div>
         <div class="card stat"><b>🔥 ${streak()}</b><span class="muted small">ngày liên tiếp</span></div>
         ${ex !== null ? `<div class="card stat"><b>${ex >= 0 ? ex : '—'}</b><span class="muted small">ngày đến kỳ thi</span></div>` : ''}
-        ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b style="color:${S.exams[0].score >= 700 ? 'var(--ok)' : 'var(--bad)'}">${S.exams[0].score}</b><span class="muted small">điểm thi thử gần nhất</span></a>` : ''}
+        ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b class="v-${verdict(pct(S.exams[0]))[0]}">${pct(S.exams[0])}%</b><span class="muted small">thi thử gần nhất · sẵn sàng ${readiness().ok}/3</span></a>` : ''}
         ${S.exam ? `<a class="card stat" style="text-decoration:none" href="#/exam"><b>⏱</b><span class="muted small">Đang thi dở · tiếp tục</span></a>` : ''}
       </div>
       <div class="card row" style="justify-content:space-between">
@@ -315,6 +337,14 @@
         return `<div class="card row" style="justify-content:space-between">
           <div>📚 Khóa học: <b>${dn}/${COURSE.length}</b> bài${nl ? `<div class="small muted">Tiếp theo: ${esc(nl.id)}. ${esc(nl.title)}</div>` : ''}</div>
           <a class="btn" href="${nl ? '#/lesson/' + esc(nl.id) : '#/learn'}">${nl ? (dn ? 'Học tiếp' : 'Bắt đầu học') : 'Xem lại'}</a></div>`;
+      })()}
+      ${(() => {
+        const ts = taskStats();
+        const weak = Object.keys(TASKS).map(t => ({ t, ...ts[t] })).filter(r => r.a >= 5).map(r => ({ ...r, p: Math.round(r.c / r.a * 100) }))
+          .filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, 3);
+        return weak.length ? `<div class="card"><b>🎯 Task cần ôn nhiều nhất</b><ul class="small" style="margin:6px 0 0">${weak.map(r =>
+          `<li>Task ${r.t} ${esc(TASKS[r.t])}: <b class="${r.p >= 70 ? 'v-warn' : 'v-no'}">${r.p}%</b> · <a href="#/practice/t-${r.t}">Luyện ngay</a></li>`).join('')}</ul>
+          <div class="small" style="margin-top:6px"><a href="#/practice">Xem thống kê đầy đủ →</a></div></div>` : '';
       })()}
       <h2>Tiến độ theo domain</h2>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${domains}</div>
@@ -350,6 +380,11 @@
       else if (arg === 'hard') { qs = D.questions.filter(q => q.lvl === 2); title = 'Câu nâng cao'; }
       else if (arg === 'multi') { qs = D.questions.filter(q => q.ans.length > 1); title = 'Câu chọn nhiều đáp án'; }
       else if (arg === 'weak') { qs = D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; }); title = 'Câu hay sai'; }
+      else if (arg === 'read') {
+        const pool = D.questions.filter(q => q.en.length >= 160);
+        return runSession(shuffle(pool).slice(0, 15).map(q => ITEMS.find(i => i.id === 'q:' + q.id)), 'Luyện đọc đề', { read: true });
+      }
+      else if (arg.startsWith('t-')) { const t = arg.slice(2); qs = D.questions.filter(q => q.t === t); title = 'Task ' + t + ' · ' + (TASKS[t] || ''); }
       else { qs = D.questions.filter(q => q.d === +arg); title = 'Domain ' + arg; }
       if (!qs.length) { $app.innerHTML = `<div class="card">Chưa có câu nào ở mục này. <a href="#/practice">Quay lại</a></div>`; return; }
       return runSession(shuffle(qs).map(q => ITEMS.find(i => i.id === 'q:' + q.id)), title);
@@ -363,17 +398,74 @@
       <a class="card dom" style="text-decoration:none" href="#/practice/all"><h3>🔀 Trộn tất cả</h3><span class="muted small">${D.questions.length} câu</span></a>
       <a class="card dom" style="text-decoration:none" href="#/practice/weak"><h3>🎯 Câu hay sai</h3><span class="muted small">${weak} câu (tỷ lệ đúng dưới 70%)</span></a>
       <a class="card dom" style="text-decoration:none" href="#/practice/hard"><h3>🔥 Câu nâng cao</h3><span class="muted small">${D.questions.filter(q => q.lvl === 2).length} câu gần độ khó đề thật</span></a>
-      <a class="card dom" style="text-decoration:none" href="#/practice/multi"><h3>☑️ Câu chọn nhiều đáp án</h3><span class="muted small">${D.questions.filter(q => q.ans.length > 1).length} câu (Choose TWO)</span></a>
-      </div>`;
+      <a class="card dom" style="text-decoration:none" href="#/practice/multi"><h3>☑️ Câu chọn nhiều đáp án</h3><span class="muted small">${D.questions.filter(q => q.ans.length > 1).length} câu (Choose TWO/THREE)</span></a>
+      <a class="card dom" style="text-decoration:none" href="#/practice/read"><h3>📖 Luyện đọc đề</h3><span class="muted small">Tìm từ khóa quyết định trước khi xem đáp án · 15 câu dài</span></a>
+      </div>
+      <h2>Theo task statement</h2>
+      <p class="muted small">Gộp kết quả luyện tập và thi thử. Task có tỷ lệ đúng thấp nhất được xếp lên đầu. Bấm để luyện riêng task đó.</p>
+      ${taskTable()}`;
+  }
+
+  /* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử) */
+  function taskStats() {
+    const out = {};
+    Object.keys(TASKS).forEach(t => { out[t] = { a: 0, c: 0, total: 0 }; });
+    D.questions.forEach(q => { if (!q.t) return; out[q.t].total++; const s = S.stats[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
+    (D.examPool || []).forEach(q => { if (!q.t) return; const s = (S.examStats || {})[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
+    return out;
+  }
+  function taskTable() {
+    const ts = taskStats();
+    const rows = Object.keys(TASKS).map(t => ({ t, ...ts[t], acc: ts[t].a ? Math.round(ts[t].c / ts[t].a * 100) : null }))
+      .sort((x, y) => (x.acc === null) - (y.acc === null) || (x.acc ?? 0) - (y.acc ?? 0) || x.t.localeCompare(y.t));
+    return `<div class="card scroll-x"><table class="tasks"><tr><th>Task</th><th>Chủ đề</th><th>Đúng</th><th style="width:30%"></th><th></th></tr>
+      ${rows.map(r => `<tr><td><b>${r.t}</b></td><td>${esc(TASKS[r.t])}</td>
+        <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${r.a} lượt</div></td>
+        <td><div class="bar"><i style="width:${r.acc || 0}%;background:${r.acc === null ? 'var(--line)' : r.acc >= 80 ? 'var(--ok)' : r.acc >= 70 ? '#c98a00' : 'var(--bad)'}"></i></div></td>
+        <td>${r.total ? `<a class="btn" href="#/practice/t-${r.t}">Luyện ${r.total}</a>` : ''}</td></tr>`).join('')}</table></div>`;
+  }
+
+  /* Chế độ luyện đọc đề: đọc đề tiếng Anh, chạm vào từ khóa quyết định, rồi mới xem lựa chọn */
+  function renderRead(it, header, done) {
+    const q = it.ref, start = Date.now(), marked = new Set();
+    const words = q.en.split(/(\s+)/);
+    let tick = null;
+    const drawStep1 = () => {
+      $app.innerHTML = `${header}<div class="card">
+        <div class="qmeta"><span>📖 Bước 1/2: đọc đề và chạm vào từ khóa quyết định</span><span id="rtimer" class="timer small">0s</span></div>
+        <p class="muted small">Gợi ý: tìm yêu cầu chính (MOST cost-effective, LEAST operational overhead…), ràng buộc (cannot be interrupted, without managing servers…) và đối tượng (data, users, servers…).</p>
+        <div class="qtext read">${words.map((w, i) => /\S/.test(w) ? `<span class="tok ${marked.has(i) ? 'mk' : ''}" data-w="${i}">${esc(w)}</span>` : w).join('')}</div>
+        <div class="row" style="margin-top:14px"><button class="btn primary" data-a="reveal">Xem từ khóa gợi ý & các lựa chọn →</button>
+          <span class="muted small">Mục tiêu khi thi: khoảng 80 giây mỗi câu (90 phút / 65 câu)</span></div></div>`;
+    };
+    drawStep1();
+    tick = setInterval(() => { const el = document.getElementById('rtimer'); if (!el) return clearInterval(tick); el.textContent = Math.round((Date.now() - start) / 1000) + 's'; }, 1000);
+    $app.onclick = e => {
+      const tk = e.target.closest('.tok');
+      if (tk) { const i = +tk.dataset.w; if (marked.has(i)) marked.delete(i); else marked.add(i); tk.classList.toggle('mk'); return; }
+      if (e.target.closest('[data-a="reveal"]')) {
+        clearInterval(tick);
+        const secs = Math.round((Date.now() - start) / 1000);
+        const mine = [...marked].sort((a, b) => a - b).map(i => words[i].replace(/[.,;:?()"]/g, '')).join(', ');
+        const kws = [...new Set((q.en.match(KW_RE) || []).map(m => m.toLowerCase().replace(/s$/, '')))]
+          .map(k => GMAP.get(k) || GMAP.get(k + 's')).filter(Boolean);
+        const box = `<div class="card read-review">
+          <div class="small"><b>⏱ ${secs}s</b> để đọc đề${secs > 80 ? ' (hơi lâu, hãy luyện đọc lướt tìm từ khóa)' : ''}.
+            Từ bạn chọn: <i>${mine ? esc(mine) : 'chưa chọn từ nào'}</i></div>
+          ${kws.length ? `<div class="small" style="margin-top:6px">🔑 Từ khóa gợi ý: ${kws.map(g => `<span class="kw">${esc(g.term)}</span> = ${esc(g.vi)}${g.hint ? ` <span class="muted">(${esc(g.hint)})</span>` : ''}`).join(' · ')}</div>` : ''}
+          <div class="vi" style="margin-top:6px">${esc(q.vi)}</div></div>`;
+        renderQuestion(it, header + box, done);
+      }
+    };
   }
 
   /* ───────── Khóa học ───────── */
-  const MODULES = [{ id: 0, vi: 'Nền tảng IT cho người mới', en: 'Start here' }, ...D.domains];
+  const MODULES = [{ id: 0, vi: 'Nền tảng IT cho người mới', en: 'Start here' }, ...D.domains, { id: 5, vi: 'Thực hành trên AWS (tùy chọn)', en: 'Hands-on labs' }];
   const lessonNum = l => parseInt(String(l.id).split('-')[1], 10) || 0;
   const COURSE = (D.course || []).slice().sort((a, b) => a.module - b.module || lessonNum(a) - lessonNum(b));
   const isDone = id => !!(S.done && S.done[id]);
   const nextLesson = () => COURSE.find(l => !isDone(l.id));
-  const modName = m => m === 0 ? 'Nền tảng' : 'Domain ' + m;
+  const modName = m => m === 0 ? 'Nền tảng' : m === 5 ? 'Thực hành' : 'Domain ' + m;
 
   function viewLearn(arg) {
     // #/learn            → lộ trình khóa học
@@ -392,12 +484,13 @@
       if (!ls.length) return '';
       const dn = ls.filter(l => isDone(l.id)).length;
       return `<section class="module" id="mod-${m.id}">
-        <div class="row" style="justify-content:space-between"><h2 style="margin:0">${m.id === 0 ? '🌱' : 'D' + m.id + '.'} ${esc(m.vi)}</h2>
+        <div class="row" style="justify-content:space-between"><h2 style="margin:0">${m.id === 0 ? '🌱' : m.id === 5 ? '🛠️' : 'D' + m.id + '.'} ${esc(m.vi)}</h2>
           <span class="muted small">${dn}/${ls.length} bài${m.weight ? ` · ${m.weight}% đề thi` : ''}</span></div>
         <ol class="lessons">${ls.map(l => `<li><a class="lrow ${isDone(l.id) ? 'done' : ''}" href="#/lesson/${esc(l.id)}">
           <span class="lnum">${isDone(l.id) ? '✓' : esc(l.id)}</span>
           <span class="ltitle">${esc(l.title)}</span><span class="muted small">${l.mins || ''} phút</span></a></li>`).join('')}</ol>
-        ${m.id ? `<div class="row small"><a href="#/learn/sum/${m.id}">📋 Tóm tắt nhanh</a><a href="#/practice/${m.id}">✍️ Luyện câu hỏi Domain ${m.id}</a></div>` : ''}
+        ${m.id === 5 ? '<p class="muted small">Không bắt buộc cho kỳ thi, nhưng giúp nhớ lâu hơn. Luôn làm theo phần dọn dẹp ở cuối mỗi lab để tránh phát sinh chi phí.</p>' : ''}
+        ${m.id >= 1 && m.id <= 4 ? `<div class="row small"><a href="#/learn/sum/${m.id}">📋 Tóm tắt nhanh</a><a href="#/practice/${m.id}">✍️ Luyện câu hỏi Domain ${m.id}</a></div>` : ''}
       </section>`;
     }).join('');
     $app.innerHTML = `<h1>Bài học</h1>${tabs}
@@ -529,9 +622,24 @@
   /* ───────── Thi thử ───────── */
   const EXAM_FULL = 65;             // đề thật: 65 câu / 90 phút
   const PASS = 700;
-  const QBY = new Map(D.questions.map(q => [q.id, q]));
+  const READY = 0.8;                // ngưỡng "sẵn sàng": ≥ 80% đúng
+  const POOL = D.examPool || [];    // kho câu chỉ dùng cho thi thử (không có trong luyện tập/SRS)
+  const POOL_IDS = new Set(POOL.map(q => q.id));
+  const QBY = new Map([...D.questions, ...POOL].map(q => [q.id, q]));
   let examTimer = null;
-  const examSize = () => Math.min(EXAM_FULL, D.questions.length);
+  const examSize = () => Math.min(EXAM_FULL, D.questions.length + POOL.length);
+  const seenCount = id => (S.examSeen && S.examSeen[id]) || 0;
+  const pct = r => Math.round(r.correct / r.n * 100);
+  function readiness() {
+    const last = (S.exams || []).slice(0, 3);
+    const ok = last.filter(r => r.correct / r.n >= READY).length;
+    return { last, ok, ready: last.length === 3 && ok === 3 };
+  }
+  function verdict(p) {
+    return p >= READY * 100 ? ['ok', '✅ Đạt ngưỡng an toàn (≥ 80%)']
+      : p >= 70 ? ['warn', '⚠️ Sát ngưỡng: đề thật có thể khó hơn, cần ôn thêm']
+      : ['no', '❌ Chưa đạt: hãy ôn lại các domain yếu'];
+  }
   const examMinutes = esl => Math.round((esl ? 120 : 90) * examSize() / EXAM_FULL);
   const fmtTime = ms => {
     const s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
@@ -541,7 +649,9 @@
 
   function pickExam() {
     const n = examSize();
-    if (n === D.questions.length) return shuffle(D.questions).map(q => q.id);
+    // Ưu tiên câu trong kho đề riêng mà bạn gặp ít nhất; thiếu thì bổ sung bằng câu luyện tập.
+    const byFresh = arr => shuffle(arr).sort((a, b) => seenCount(a.id) - seenCount(b.id));
+    const candidates = dId => [...byFresh(POOL.filter(q => q.d === dId)), ...byFresh(D.questions.filter(q => q.d === dId))];
     // chia số câu theo tỷ trọng domain
     // phân bổ theo phần dư lớn nhất để tổng đúng bằng n (65 câu → 16/19/22/8)
     const raw = D.domains.map(d => ({ d, x: n * d.weight / 100 }));
@@ -549,8 +659,8 @@
     let left = n - raw.reduce((s, r) => s + r.k, 0);
     raw.slice().sort((a, b) => (b.x - b.k) - (a.x - a.k)).forEach(r => { if (left > 0) { r.k++; left--; } });
     const out = [];
-    raw.forEach(r => out.push(...shuffle(D.questions.filter(q => q.d === r.d.id)).slice(0, r.k)));
-    const rest = shuffle(D.questions.filter(q => !out.includes(q)));
+    raw.forEach(r => out.push(...candidates(r.d.id).slice(0, r.k)));
+    const rest = byFresh([...POOL, ...D.questions].filter(q => !out.includes(q)));
     while (out.length < n && rest.length) out.push(rest.shift());
     return shuffle(out.slice(0, n)).map(q => q.id);
   }
@@ -559,24 +669,29 @@
     if (arg && arg[0] === 'r') return examResult(+arg.slice(1));
     if (S.exam) return examRun();
     const n = examSize(), st = S.settings;
-    const hist = (S.exams || []).map((r, i) => `<tr><td><a href="#/exam/r${i}">${new Date(r.date).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</a></td>
-      <td><b>${r.score}</b></td><td>${r.score >= PASS ? '<span style="color:var(--ok)">Đạt</span>' : '<span style="color:var(--bad)">Chưa đạt</span>'}</td>
-      <td>${r.correct}/${r.n}</td><td>${fmtTime(r.used)}</td></tr>`).join('');
+    const hist = (S.exams || []).map((r, i) => { const p = pct(r), v = verdict(p);
+      return `<tr><td><a href="#/exam/r${i}">${new Date(r.date).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</a></td>
+      <td><b class="v-${v[0]}">${p}%</b></td><td>${r.correct}/${r.n}</td>
+      <td>${r.fresh != null ? `${r.fresh}/${r.n}` : '—'}</td><td>${fmtTime(r.used)}</td></tr>`; }).join('');
+    const poolSeen = POOL.filter(q => seenCount(q.id) > 0).length;
+    const rd = readiness();
     $app.innerHTML = `<h1>Thi thử</h1>
       <div class="card">
         <p>Đề gồm <b>${n} câu</b>, làm trong <b id="mins">${examMinutes(st.esl)} phút</b>.
           ${n < EXAM_FULL ? `<span class="muted small">(Đề thật có 65 câu trong 90 phút. Ngân hàng hiện có ${D.questions.length} câu nên thời gian được tính theo tỷ lệ.)</span>` : ''}</p>
         <ul class="small">
           <li>Giống thi thật: <b>chỉ tiếng Anh</b>, không tô màu từ khóa, không xem đáp án giữa chừng.</li>
-          <li>Có thể <b>đánh dấu</b> câu để xem lại và chuyển qua lại giữa các câu.</li>
-          <li>Hết giờ thì bài tự nộp. Đậu khi đạt <b>≥ ${PASS}</b>/1000 điểm.</li>
-          <li>Câu sai sẽ được đưa vào lịch SRS để ôn lại.</li>
+          <li>Đề ưu tiên lấy từ <b>kho đề riêng ${POOL.length} câu</b>. Các câu này <b>không xuất hiện</b> khi luyện tập hay ôn SRS, nên kết quả phản ánh năng lực thật chứ không phải trí nhớ. Bạn đã gặp ${poolSeen}/${POOL.length} câu trong các lần thi trước.</li>
+          <li>Có thể <b>đánh dấu</b> câu để xem lại và chuyển qua lại giữa các câu. Hết giờ thì bài tự nộp.</li>
+          <li>Kết quả tính bằng <b>% câu đúng</b>. Đề thật dùng thang điểm scaled (đậu 700/1000) và có thể khó hơn, nên hãy nhắm <b>≥ 80%</b>.</li>
         </ul>
         <label class="radio"><input type="checkbox" id="esl" ${st.esl ? 'checked' : ''}> Áp dụng chế độ <b>ESL +30 phút</b> (nếu bạn đăng ký hỗ trợ này khi đặt lịch thi)</label>
         <button class="btn primary" id="start" style="margin-top:8px">Bắt đầu thi</button>
       </div>
+      ${readyCard(rd)}
       <h2>Lịch sử thi thử</h2>
-      ${hist ? `<div class="card scroll-x"><table><tr><th>Thời gian</th><th>Điểm</th><th>Kết quả</th><th>Đúng</th><th>Thời gian làm</th></tr>${hist}</table></div>`
+      ${hist ? `<div class="card scroll-x"><table><tr><th>Thời gian</th><th>% đúng</th><th>Đúng</th><th>Câu mới gặp</th><th>Thời gian làm</th></tr>${hist}</table>
+        <p class="note">“Câu mới gặp”: số câu bạn gặp lần đầu trong bài thi đó. Nếu thấp, điểm có thể cao hơn năng lực thật vì bạn đã nhớ đáp án.</p></div>`
              : '<p class="muted">Chưa có bài thi nào.</p>'}`;
     document.getElementById('esl').onchange = e => { st.esl = e.target.checked; save(); document.getElementById('mins').textContent = examMinutes(st.esl) + ' phút'; };
     document.getElementById('start').onclick = () => {
@@ -658,6 +773,16 @@
     };
   }
 
+  function readyCard(rd) {
+    const dots = [0, 1, 2].map(i => { const r = rd.last[i]; if (!r) return '<span class="dot"></span>';
+      return `<span class="dot ${r.correct / r.n >= READY ? 'ok' : 'no'}" title="${pct(r)}%">${pct(r)}%</span>`; }).join('');
+    return `<div class="card ready ${rd.ready ? 'yes' : ''}"><b>${rd.ready ? '🎯 Sẵn sàng đi thi' : '🎯 Mức sẵn sàng'}</b>
+      <div class="dots">${dots}</div>
+      <p class="small muted" style="margin:6px 0 0">${rd.ready
+        ? 'Bạn đã đạt ≥ 80% ở 3 đề gần nhất. Hãy thử thêm Official Practice Question Set trên AWS Skill Builder trước khi đăng ký thi.'
+        : `Mục tiêu: đạt ≥ 80% ở <b>3 đề liên tiếp</b> (hiện ${rd.ok}/${rd.last.length || 0} đề gần nhất đạt).`}</p></div>`;
+  }
+
   function examSubmit(auto) {
     clearInterval(examTimer); examTimer = null; onKey = null;
     const E = S.exam; if (!E) return;
@@ -666,14 +791,23 @@
       const q = QBY.get(id), ok = sameAns(q, E.ans[id] || []);
       const p = per[q.d] || (per[q.d] = { c: 0, t: 0 });
       p.t++; if (ok) { p.c++; correct++; }
-      recordAnswer(id, ok);
-      if (!ok) S.cards['q:' + id] = nextCard(S.cards['q:' + id], 1); // câu sai → vào SRS, ôn lại sớm
+      if (!POOL_IDS.has(id)) {          // câu luyện tập: ghi thống kê, câu sai vào SRS
+        recordAnswer(id, ok);
+        if (!ok) S.cards['q:' + id] = nextCard(S.cards['q:' + id], 1);
+      }
     });
     const n = E.ids.length;
     S.exams = [{
       date: Date.now(), ids: E.ids, ans: E.ans, order: E.order, flag: E.flag, correct, n, per, auto,
-      score: Math.round(100 + 900 * correct / n), used: Math.min(Date.now() - E.start, E.dur)
+      score: Math.round(100 + 900 * correct / n), used: Math.min(Date.now() - E.start, E.dur),
+      fresh: E.ids.filter(id => POOL_IDS.has(id) && seenCount(id) === 0).length
     }, ...(S.exams || [])].slice(0, 20);
+    S.examSeen = S.examSeen || {};
+    S.examStats = S.examStats || {};
+    E.ids.forEach(id => {
+      S.examSeen[id] = (S.examSeen[id] || 0) + 1;
+      if (POOL_IDS.has(id)) { const st = S.examStats[id] || (S.examStats[id] = { a: 0, c: 0 }); st.a++; if (sameAns(QBY.get(id), E.ans[id] || [])) st.c++; }
+    });
     S.exam = null;
     S.activity[today()] = (S.activity[today()] || 0) + n;
     save();
@@ -683,9 +817,14 @@
   function examResult(i) {
     const R = (S.exams || [])[i];
     if (!R) { $app.innerHTML = `<div class="card">Không tìm thấy bài thi. <a href="#/exam">Quay lại</a></div>`; return; }
-    const pass = R.score >= PASS;
+    R.ids = R.ids.filter(id => QBY.has(id));   // bỏ câu đã bị xóa khỏi ngân hàng
+    const p100 = pct(R), v = verdict(p100);
     let filter = 'all', showVi = false;
     const wrongIds = R.ids.filter(id => !sameAns(QBY.get(id), R.ans[id] || []));
+    const drillIds = wrongIds.filter(id => !POOL_IDS.has(id));   // chỉ câu luyện tập mới đưa vào ôn
+    const tk = {};
+    R.ids.forEach(id => { const q = QBY.get(id); if (!q.t) return; const r = tk[q.t] || (tk[q.t] = { c: 0, n: 0 }); r.n++; if (sameAns(q, R.ans[id] || [])) r.c++; });
+    const weakTasks = Object.entries(tk).map(([t, r]) => ({ t, ...r, p: Math.round(r.c / r.n * 100) })).filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, 5);
     const domRows = D.domains.filter(d => R.per[d.id]).map(d => {
       const p = R.per[d.id], pc = Math.round(p.c / p.t * 100);
       return `<tr><td>D${d.id}. ${esc(d.vi)}</td><td>${p.c}/${p.t}</td><td style="width:40%"><div class="bar"><i style="width:${pc}%;background:${pc >= 70 ? 'var(--ok)' : 'var(--bad)'}"></i></div></td><td><b>${pc}%</b></td></tr>`;
@@ -708,17 +847,19 @@
       $app.innerHTML = `
         <div class="card" style="text-align:center">
           <div class="muted small">${new Date(R.date).toLocaleString('vi-VN')}${R.auto ? ' · tự nộp khi hết giờ' : ''}</div>
-          <div class="score ${pass ? 'pass' : 'fail'}">${R.score}<small>/1000</small></div>
-          <h2 style="margin:4px 0">${pass ? '🎉 ĐẠT' : 'CHƯA ĐẠT'} <span class="muted small">(cần ≥ ${PASS})</span></h2>
-          <p>Đúng <b>${R.correct}/${R.n}</b> câu · Thời gian làm ${fmtTime(R.used)}</p>
-          <p class="note">Điểm chỉ là quy đổi gần đúng (100 + 900 × tỷ lệ đúng). Đề thật dùng thang điểm scaled nên kết quả có thể khác.</p>
+          <div class="score v-${v[0]}">${p100}<small>% đúng</small></div>
+          <h2 style="margin:4px 0">${v[1]}</h2>
+          <p>Đúng <b>${R.correct}/${R.n}</b> câu · Thời gian làm ${fmtTime(R.used)}${R.fresh != null ? ` · Câu mới gặp lần đầu: <b>${R.fresh}/${R.n}</b>` : ''}</p>
+          <p class="note">Quy đổi thô theo thang 1000 ≈ ${R.score} điểm, chỉ để tham khảo. Đề thật dùng thang scaled (đậu ${PASS}) và có thể khó hơn, nên hãy nhắm ≥ 80% ở 3 đề liên tiếp.${R.fresh != null && R.fresh < R.n / 2 ? ' ⚠️ Đề này có nhiều câu bạn đã gặp, nên kết quả có thể cao hơn năng lực thật.' : ''}</p>
           <div class="row" style="justify-content:center">
             <a class="btn primary" href="#/exam">Thi lại</a>
-            ${wrongIds.length ? `<button class="btn" data-a="drill">Ôn ngay ${wrongIds.length} câu sai</button>` : ''}
+            ${drillIds.length ? `<button class="btn" data-a="drill">Ôn ngay ${drillIds.length} câu sai (câu luyện tập)</button>` : ''}
           </div>
         </div>
+        ${i === 0 ? readyCard(readiness()) : ''}
         <h2>Kết quả theo domain</h2>
-        <div class="card scroll-x"><table>${domRows}</table><p class="note">Domain nào dưới 70% thì nên học lại bài học của domain đó.</p></div>
+        <div class="card scroll-x"><table>${domRows}</table><p class="note">Domain nào dưới 70% thì nên học lại bài học của domain đó.</p>
+          ${weakTasks.length ? `<h3 style="margin:14px 0 6px">Task cần ôn thêm</h3><ul class="small">${weakTasks.map(r => `<li><b>Task ${r.t}</b> ${esc(TASKS[r.t])}: ${r.c}/${r.n} câu đúng (${r.p}%) · <a href="#/practice/t-${r.t}">Luyện task này</a></li>`).join('')}</ul>` : ''}</div>
         <h2>Xem lại bài làm</h2>
         <div class="row" style="margin-bottom:12px">
           <div class="tabs" style="margin:0">
@@ -733,7 +874,7 @@
     $app.onclick = e => {
       const f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; draw(); return; }
       const b = e.target.closest('[data-a="drill"]');
-      if (b) runSession(wrongIds.map(id => ITEMS.find(it => it.id === 'q:' + id)), 'Ôn câu sai sau thi thử');
+      if (b) runSession(drillIds.map(id => ITEMS.find(it => it.id === 'q:' + id)).filter(Boolean), 'Ôn câu sai sau thi thử');
     };
   }
 
