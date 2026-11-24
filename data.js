@@ -98,18 +98,18 @@ window.CLF = {
       opts: [
         ["Business", "Kinh doanh"],
         ["Security", "Bảo mật"],
-        ["Pricing", "Định giá"],
+        ["Cost Optimization", "Tối ưu chi phí"],
         ["Networking", "Mạng"],
-        ["Marketing", "Tiếp thị"]
+        ["Sustainability", "Bền vững"]
       ],
       ans: [0, 1],
       exp: "AWS CAF có 6 perspective: Business, People, Governance, Platform, Security, Operations.",
       why: [
-        "Đúng: Business là một perspective.",
-        "Đúng: Security là một perspective.",
-        "Sai: không có perspective Pricing.",
-        "Sai: không có perspective Networking.",
-        "Sai: không có perspective Marketing."
+        "Đúng: Business perspective giúp đảm bảo đầu tư cloud phục vụ mục tiêu kinh doanh.",
+        "Đúng: Security perspective lo tính bảo mật, toàn vẹn và sẵn sàng của dữ liệu và workload.",
+        "Sai: Cost Optimization là trụ cột của Well-Architected Framework, không phải perspective của CAF.",
+        "Sai: networking là một phần của Platform perspective, không phải perspective riêng.",
+        "Sai: Sustainability là trụ cột của Well-Architected Framework, không phải perspective của CAF."
       ]
     },
 
@@ -130,9 +130,9 @@ window.CLF = {
       why: [
         "Đúng: cấu hình mạng và tường lửa là việc của khách hàng.",
         "Đúng: với EC2, khách hàng tự vá hệ điều hành.",
-        "Sai: AWS chịu trách nhiệm.",
-        "Sai: AWS chịu trách nhiệm.",
-        "Sai: AWS chịu trách nhiệm."
+        "Sai: bảo mật vật lý data center là phần “OF the cloud” do AWS chịu trách nhiệm.",
+        "Sai: hypervisor là lớp ảo hóa do AWS quản lý, khách hàng không truy cập được.",
+        "Sai: phần cứng vật lý thuộc hạ tầng do AWS bảo trì và thay thế."
       ]
     },
     {
@@ -141,17 +141,17 @@ window.CLF = {
       vi: "Đâu là thực hành tốt nhất để bảo vệ tài khoản root user của AWS?",
       opts: [
         ["Enable MFA and avoid using the root user for everyday tasks", "Bật MFA và không dùng root user cho công việc hằng ngày"],
-        ["Share the root user credentials with all administrators", "Chia sẻ thông tin đăng nhập root cho mọi quản trị viên"],
+        ["Attach an IAM policy to the root user to restrict its permissions", "Gắn IAM policy cho root user để giới hạn quyền của nó"],
         ["Create access keys for the root user to use in automation scripts", "Tạo access key cho root user để dùng trong script tự động"],
-        ["Use the root user for daily administrative tasks", "Dùng root user cho việc quản trị hằng ngày"]
+        ["Use a strong password without MFA, since CloudTrail logs root activity", "Dùng mật khẩu mạnh, không cần MFA vì CloudTrail đã ghi lại hoạt động của root"]
       ],
       ans: [0],
       exp: "Root user có toàn quyền. Hãy bật MFA, không tạo access key cho root, và dùng IAM user/role cho công việc hằng ngày.",
       why: [
-        "Đúng.",
-        "Sai: không bao giờ chia sẻ root.",
-        "Sai: AWS khuyến nghị không tạo access key cho root.",
-        "Sai: chỉ dùng root cho vài tác vụ đặc biệt (ví dụ đổi email/mật khẩu root, đóng tài khoản)."
+        "Đúng: MFA thêm lớp bảo vệ khi đăng nhập, và hạn chế dùng root giảm rủi ro lộ thông tin có toàn quyền.",
+        "Sai: không thể gắn IAM policy cho root user; root luôn có toàn quyền trong tài khoản của nó.",
+        "Sai: AWS khuyến nghị không tạo access key cho root vì key dài hạn có toàn quyền rất dễ bị lộ.",
+        "Sai: CloudTrail chỉ ghi lại sau khi sự việc xảy ra, không ngăn được việc mật khẩu root bị đánh cắp; vẫn cần MFA."
       ]
     },
     {
@@ -186,7 +186,7 @@ window.CLF = {
       ans: [0],
       exp: "Mẹo nhớ: CloudTrail là “dấu vết” (trail) của ai làm gì. CloudWatch là “theo dõi” (watch) hiệu năng.",
       why: [
-        "Đúng.",
+        "Đúng: CloudTrail ghi lại mọi lời gọi API (ai, làm gì, khi nào, từ đâu) để phục vụ kiểm toán.",
         "Sai: CloudWatch theo dõi metric, log và alarm (hiệu năng).",
         "Sai: Config ghi lại thay đổi cấu hình của tài nguyên, không phải ai gọi API.",
         "Sai: X-Ray truy vết request trong ứng dụng phân tán để debug."
@@ -205,7 +205,7 @@ window.CLF = {
       ans: [0],
       exp: "WAF là tường lửa ứng dụng web (lớp 7), lọc request theo rule. Shield là để chống DDoS.",
       why: [
-        "Đúng.",
+        "Đúng: WAF lọc request HTTP/HTTPS theo rule, có sẵn rule chặn SQL injection và XSS.",
         "Sai: Shield chống DDoS. Bản Standard được bật miễn phí cho mọi khách hàng.",
         "Sai: GuardDuty phát hiện mối đe dọa từ log, không chặn request.",
         "Sai: Macie tìm dữ liệu nhạy cảm (PII) trong S3."
@@ -224,7 +224,7 @@ window.CLF = {
       ans: [0],
       exp: "GuardDuty là dịch vụ phát hiện mối đe dọa (threat detection) dựa trên log.",
       why: [
-        "Đúng.",
+        "Đúng: GuardDuty dùng ML phân tích CloudTrail, VPC Flow Logs và DNS logs để phát hiện mối đe dọa.",
         "Sai: Inspector quét lỗ hổng (vulnerability) phần mềm.",
         "Sai: Macie tìm dữ liệu nhạy cảm trong S3.",
         "Sai: Shield Advanced chống DDoS nâng cao, có đội hỗ trợ DDoS 24/7."
@@ -237,15 +237,15 @@ window.CLF = {
       opts: [
         ["Attach an IAM role to the EC2 instance", "Gắn IAM role cho instance EC2"],
         ["Store an IAM user's access keys on the instance", "Lưu access key của IAM user trên instance"],
-        ["Use the root user's access keys", "Dùng access key của root user"],
+        ["Allow the instance's public IP address in the S3 bucket policy", "Cho phép địa chỉ IP public của instance trong bucket policy của S3"],
         ["Open the security group to allow all outbound traffic", "Mở security group cho phép mọi lưu lượng đi ra"]
       ],
       ans: [0],
       exp: "IAM role cấp quyền tạm thời và tự động xoay vòng (rotate), không cần lưu key trên máy.",
       why: [
-        "Đúng.",
-        "Sai: key lưu cố định trên máy dễ bị lộ.",
-        "Sai: không bao giờ dùng key của root.",
+        "Đúng: role cấp credential tạm thời, tự xoay vòng, không phải lưu key trên instance.",
+        "Sai: access key dài hạn lưu cố định trên máy dễ bị lộ và phải tự xoay vòng.",
+        "Sai: lọc theo IP không xác thực danh tính, IP public có thể thay đổi và mọi thứ chạy từ IP đó đều được truy cập.",
         "Sai: security group chỉ kiểm soát mạng, không cấp quyền IAM để đọc S3."
       ]
     },
@@ -256,18 +256,18 @@ window.CLF = {
       en: "Which of the following best describes an Availability Zone?",
       vi: "Mô tả nào đúng nhất về Availability Zone?",
       opts: [
-        ["One or more discrete data centers with redundant power, networking, and connectivity within a Region", "Một hoặc nhiều data center tách biệt, có nguồn điện, mạng và kết nối dự phòng, nằm trong một Region"],
-        ["A geographic area that contains multiple Regions", "Một khu vực địa lý chứa nhiều Region"],
-        ["A site that Amazon CloudFront uses to cache content close to users", "Địa điểm CloudFront dùng để cache nội dung gần người dùng"],
-        ["A single server rack inside a data center", "Một tủ máy chủ trong data center"]
+        ["One or more discrete data centers with redundant power and networking in a Region", "Một hoặc nhiều data center tách biệt, có nguồn điện và mạng dự phòng, nằm trong một Region"],
+        ["A large geographic area, such as a continent, that contains multiple Regions", "Một khu vực địa lý lớn (ví dụ một châu lục) chứa nhiều Region"],
+        ["A site in a major city that Amazon CloudFront uses to cache content near end users", "Địa điểm ở các thành phố lớn mà CloudFront dùng để cache nội dung gần người dùng"],
+        ["A logically isolated virtual network that a customer defines inside a Region", "Một mạng ảo cô lập về logic do khách hàng tự định nghĩa trong một Region"]
       ],
       ans: [0],
       exp: "Thứ tự từ lớn đến nhỏ: Region chứa nhiều AZ (thường từ 3 trở lên), mỗi AZ gồm 1 hoặc nhiều data center. Edge location là điểm cache của CloudFront.",
       why: [
-        "Đúng.",
-        "Sai: ngược lại, Region mới là khu vực địa lý, chứa nhiều AZ.",
-        "Sai: đó là edge location.",
-        "Sai."
+        "Đúng: AZ là một hoặc nhiều data center tách biệt, có nguồn điện và mạng dự phòng, nằm trong một Region.",
+        "Sai: ngược lại, Region mới là khu vực địa lý, chứa nhiều AZ; AWS không có cấp “chứa nhiều Region”.",
+        "Sai: đó là edge location, điểm cache của CloudFront, không phải nơi chạy tài nguyên như EC2.",
+        "Sai: đó là Amazon VPC, một mạng ảo trải trên các AZ của Region."
       ]
     },
     {
@@ -283,7 +283,7 @@ window.CLF = {
       ans: [0],
       exp: "Thấy “without provisioning or managing servers” thì nghĩ đến serverless, tức là Lambda (hoặc Fargate cho container).",
       why: [
-        "Đúng.",
+        "Đúng: Lambda là serverless, chạy code theo sự kiện và tính tiền theo thời gian chạy.",
         "Sai: EC2 là máy ảo, khách hàng tự quản lý.",
         "Sai: Beanstalk (PaaS) tự dựng EC2 giúp bạn, nhưng vẫn có server và tính tiền theo EC2.",
         "Sai: Lightsail là VPS giá cố định hằng tháng, dễ dùng."
@@ -302,7 +302,7 @@ window.CLF = {
       ans: [0],
       exp: "Lưu lâu, hiếm khi dùng và chấp nhận chờ nhiều giờ thì chọn Deep Archive, lớp rẻ nhất của S3.",
       why: [
-        "Đúng.",
+        "Đúng: Deep Archive có giá lưu trữ thấp nhất, thời gian lấy dữ liệu trong vòng 12 giờ là đủ đáp ứng.",
         "Sai: Standard dành cho dữ liệu dùng thường xuyên, giá cao nhất.",
         "Sai: Standard-IA dành cho dữ liệu ít dùng nhưng cần lấy ngay, đắt hơn Glacier.",
         "Sai: Instant Retrieval lấy ra trong mili-giây nên đắt hơn Deep Archive. Đề không cần lấy nhanh."
@@ -321,7 +321,7 @@ window.CLF = {
       ans: [0],
       exp: "NoSQL và key-value là DynamoDB. Quan hệ (SQL) là RDS hoặc Aurora. Kho dữ liệu phân tích là Redshift.",
       why: [
-        "Đúng.",
+        "Đúng: DynamoDB là NoSQL key-value serverless, độ trễ vài mili-giây ở mọi quy mô.",
         "Sai: RDS là cơ sở dữ liệu quan hệ (MySQL, PostgreSQL...).",
         "Sai: Redshift là data warehouse cho phân tích (OLAP).",
         "Sai: Aurora là cơ sở dữ liệu quan hệ do AWS phát triển, tương thích MySQL/PostgreSQL."
@@ -340,7 +340,7 @@ window.CLF = {
       ans: [0],
       exp: "CloudFront là CDN (mạng phân phối nội dung), cache nội dung tại edge location.",
       why: [
-        "Đúng.",
+        "Đúng: CloudFront là CDN, cache nội dung tại edge location gần người dùng để giảm độ trễ.",
         "Sai: Route 53 là DNS (phân giải tên miền), không cache nội dung.",
         "Sai: Direct Connect là đường truyền riêng từ on-premises tới AWS.",
         "Sai: ELB phân phối traffic tới nhiều server trong một Region."
@@ -359,10 +359,10 @@ window.CLF = {
       ans: [0],
       exp: "ELB chia tải. Auto Scaling thay đổi số lượng instance. Hai dịch vụ này thường dùng cùng nhau.",
       why: [
-        "Đúng.",
+        "Đúng: ELB nhận traffic và phân phối tới nhiều target khỏe mạnh (EC2, container, IP).",
         "Sai: Auto Scaling tăng/giảm số instance, không chia traffic.",
-        "Sai: VPC là mạng riêng ảo.",
-        "Sai: Direct Connect là kết nối riêng từ on-premises."
+        "Sai: VPC là mạng riêng ảo chứa tài nguyên, không tự phân phối traffic giữa các instance.",
+        "Sai: Direct Connect là đường kết nối riêng từ on-premises tới AWS, không cân bằng tải."
       ]
     },
     {
@@ -378,7 +378,7 @@ window.CLF = {
       ans: [0],
       exp: "Thấy “dedicated” và “not over the public internet” thì chọn Direct Connect. VPN thì đi qua internet nhưng được mã hóa.",
       why: [
-        "Đúng.",
+        "Đúng: Direct Connect là đường truyền vật lý riêng, không đi qua internet công cộng.",
         "Sai: VPN đi qua internet công cộng (có mã hóa). Bù lại triển khai nhanh, rẻ.",
         "Sai: Internet gateway cho VPC kết nối ra internet.",
         "Sai: VPC peering kết nối hai VPC với nhau."
@@ -399,7 +399,7 @@ window.CLF = {
       ans: [0],
       exp: "Tải ổn định và cam kết dài hạn (1 hoặc 3 năm) thì chọn Reserved Instances hoặc Savings Plans, giảm tới khoảng 72%.",
       why: [
-        "Đúng.",
+        "Đúng: cam kết 3 năm cho tải ổn định giúp giảm giá nhiều so với On-Demand mà không bị gián đoạn.",
         "Sai: On-Demand linh hoạt nhưng đắt nhất về lâu dài.",
         "Sai: Spot rẻ nhất nhưng có thể bị thu hồi, mà đề yêu cầu không được gián đoạn.",
         "Sai: Dedicated Hosts dùng khi cần server vật lý riêng (license, tuân thủ), đắt."
@@ -418,7 +418,7 @@ window.CLF = {
       ans: [0],
       exp: "Thấy “can be interrupted” hoặc “fault-tolerant” thì chọn Spot, giảm tới khoảng 90%. AWS báo trước 2 phút trước khi thu hồi.",
       why: [
-        "Đúng.",
+        "Đúng: Spot dùng công suất dư của AWS, rẻ nhất, hợp với job chịu được việc bị thu hồi.",
         "Sai: Reserved cần cam kết dài hạn, không rẻ bằng Spot.",
         "Sai: On-Demand đắt hơn Spot.",
         "Sai: Dedicated Instances chạy trên phần cứng riêng, đắt."
@@ -437,7 +437,7 @@ window.CLF = {
       ans: [0],
       exp: "Budgets dùng để đặt ngân sách và cảnh báo khi vượt (hoặc dự báo sẽ vượt).",
       why: [
-        "Đúng.",
+        "Đúng: Budgets đặt ngưỡng chi phí và gửi cảnh báo khi chi phí thực tế hoặc dự báo vượt ngưỡng.",
         "Sai: Cost Explorer dùng để xem và phân tích chi phí quá khứ, có dự báo, nhưng không phải công cụ cảnh báo chính.",
         "Sai: Pricing Calculator ước tính chi phí trước khi dùng.",
         "Sai: CUR là báo cáo chi tiết nhất về chi phí và mức dùng (file dữ liệu)."
@@ -456,9 +456,9 @@ window.CLF = {
       ans: [0],
       exp: "Chưa dùng AWS mà muốn ước tính thì dùng Pricing Calculator. Đã dùng rồi, muốn phân tích thì dùng Cost Explorer.",
       why: [
-        "Đúng.",
+        "Đúng: Pricing Calculator ước tính chi phí của kiến trúc dự kiến khi chưa chạy gì trên AWS.",
         "Sai: Cost Explorer phân tích chi phí đã phát sinh.",
-        "Sai: Budgets đặt ngân sách và cảnh báo.",
+        "Sai: Budgets đặt ngân sách và cảnh báo cho chi phí thực tế, không ước tính trước khi migration.",
         "Sai: Trusted Advisor khuyến nghị tối ưu cho tài nguyên đang chạy."
       ]
     },
@@ -468,17 +468,17 @@ window.CLF = {
       vi: "Công ty có nhiều tài khoản AWS và muốn một hóa đơn duy nhất, được giảm giá theo khối lượng dựa trên mức dùng gộp của mọi tài khoản. Nên dùng tính năng nào?",
       opts: [
         ["Consolidated billing in AWS Organizations", "Consolidated billing của AWS Organizations"],
-        ["AWS Budgets", "AWS Budgets"],
-        ["AWS Cost Explorer", "AWS Cost Explorer"],
+        ["AWS Budgets with one shared budget for all accounts", "AWS Budgets với một ngân sách chung cho mọi tài khoản"],
+        ["Cost allocation tags in AWS Cost Explorer", "Cost allocation tag trong AWS Cost Explorer"],
         ["AWS Trusted Advisor", "AWS Trusted Advisor"]
       ],
       ans: [0],
       exp: "Consolidated billing gộp hóa đơn, cộng dồn mức dùng để đạt bậc giảm giá (ví dụ S3 theo bậc dung lượng), và không tốn thêm phí.",
       why: [
-        "Đúng.",
-        "Sai: Budgets dùng để cảnh báo chi phí.",
-        "Sai: Cost Explorer dùng để phân tích chi phí.",
-        "Sai: Trusted Advisor đưa khuyến nghị tối ưu."
+        "Đúng: consolidated billing gộp hóa đơn của mọi tài khoản và cộng dồn mức dùng để đạt bậc giảm giá.",
+        "Sai: Budgets chỉ theo dõi và cảnh báo chi phí, không gộp hóa đơn hay tạo giảm giá theo khối lượng.",
+        "Sai: tag giúp phân bổ và xem chi phí theo dự án, không gộp hóa đơn của nhiều tài khoản.",
+        "Sai: Trusted Advisor đưa khuyến nghị tối ưu, không liên quan đến việc gộp hóa đơn."
       ]
     },
     {
@@ -489,17 +489,17 @@ window.CLF = {
         ["The amount of data stored", "Dung lượng dữ liệu lưu trữ"],
         ["Data transfer out to the internet", "Dữ liệu truyền ra internet"],
         ["Data transfer in from the internet", "Dữ liệu truyền vào từ internet"],
-        ["The number of IAM users in the account", "Số IAM user trong tài khoản"],
-        ["The number of Availability Zones in the Region", "Số AZ trong Region"]
+        ["Data transfer from S3 to Amazon EC2 in the same Region", "Dữ liệu truyền từ S3 tới EC2 trong cùng Region"],
+        ["Turning on S3 Block Public Access for a bucket", "Bật S3 Block Public Access cho bucket"]
       ],
       ans: [0, 1],
       exp: "Chi phí S3 gồm: dung lượng lưu trữ, lớp lưu trữ (storage class), số request, và data transfer OUT. Data transfer IN thì miễn phí.",
       why: [
-        "Đúng.",
-        "Đúng.",
+        "Đúng: S3 tính phí theo GB lưu trữ mỗi tháng (giá khác nhau theo storage class).",
+        "Đúng: dữ liệu truyền từ S3 ra internet bị tính phí theo GB.",
         "Sai: dữ liệu vào AWS từ internet miễn phí.",
-        "Sai: IAM miễn phí.",
-        "Sai: không phải yếu tố tính giá."
+        "Sai: truyền dữ liệu từ S3 tới EC2 trong cùng Region không mất phí data transfer.",
+        "Sai: Block Public Access là thiết lập bảo mật miễn phí, không ảnh hưởng chi phí."
       ]
     }
   ],

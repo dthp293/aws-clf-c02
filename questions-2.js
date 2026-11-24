@@ -8,7 +8,7 @@ window.CLF.questions.push(
     opts: [["Sustainability", "Bền vững"], ["Performance Efficiency", "Hiệu quả hiệu năng"], ["Cost Optimization", "Tối ưu chi phí"], ["Reliability", "Độ tin cậy"]],
     ans: [0],
     exp: "Thấy “environmental impact” thì chọn Sustainability, trụ cột thứ 6, được thêm vào năm 2021.",
-    why: ["Đúng.", "Sai: Performance Efficiency tập trung vào hiệu năng, không phải môi trường.", "Sai: Cost Optimization tập trung vào chi phí.", "Sai: Reliability tập trung vào phục hồi sau sự cố."]
+    why: ["Đúng: Sustainability tập trung giảm tác động môi trường, ví dụ tận dụng tối đa tài nguyên để giảm lãng phí.", "Sai: Performance Efficiency tập trung vào hiệu năng, không phải môi trường.", "Sai: Cost Optimization tập trung vào chi phí.", "Sai: Reliability tập trung vào phục hồi sau sự cố."]
   },
   {
     id: "d1-7", d: 1,
@@ -17,7 +17,7 @@ window.CLF.questions.push(
     opts: [["Operational Excellence", "Vận hành xuất sắc"], ["Reliability", "Độ tin cậy"], ["Performance Efficiency", "Hiệu quả hiệu năng"], ["Security", "Bảo mật"]],
     ans: [0],
     exp: "Operational Excellence gồm: perform operations as code, thay đổi nhỏ và thường xuyên, học từ sự cố.",
-    why: ["Đúng.", "Sai: Reliability có nguyên tắc như tự động phục hồi, scale ngang.", "Sai: Performance Efficiency có nguyên tắc như dùng serverless, go global in minutes.", "Sai: Security có nguyên tắc như least privilege, bật traceability."]
+    why: ["Đúng: “perform operations as code” là nguyên tắc thiết kế của Operational Excellence.", "Sai: Reliability có nguyên tắc như tự động phục hồi, scale ngang.", "Sai: Performance Efficiency có nguyên tắc như dùng serverless, go global in minutes.", "Sai: Security có nguyên tắc như least privilege, bật traceability."]
   },
   {
     id: "d1-8", d: 1,
@@ -26,7 +26,7 @@ window.CLF.questions.push(
     opts: [["Replatform", "Replatform"], ["Rehost", "Rehost"], ["Refactor", "Refactor"], ["Repurchase", "Repurchase"]],
     ans: [0],
     exp: "Replatform (“lift, tinker, and shift”) là tối ưu nhỏ khi chuyển, ví dụ chuyển sang dịch vụ managed như RDS.",
-    why: ["Đúng.", "Sai: Rehost giữ nguyên, không đổi gì.", "Sai: Refactor thay đổi lớn về kiến trúc.", "Sai: Repurchase là chuyển sang sản phẩm khác (thường là SaaS)."]
+    why: ["Đúng: chuyển sang dịch vụ managed như RDS mà không đổi kiến trúc lõi là tối ưu nhỏ kiểu Replatform.", "Sai: Rehost chuyển nguyên trạng, sẽ giữ MySQL tự quản lý trên EC2 chứ không đổi sang RDS.", "Sai: Refactor thay đổi lớn về kiến trúc, trong khi đề nói kiến trúc lõi giữ nguyên.", "Sai: Repurchase là chuyển sang sản phẩm khác (thường là SaaS)."]
   },
   {
     id: "d1-9", d: 1,
@@ -35,7 +35,7 @@ window.CLF.questions.push(
     opts: [["Repurchase", "Repurchase"], ["Rehost", "Rehost"], ["Retain", "Retain"], ["Relocate", "Relocate"]],
     ans: [0],
     exp: "Repurchase (“drop and shop”) là mua hoặc chuyển sang sản phẩm khác, thường là SaaS.",
-    why: ["Đúng.", "Sai: Rehost là chuyển nguyên phần mềm cũ lên EC2.", "Sai: Retain là giữ lại on-premises.", "Sai: Relocate là chuyển hạ tầng ảo hóa (ví dụ VMware) lên cloud."]
+    why: ["Đúng: bỏ phần mềm cũ để chuyển sang sản phẩm SaaS khác là Repurchase (“drop and shop”).", "Sai: Rehost là chuyển nguyên phần mềm cũ lên EC2.", "Sai: Retain là giữ lại on-premises.", "Sai: Relocate là chuyển hạ tầng ảo hóa (ví dụ VMware) lên cloud."]
   },
   {
     id: "d1-10", d: 1,
@@ -44,7 +44,7 @@ window.CLF.questions.push(
     opts: [["Benefit from massive economies of scale", "Hưởng lợi từ quy mô kinh tế lớn"], ["Trade fixed expense for variable expense", "Chuyển chi phí cố định thành biến đổi"], ["Stop guessing capacity", "Không cần đoán công suất"], ["Go global in minutes", "Mở rộng toàn cầu trong vài phút"]],
     ans: [0],
     exp: "Thấy “aggregates usage” và “lower prices” thì chọn economies of scale.",
-    why: ["Đúng.", "Sai: nói về việc không trả trước.", "Sai: nói về việc co giãn theo nhu cầu thực tế.", "Sai: nói về việc triển khai ra nhiều Region."]
+    why: ["Đúng: AWS gộp nhu cầu của rất nhiều khách hàng nên chi phí đơn vị thấp hơn và giảm giá cho khách.", "Sai: nói về việc không trả trước, chỉ trả theo mức dùng.", "Sai: nói về việc co giãn theo nhu cầu thực tế thay vì đoán trước công suất.", "Sai: nói về việc triển khai nhanh ra nhiều Region trên thế giới."]
   },
   {
     id: "d1-11", d: 1,
@@ -53,7 +53,7 @@ window.CLF.questions.push(
     opts: [["Stop guessing capacity", "Không cần đoán công suất"], ["Go global in minutes", "Mở rộng toàn cầu trong vài phút"], ["Benefit from massive economies of scale", "Hưởng lợi từ quy mô kinh tế lớn"], ["Stop spending money running and maintaining data centers", "Không tốn tiền vận hành data center"]],
     ans: [0],
     exp: "Mua thừa (over-provisioning) hoặc thiếu công suất là vấn đề của việc đoán trước. Trên cloud thì dùng bao nhiêu lấy bấy nhiêu.",
-    why: ["Đúng.", "Sai.", "Sai: nói về giá rẻ do quy mô.", "Sai: nói về việc tập trung vào kinh doanh thay vì vận hành hạ tầng."]
+    why: ["Đúng: trên cloud chỉ cần cấp đúng công suất đang cần và co giãn khi tải đổi, không phải mua thừa cho đỉnh tải.", "Sai: nói về việc triển khai ra nhiều Region nhanh chóng, không giải quyết việc mua thừa công suất.", "Sai: nói về giá rẻ do quy mô.", "Sai: nói về việc tập trung vào kinh doanh thay vì vận hành hạ tầng."]
   },
   {
     id: "d1-12", d: 1,
@@ -62,7 +62,7 @@ window.CLF.questions.push(
     opts: [["Hybrid deployment", "Triển khai hybrid"], ["Cloud deployment", "Triển khai hoàn toàn trên cloud"], ["On-premises deployment", "Triển khai tại chỗ"], ["Edge deployment", "Triển khai ở biên"]],
     ans: [0],
     exp: "Hybrid là kết hợp on-premises và cloud.",
-    why: ["Đúng.", "Sai: mọi thứ chạy trên cloud.", "Sai: mọi thứ chạy trong data center của công ty (private cloud).", "Sai: không phải một trong các mô hình triển khai chuẩn."]
+    why: ["Đúng: hybrid kết nối hạ tầng on-premises với tài nguyên trên cloud.", "Sai: cloud deployment là mọi thứ chạy trên cloud, không còn hạ tầng tại chỗ.", "Sai: on-premises là mọi thứ chạy trong data center của công ty (private cloud).", "Sai: edge không phải một trong ba mô hình triển khai chuẩn (cloud, on-premises, hybrid)."]
   },
   {
     id: "d1-13", d: 1,
@@ -71,7 +71,7 @@ window.CLF.questions.push(
     opts: [["Amazon EC2", "Amazon EC2"], ["AWS Elastic Beanstalk", "AWS Elastic Beanstalk"], ["A web-based email application", "Ứng dụng email chạy trên web"], ["A CRM product delivered over the internet", "Sản phẩm CRM cung cấp qua internet"]],
     ans: [0],
     exp: "IaaS là thuê máy ảo, mạng, lưu trữ và tự quản lý OS (EC2). PaaS là chỉ lo code (Beanstalk). SaaS là dùng phần mềm hoàn chỉnh.",
-    why: ["Đúng.", "Sai: đây là PaaS.", "Sai: đây là SaaS.", "Sai: đây là SaaS."]
+    why: ["Đúng: EC2 cho thuê máy ảo, khách hàng tự quản lý OS và phần mềm, đúng kiểu IaaS.", "Sai: Beanstalk là PaaS, AWS lo hạ tầng và nền tảng, bạn chỉ lo code.", "Sai: email trên web là phần mềm hoàn chỉnh dùng ngay, tức là SaaS.", "Sai: CRM cung cấp qua internet là phần mềm hoàn chỉnh, tức là SaaS."]
   },
   {
     id: "d1-14", d: 1,
@@ -80,7 +80,7 @@ window.CLF.questions.push(
     opts: [["Platform", "Platform"], ["People", "People"], ["Governance", "Governance"], ["Business", "Business"]],
     ans: [0],
     exp: "Platform thuộc nhóm kỹ thuật (Platform, Security, Operations).",
-    why: ["Đúng.", "Sai: People tập trung vào văn hóa, cơ cấu tổ chức, kỹ năng nhân sự.", "Sai: Governance tập trung vào quản trị, rủi ro, quản lý chương trình.", "Sai: Business tập trung vào việc đầu tư cloud phục vụ mục tiêu kinh doanh."]
+    why: ["Đúng: Platform perspective lo xây nền tảng cloud hybrid, mở rộng được, đạt chuẩn doanh nghiệp.", "Sai: People tập trung vào văn hóa, cơ cấu tổ chức, kỹ năng nhân sự.", "Sai: Governance tập trung vào quản trị, rủi ro, quản lý chương trình.", "Sai: Business tập trung vào việc đầu tư cloud phục vụ mục tiêu kinh doanh."]
   },
   {
     id: "d1-15", d: 1,
@@ -89,7 +89,7 @@ window.CLF.questions.push(
     opts: [["People", "People"], ["Governance", "Governance"], ["Operations", "Operations"], ["Security", "Security"]],
     ans: [0],
     exp: "Thấy “culture”, “workforce”, “skills” thì chọn People.",
-    why: ["Đúng.", "Sai: Governance là quản trị và rủi ro.", "Sai: Operations là vận hành dịch vụ cloud hằng ngày.", "Sai: Security là bảo mật."]
+    why: ["Đúng: People perspective lo văn hóa, cơ cấu tổ chức, lãnh đạo và kỹ năng nhân sự.", "Sai: Governance là quản trị chương trình, rủi ro và chi phí.", "Sai: Operations là vận hành dịch vụ cloud hằng ngày.", "Sai: Security lo bảo mật dữ liệu và workload, không phải văn hóa hay kỹ năng."]
   },
   {
     id: "d1-16", d: 1,
@@ -98,16 +98,16 @@ window.CLF.questions.push(
     opts: [["High availability", "Tính sẵn sàng cao"], ["Elasticity", "Tính co giãn"], ["Agility", "Sự linh hoạt"], ["Economies of scale", "Quy mô kinh tế"]],
     ans: [0],
     exp: "Multi-AZ là cách điển hình để đạt high availability.",
-    why: ["Đúng.", "Sai: Elasticity là co giãn theo tải.", "Sai: Agility là tốc độ thử nghiệm và triển khai.", "Sai: Economies of scale nói về giá."]
+    why: ["Đúng: chạy trên nhiều AZ để vẫn hoạt động khi một AZ hỏng là cách đạt high availability.", "Sai: Elasticity là co giãn số tài nguyên theo tải, không nói về chịu sự cố AZ.", "Sai: Agility là tốc độ thử nghiệm và triển khai.", "Sai: Economies of scale nói về giá rẻ nhờ quy mô."]
   },
   {
     id: "d1-17", d: 1,
     en: "Which of the following are benefits of the AWS Cloud? (Choose TWO.)",
     vi: "Những mục nào là lợi ích của AWS Cloud? (Chọn 2.)",
-    opts: [["Increased speed and agility", "Tăng tốc độ và sự linh hoạt"], ["Global reach in minutes", "Mở rộng toàn cầu trong vài phút"], ["A requirement to purchase hardware upfront", "Phải mua phần cứng trả trước"], ["Customer responsibility for the physical security of data centers", "Khách hàng chịu trách nhiệm bảo mật vật lý data center"], ["Unlimited free usage of all services", "Dùng miễn phí không giới hạn mọi dịch vụ"]],
+    opts: [["Increased speed and agility", "Tăng tốc độ và sự linh hoạt"], ["Global reach in minutes", "Mở rộng toàn cầu trong vài phút"], ["Fixed monthly pricing regardless of actual usage", "Giá cố định hằng tháng bất kể mức sử dụng thực tế"], ["No remaining security responsibilities for the customer", "Khách hàng không còn trách nhiệm bảo mật nào"], ["A guaranteed 100% uptime SLA for every AWS service", "SLA cam kết uptime 100% cho mọi dịch vụ AWS"]],
     ans: [0, 1],
     exp: "Hai đáp án đúng đều thuộc 6 lợi ích của cloud.",
-    why: ["Đúng.", "Đúng.", "Sai: cloud thì không cần trả trước.", "Sai: đây là trách nhiệm của AWS.", "Sai: Free Tier có giới hạn."]
+    why: ["Đúng: tạo tài nguyên trong vài phút giúp thử nghiệm và ra sản phẩm nhanh hơn.", "Đúng: có thể triển khai ứng dụng ra nhiều Region trên thế giới chỉ trong vài phút.", "Sai: cloud là pay-as-you-go, chi phí biến đổi theo mức dùng chứ không cố định.", "Sai: theo mô hình trách nhiệm chia sẻ, khách hàng vẫn lo bảo mật “IN the cloud” (dữ liệu, IAM, cấu hình).", "Sai: SLA của AWS thường dưới 100% và khác nhau theo dịch vụ; khách hàng phải tự thiết kế để chịu lỗi."]
   },
 
   // ───────── Domain 2 ─────────
@@ -118,16 +118,16 @@ window.CLF.questions.push(
     opts: [["AWS Key Management Service (AWS KMS)", "AWS KMS"], ["AWS Secrets Manager", "AWS Secrets Manager"], ["AWS Certificate Manager (ACM)", "AWS Certificate Manager"], ["AWS Identity and Access Management (IAM)", "AWS IAM"]],
     ans: [0],
     exp: "Thấy “encryption keys” thì chọn KMS.",
-    why: ["Đúng.", "Sai: Secrets Manager lưu mật khẩu và API key.", "Sai: ACM quản lý chứng chỉ SSL/TLS.", "Sai: IAM quản lý danh tính và quyền."]
+    why: ["Đúng: KMS tạo, lưu và kiểm soát việc dùng khóa mã hóa, tích hợp với hầu hết dịch vụ AWS.", "Sai: Secrets Manager lưu mật khẩu và API key (bản thân nó dùng KMS để mã hóa).", "Sai: ACM quản lý chứng chỉ SSL/TLS.", "Sai: IAM quản lý danh tính và quyền."]
   },
   {
     id: "d2-9", d: 2,
     en: "A company needs to store database credentials securely and rotate them automatically. Which AWS service should it use?",
     vi: "Công ty cần lưu thông tin đăng nhập database an toàn và tự động xoay vòng (rotate). Nên dùng dịch vụ nào?",
-    opts: [["AWS Secrets Manager", "AWS Secrets Manager"], ["AWS KMS", "AWS KMS"], ["Amazon S3", "Amazon S3"], ["AWS IAM", "AWS IAM"]],
+    opts: [["AWS Secrets Manager", "AWS Secrets Manager"], ["AWS Key Management Service (AWS KMS)", "AWS KMS"], ["AWS Systems Manager Parameter Store", "AWS Systems Manager Parameter Store"], ["AWS IAM", "AWS IAM"]],
     ans: [0],
     exp: "Thấy “credentials” và “rotate automatically” thì chọn Secrets Manager.",
-    why: ["Đúng.", "Sai: KMS quản lý khóa mã hóa, không lưu mật khẩu.", "Sai: S3 không tự rotate mật khẩu.", "Sai: IAM không quản lý mật khẩu database."]
+    why: ["Đúng: Secrets Manager lưu secret được mã hóa và có sẵn tính năng tự động rotate mật khẩu database.", "Sai: KMS quản lý khóa mã hóa, không lưu mật khẩu.", "Sai: Parameter Store lưu được giá trị mã hóa (SecureString) nhưng không có tính năng tự động rotate.", "Sai: IAM quản lý danh tính và quyền AWS, không lưu hay rotate mật khẩu database."]
   },
   {
     id: "d2-10", d: 2,
@@ -136,7 +136,7 @@ window.CLF.questions.push(
     opts: [["Amazon Macie", "Amazon Macie"], ["Amazon GuardDuty", "Amazon GuardDuty"], ["Amazon Inspector", "Amazon Inspector"], ["AWS Shield", "AWS Shield"]],
     ans: [0],
     exp: "Thấy “sensitive data”, “PII” và S3 thì chọn Macie.",
-    why: ["Đúng.", "Sai: GuardDuty phát hiện mối đe dọa từ log.", "Sai: Inspector quét lỗ hổng phần mềm.", "Sai: Shield chống DDoS."]
+    why: ["Đúng: Macie dùng ML và pattern matching để tìm và báo cáo dữ liệu nhạy cảm như PII trong S3.", "Sai: GuardDuty phát hiện mối đe dọa từ log, không phân loại dữ liệu trong object.", "Sai: Inspector quét lỗ hổng phần mềm.", "Sai: Shield chống DDoS."]
   },
   {
     id: "d2-11", d: 2,
@@ -145,7 +145,7 @@ window.CLF.questions.push(
     opts: [["Amazon Inspector", "Amazon Inspector"], ["Amazon GuardDuty", "Amazon GuardDuty"], ["Amazon Macie", "Amazon Macie"], ["AWS Trusted Advisor", "AWS Trusted Advisor"]],
     ans: [0],
     exp: "Thấy “vulnerabilities” thì chọn Inspector.",
-    why: ["Đúng.", "Sai: GuardDuty phát hiện hành vi đáng ngờ từ log.", "Sai: Macie tìm dữ liệu nhạy cảm trong S3.", "Sai: Trusted Advisor kiểm tra cấu hình theo best practice, không quét lỗ hổng phần mềm."]
+    why: ["Đúng: Inspector tự động quét EC2, container image và Lambda để tìm lỗ hổng phần mềm (CVE).", "Sai: GuardDuty phát hiện hành vi đáng ngờ từ log.", "Sai: Macie tìm dữ liệu nhạy cảm trong S3.", "Sai: Trusted Advisor kiểm tra cấu hình theo best practice, không quét lỗ hổng phần mềm."]
   },
   {
     id: "d2-12", d: 2,
@@ -154,7 +154,7 @@ window.CLF.questions.push(
     opts: [["AWS Shield Standard", "AWS Shield Standard"], ["AWS Shield Advanced", "AWS Shield Advanced"], ["AWS WAF", "AWS WAF"], ["Amazon GuardDuty", "Amazon GuardDuty"]],
     ans: [0],
     exp: "Shield Standard miễn phí và tự động bật. Shield Advanced có phí, kèm đội hỗ trợ DDoS 24/7 và bảo vệ chi phí khi bị tấn công.",
-    why: ["Đúng.", "Sai: Shield Advanced có phí.", "Sai: WAF có phí và cần cấu hình rule.", "Sai: GuardDuty có phí và không phải dịch vụ chống DDoS."]
+    why: ["Đúng: Shield Standard tự động bật miễn phí, chống các tấn công DDoS phổ biến ở lớp 3/4.", "Sai: Shield Advanced có phí và phải đăng ký, không tự bật.", "Sai: WAF có phí và cần cấu hình rule.", "Sai: GuardDuty có phí và không phải dịch vụ chống DDoS."]
   },
   {
     id: "d2-13", d: 2,
@@ -163,7 +163,7 @@ window.CLF.questions.push(
     opts: [["AWS Config", "AWS Config"], ["AWS CloudTrail", "AWS CloudTrail"], ["Amazon CloudWatch", "Amazon CloudWatch"], ["Amazon Inspector", "Amazon Inspector"]],
     ans: [0],
     exp: "Config trả lời câu hỏi “tài nguyên đã thay đổi cấu hình thế nào, có tuân thủ rule không”.",
-    why: ["Đúng.", "Sai: CloudTrail ghi lại ai đã gọi API.", "Sai: CloudWatch theo dõi metric, log và alarm.", "Sai: Inspector quét lỗ hổng."]
+    why: ["Đúng: Config ghi lịch sử cấu hình tài nguyên và dùng Config rules để đánh giá tuân thủ.", "Sai: CloudTrail ghi lại ai đã gọi API, không đánh giá cấu hình theo rule.", "Sai: CloudWatch theo dõi metric, log và alarm.", "Sai: Inspector quét lỗ hổng phần mềm, không theo dõi thay đổi cấu hình."]
   },
   {
     id: "d2-14", d: 2,
@@ -172,7 +172,7 @@ window.CLF.questions.push(
     opts: [["They are stateful and act at the instance level", "Chúng stateful và hoạt động ở cấp instance"], ["They are stateless and act at the subnet level", "Chúng stateless và hoạt động ở cấp subnet"], ["They support both allow and deny rules", "Chúng hỗ trợ cả rule cho phép và từ chối"], ["They apply automatically to every resource in a Region", "Chúng tự áp dụng cho mọi tài nguyên trong Region"]],
     ans: [0],
     exp: "Security group: stateful, cấp instance, chỉ có rule Allow. Network ACL: stateless, cấp subnet, có cả Allow và Deny.",
-    why: ["Đúng.", "Sai: đó là đặc điểm của Network ACL.", "Sai: security group chỉ có rule Allow.", "Sai: security group phải được gắn vào từng tài nguyên."]
+    why: ["Đúng: security group stateful (tự cho phép traffic trả về) và gắn ở cấp instance/ENI.", "Sai: đó là đặc điểm của Network ACL.", "Sai: security group chỉ có rule Allow.", "Sai: security group phải được gắn vào từng tài nguyên."]
   },
   {
     id: "d2-15", d: 2,
@@ -181,34 +181,34 @@ window.CLF.questions.push(
     opts: [["Network ACL", "Network ACL"], ["Security group", "Security group"], ["AWS WAF", "AWS WAF"], ["AWS Shield", "AWS Shield"]],
     ans: [0],
     exp: "Thấy “subnet”, “stateless” hoặc “deny rules” thì chọn Network ACL.",
-    why: ["Đúng.", "Sai: security group stateful, cấp instance.", "Sai: WAF lọc request web ở lớp 7.", "Sai: Shield chống DDoS."]
+    why: ["Đúng: Network ACL là tường lửa stateless ở cấp subnet, có cả rule Allow và Deny.", "Sai: security group stateful, cấp instance và chỉ có rule Allow.", "Sai: WAF lọc request web ở lớp 7.", "Sai: Shield chống DDoS, không phải tường lửa có rule cho subnet."]
   },
   {
     id: "d2-16", d: 2,
     en: "A company wants to grant users only the permissions they need to perform their jobs. Which security principle is this?",
     vi: "Công ty muốn chỉ cấp cho người dùng đúng những quyền cần thiết để làm việc. Đây là nguyên tắc bảo mật nào?",
-    opts: [["Principle of least privilege", "Nguyên tắc đặc quyền tối thiểu"], ["Shared responsibility", "Trách nhiệm chia sẻ"], ["Elasticity", "Tính co giãn"], ["High availability", "Tính sẵn sàng cao"]],
+    opts: [["Principle of least privilege", "Nguyên tắc đặc quyền tối thiểu"], ["Shared responsibility model", "Mô hình trách nhiệm chia sẻ"], ["Defense in depth (layered security)", "Phòng thủ nhiều lớp (defense in depth)"], ["Enable traceability", "Bật khả năng truy vết (traceability)"]],
     ans: [0],
     exp: "Least privilege là một nguyên tắc cốt lõi của IAM.",
-    why: ["Đúng.", "Sai: nói về phân chia trách nhiệm giữa AWS và khách hàng.", "Sai: khái niệm về co giãn tài nguyên.", "Sai: khái niệm về độ sẵn sàng."]
+    why: ["Đúng: least privilege là chỉ cấp đúng quyền cần thiết để thực hiện công việc.", "Sai: nói về phân chia trách nhiệm bảo mật giữa AWS và khách hàng.", "Sai: defense in depth là áp dụng bảo mật ở nhiều lớp (mạng, instance, ứng dụng), không phải giới hạn quyền.", "Sai: traceability là ghi log và giám sát hành động để truy vết, không quyết định cấp bao nhiêu quyền."]
   },
   {
     id: "d2-17", d: 2,
     en: "What is the MOST efficient way to grant the same permissions to 20 developers?",
     vi: "Cách hiệu quả nhất để cấp cùng một bộ quyền cho 20 lập trình viên là gì?",
-    opts: [["Create an IAM group, attach a policy to it, and add the users to the group", "Tạo IAM group, gắn policy vào group, thêm user vào group"], ["Attach the same policy to each IAM user individually", "Gắn policy cho từng IAM user một"], ["Create one IAM user and share its credentials with all developers", "Tạo một IAM user và chia sẻ thông tin đăng nhập cho tất cả"], ["Give all developers the root user credentials", "Đưa thông tin root user cho tất cả"]],
+    opts: [["Add the users to an IAM group that has the policy attached", "Thêm user vào một IAM group đã gắn policy"], ["Attach the same policy to each IAM user individually", "Gắn policy cho từng IAM user một"], ["Create an SCP in AWS Organizations that grants the permissions", "Tạo SCP trong AWS Organizations để cấp các quyền đó"], ["Add the developers to a resource-based policy on each resource", "Thêm các lập trình viên vào resource-based policy của từng tài nguyên"]],
     ans: [0],
     exp: "Group giúp quản lý quyền theo nhóm. Thêm hoặc bớt người chỉ cần thêm hoặc xóa khỏi group.",
-    why: ["Đúng.", "Sai: làm được nhưng khó quản lý.", "Sai: không bao giờ chia sẻ thông tin đăng nhập.", "Sai: không bao giờ chia sẻ root."]
+    why: ["Đúng: gắn policy một lần vào group, mọi user trong group đều nhận quyền, thêm/bớt người rất dễ.", "Sai: làm được nhưng phải lặp lại 20 lần và khó quản lý khi quyền thay đổi.", "Sai: SCP chỉ đặt giới hạn quyền tối đa cho tài khoản, không cấp quyền cho user.", "Sai: phải sửa policy trên từng tài nguyên, tốn công và khó kiểm soát hơn nhiều so với group."]
   },
   {
     id: "d2-18", d: 2,
     en: "When a company uses Amazon RDS, which task is AWS responsible for?",
     vi: "Khi công ty dùng Amazon RDS, việc nào thuộc trách nhiệm của AWS?",
-    opts: [["Patching the database engine and the underlying operating system", "Vá lỗi database engine và hệ điều hành bên dưới"], ["Managing database user accounts and permissions", "Quản lý tài khoản và quyền của user trong database"], ["Configuring security group rules for the database", "Cấu hình rule security group cho database"], ["Deciding which data to store and encrypt", "Quyết định lưu và mã hóa dữ liệu nào"]],
+    opts: [["Patching the database engine and the host OS", "Vá lỗi database engine và hệ điều hành bên dưới"], ["Managing database user accounts and permissions", "Quản lý tài khoản và quyền của user trong database"], ["Configuring security group rules for the database", "Cấu hình rule security group cho database"], ["Deciding which data to store and which data to encrypt", "Quyết định lưu dữ liệu nào và mã hóa dữ liệu nào"]],
     ans: [0],
     exp: "Với dịch vụ managed như RDS, AWS lo cả việc vá OS và DB engine. Khách hàng chỉ chọn khung giờ bảo trì.",
-    why: ["Đúng.", "Sai: khách hàng quản lý user trong database.", "Sai: khách hàng cấu hình mạng.", "Sai: dữ liệu luôn là trách nhiệm của khách hàng."]
+    why: ["Đúng: RDS là dịch vụ managed nên AWS vá OS và database engine, khách hàng chỉ chọn khung giờ bảo trì.", "Sai: khách hàng quản lý user trong database.", "Sai: khách hàng cấu hình mạng.", "Sai: dữ liệu luôn là trách nhiệm của khách hàng."]
   },
   {
     id: "d2-19", d: 2,
@@ -217,7 +217,7 @@ window.CLF.questions.push(
     opts: [["Physical security of data centers", "Bảo mật vật lý data center"], ["Maintaining the hardware of the global infrastructure", "Bảo trì phần cứng của hạ tầng toàn cầu"], ["Encrypting customer data", "Mã hóa dữ liệu của khách hàng"], ["Managing IAM users and permissions", "Quản lý IAM user và quyền"], ["Securing application code", "Bảo mật mã nguồn ứng dụng"]],
     ans: [0, 1],
     exp: "AWS lo “OF the cloud”: data center, phần cứng, mạng toàn cầu.",
-    why: ["Đúng.", "Đúng.", "Sai: khách hàng quyết định và cấu hình mã hóa.", "Sai: khách hàng quản lý IAM.", "Sai: khách hàng chịu trách nhiệm code của mình."]
+    why: ["Đúng: bảo mật vật lý data center là phần “OF the cloud” do AWS lo.", "Đúng: AWS bảo trì phần cứng, mạng và cơ sở vật chất của hạ tầng toàn cầu.", "Sai: khách hàng quyết định và cấu hình mã hóa.", "Sai: khách hàng quản lý IAM.", "Sai: khách hàng chịu trách nhiệm code của mình."]
   },
   {
     id: "d2-20", d: 2,
@@ -226,7 +226,7 @@ window.CLF.questions.push(
     opts: [["AWS IAM Identity Center", "AWS IAM Identity Center"], ["Amazon Cognito", "Amazon Cognito"], ["IAM groups", "IAM group"], ["AWS Organizations", "AWS Organizations"]],
     ans: [0],
     exp: "IAM Identity Center (tên cũ là AWS SSO) dùng để đăng nhập một lần (single sign-on) cho nhân viên vào nhiều tài khoản.",
-    why: ["Đúng.", "Sai: Cognito dùng cho người dùng cuối của ứng dụng web/mobile.", "Sai: group chỉ gom user trong một tài khoản.", "Sai: Organizations quản lý tài khoản, không phải dịch vụ đăng nhập."]
+    why: ["Đúng: IAM Identity Center cho nhân viên đăng nhập một lần vào nhiều tài khoản AWS và ứng dụng doanh nghiệp.", "Sai: Cognito dùng cho người dùng cuối của ứng dụng web/mobile.", "Sai: group chỉ gom user trong một tài khoản.", "Sai: Organizations quản lý tài khoản, không phải dịch vụ đăng nhập."]
   },
   {
     id: "d2-21", d: 2,
@@ -235,16 +235,16 @@ window.CLF.questions.push(
     opts: [["AWS Security Hub", "AWS Security Hub"], ["Amazon GuardDuty", "Amazon GuardDuty"], ["AWS Trusted Advisor", "AWS Trusted Advisor"], ["AWS CloudTrail", "AWS CloudTrail"]],
     ans: [0],
     exp: "Security Hub tổng hợp kết quả từ GuardDuty, Inspector, Macie... và kiểm tra theo các chuẩn bảo mật.",
-    why: ["Đúng.", "Sai: GuardDuty là một nguồn cảnh báo, không phải nơi tổng hợp.", "Sai: Trusted Advisor đưa khuyến nghị best practice chung.", "Sai: CloudTrail ghi lại API calls."]
+    why: ["Đúng: Security Hub gom cảnh báo từ nhiều dịch vụ và tài khoản về một nơi, kèm kiểm tra theo chuẩn bảo mật.", "Sai: GuardDuty là một nguồn cảnh báo, không phải nơi tổng hợp.", "Sai: Trusted Advisor đưa khuyến nghị best practice chung.", "Sai: CloudTrail ghi lại API calls."]
   },
   {
     id: "d2-22", d: 2,
     en: "Which security feature adds an extra layer of sign-in protection by requiring a code from a device in addition to a password?",
     vi: "Tính năng bảo mật nào thêm một lớp bảo vệ khi đăng nhập, yêu cầu mã từ thiết bị ngoài mật khẩu?",
-    opts: [["Multi-factor authentication (MFA)", "Xác thực đa yếu tố (MFA)"], ["Access keys", "Access key"], ["IAM policies", "IAM policy"], ["Password policies", "Chính sách mật khẩu"]],
+    opts: [["Multi-factor authentication (MFA)", "Xác thực đa yếu tố (MFA)"], ["Long-term access keys for the IAM user", "Access key dài hạn cho IAM user"], ["IAM identity-based permission policies", "IAM policy cấp quyền gắn với danh tính"], ["A strong IAM account password policy", "Password policy mạnh cho tài khoản"]],
     ans: [0],
     exp: "MFA yêu cầu thứ bạn biết (mật khẩu) và thứ bạn có (thiết bị).",
-    why: ["Đúng.", "Sai: access key dùng cho truy cập bằng CLI/SDK.", "Sai: policy định nghĩa quyền.", "Sai: password policy quy định độ mạnh của mật khẩu."]
+    why: ["Đúng: MFA yêu cầu thêm mã từ thiết bị ngoài mật khẩu khi đăng nhập.", "Sai: access key dùng cho truy cập bằng CLI/SDK, không phải lớp bảo vệ đăng nhập thứ hai.", "Sai: policy định nghĩa quyền được làm gì sau khi đăng nhập, không thêm bước xác thực.", "Sai: password policy chỉ quy định độ mạnh và thời hạn mật khẩu, vẫn chỉ là một yếu tố."]
   },
 
   // ───────── Domain 3 ─────────
@@ -252,28 +252,28 @@ window.CLF.questions.push(
     id: "d3-8", d: 3,
     en: "Which AWS storage service provides block-level storage volumes for Amazon EC2 instances?",
     vi: "Dịch vụ lưu trữ nào cung cấp ổ đĩa dạng block cho instance EC2?",
-    opts: [["Amazon Elastic Block Store (Amazon EBS)", "Amazon EBS"], ["Amazon S3", "Amazon S3"], ["Amazon Elastic File System (Amazon EFS)", "Amazon EFS"], ["Amazon S3 Glacier", "Amazon S3 Glacier"]],
+    opts: [["Amazon Elastic Block Store (Amazon EBS)", "Amazon EBS"], ["Amazon Simple Storage Service (Amazon S3)", "Amazon S3"], ["Amazon Elastic File System (Amazon EFS)", "Amazon EFS"], ["Amazon S3 Glacier Flexible Retrieval", "Amazon S3 Glacier Flexible Retrieval"]],
     ans: [0],
     exp: "Block là EBS. Object là S3. File là EFS.",
-    why: ["Đúng.", "Sai: S3 là object storage.", "Sai: EFS là file storage dùng chung.", "Sai: Glacier là lưu trữ lâu dài."]
+    why: ["Đúng: EBS cung cấp volume dạng block gắn vào EC2 như một ổ đĩa.", "Sai: S3 là object storage, truy cập qua API chứ không gắn như ổ đĩa block.", "Sai: EFS là file storage dùng chung (NFS), không phải block.", "Sai: Glacier Flexible Retrieval là lớp lưu trữ dài hạn của S3 (object), không phải block."]
   },
   {
     id: "d3-9", d: 3,
     en: "Multiple Linux-based Amazon EC2 instances need shared, concurrent access to the same file system. Which AWS service should be used?",
     vi: "Nhiều instance EC2 chạy Linux cần truy cập đồng thời vào cùng một hệ thống file dùng chung. Nên dùng dịch vụ nào?",
-    opts: [["Amazon Elastic File System (Amazon EFS)", "Amazon EFS"], ["Amazon Elastic Block Store (Amazon EBS)", "Amazon EBS"], ["Amazon S3 Glacier Deep Archive", "Amazon S3 Glacier Deep Archive"], ["EC2 instance store", "Instance store của EC2"]],
+    opts: [["Amazon EFS", "Amazon EFS"], ["Amazon Elastic Block Store (Amazon EBS)", "Amazon EBS"], ["Amazon S3 Glacier Deep Archive", "Amazon S3 Glacier Deep Archive"], ["Amazon EC2 instance store volumes", "Instance store của EC2"]],
     ans: [0],
-    exp: "Thấy “shared file system” và “multiple instances” thì chọn EFS.",
-    why: ["Đúng.", "Sai: EBS thường chỉ gắn với một instance và nằm trong một AZ.", "Sai: dùng để lưu trữ lâu dài, không phải file system.", "Sai: ổ tạm thời, mất dữ liệu khi dừng instance."]
+    exp: "Thấy “shared file system” và “multiple instances” thì chọn EFS (Amazon Elastic File System).",
+    why: ["Đúng: EFS là file system NFS được quản lý, nhiều instance Linux mount và truy cập đồng thời được.", "Sai: EBS thường chỉ gắn với một instance và nằm trong một AZ.", "Sai: Deep Archive là lớp lưu trữ lâu dài của S3, lấy dữ liệu mất nhiều giờ, không phải file system.", "Sai: instance store là ổ tạm thời gắn với một instance, mất dữ liệu khi dừng instance."]
   },
   {
     id: "d3-10", d: 3,
     en: "Which factors should a company consider when choosing an AWS Region for a workload? (Choose TWO.)",
     vi: "Công ty nên cân nhắc những yếu tố nào khi chọn AWS Region cho hệ thống? (Chọn 2.)",
-    opts: [["Data sovereignty and compliance requirements", "Yêu cầu về chủ quyền dữ liệu và tuân thủ"], ["Proximity to customers to reduce latency", "Gần khách hàng để giảm độ trễ"], ["The number of IAM users in the account", "Số IAM user trong tài khoản"], ["The company's AWS Support plan", "Gói AWS Support của công ty"], ["The number of S3 buckets in the account", "Số S3 bucket trong tài khoản"]],
+    opts: [["Data sovereignty and compliance requirements", "Yêu cầu về chủ quyền dữ liệu và tuân thủ"], ["Proximity to customers to reduce latency", "Gần khách hàng để giảm độ trễ"], ["The Region where the company's IAM users were created", "Region nơi các IAM user của công ty được tạo"], ["The company's AWS Support plan", "Gói AWS Support của công ty"], ["The Region selected when the AWS account was first created", "Region được chọn khi mới tạo tài khoản AWS"]],
     ans: [0, 1],
     exp: "4 yếu tố chọn Region: compliance, proximity (latency), service availability, pricing.",
-    why: ["Đúng.", "Đúng.", "Sai: IAM là dịch vụ toàn cầu.", "Sai: Support plan áp dụng cho cả tài khoản.", "Sai: không liên quan."]
+    why: ["Đúng: luật về chủ quyền dữ liệu có thể bắt buộc dữ liệu phải nằm trong một quốc gia hoặc khu vực.", "Đúng: Region gần người dùng giúp giảm độ trễ.", "Sai: IAM là dịch vụ toàn cầu, IAM user không thuộc Region nào.", "Sai: Support plan áp dụng cho cả tài khoản, như nhau ở mọi Region.", "Sai: tài khoản AWS không bị gắn với một Region; có thể dùng bất kỳ Region nào đang bật."]
   },
   {
     id: "d3-11", d: 3,
@@ -282,7 +282,7 @@ window.CLF.questions.push(
     opts: [["Amazon Route 53", "Amazon Route 53"], ["Amazon CloudFront", "Amazon CloudFront"], ["Elastic Load Balancing", "Elastic Load Balancing"], ["Amazon VPC", "Amazon VPC"]],
     ans: [0],
     exp: "DNS là Route 53. Con số 53 là cổng (port) của DNS.",
-    why: ["Đúng.", "Sai: CloudFront là CDN.", "Sai: ELB chia tải.", "Sai: VPC là mạng riêng."]
+    why: ["Đúng: Route 53 là dịch vụ DNS có tính sẵn sàng cao, kèm đăng ký tên miền và health check.", "Sai: CloudFront là CDN, cache nội dung chứ không phân giải tên miền.", "Sai: ELB chia tải giữa các target, không phải DNS.", "Sai: VPC là mạng riêng ảo, không phải dịch vụ DNS công khai."]
   },
   {
     id: "d3-12", d: 3,
@@ -291,7 +291,7 @@ window.CLF.questions.push(
     opts: [["Amazon EC2 Auto Scaling", "Amazon EC2 Auto Scaling"], ["Elastic Load Balancing", "Elastic Load Balancing"], ["Amazon CloudFront", "Amazon CloudFront"], ["AWS Trusted Advisor", "AWS Trusted Advisor"]],
     ans: [0],
     exp: "Thêm hoặc bớt số instance là việc của Auto Scaling. Chia traffic giữa các instance là việc của ELB.",
-    why: ["Đúng.", "Sai: ELB chia traffic nhưng không thay đổi số instance.", "Sai: CloudFront là CDN.", "Sai: Trusted Advisor chỉ đưa khuyến nghị."]
+    why: ["Đúng: EC2 Auto Scaling tự thêm instance khi tải tăng và bớt instance khi tải giảm.", "Sai: ELB chia traffic nhưng không thay đổi số instance.", "Sai: CloudFront là CDN, cache nội dung chứ không thêm/bớt instance.", "Sai: Trusted Advisor chỉ đưa khuyến nghị, không tự thay đổi số instance."]
   },
   {
     id: "d3-13", d: 3,
@@ -300,7 +300,7 @@ window.CLF.questions.push(
     opts: [["Amazon Aurora", "Amazon Aurora"], ["Amazon DynamoDB", "Amazon DynamoDB"], ["Amazon Redshift", "Amazon Redshift"], ["Amazon ElastiCache", "Amazon ElastiCache"]],
     ans: [0],
     exp: "Aurora là DB quan hệ của AWS, chạy trong Amazon RDS.",
-    why: ["Đúng.", "Sai: DynamoDB là NoSQL.", "Sai: Redshift là data warehouse.", "Sai: ElastiCache là cache trong bộ nhớ."]
+    why: ["Đúng: Aurora là DB quan hệ do AWS xây cho cloud, tương thích MySQL/PostgreSQL, nhanh hơn MySQL chuẩn.", "Sai: DynamoDB là NoSQL key-value, không tương thích MySQL/PostgreSQL.", "Sai: Redshift là data warehouse cho phân tích, không phải DB giao dịch tương thích MySQL.", "Sai: ElastiCache là cache trong bộ nhớ (Redis/Memcached), không phải DB quan hệ."]
   },
   {
     id: "d3-14", d: 3,
@@ -309,16 +309,16 @@ window.CLF.questions.push(
     opts: [["Amazon Redshift", "Amazon Redshift"], ["Amazon DynamoDB", "Amazon DynamoDB"], ["Amazon RDS", "Amazon RDS"], ["Amazon ElastiCache", "Amazon ElastiCache"]],
     ans: [0],
     exp: "Thấy “analytical queries” hoặc “data warehouse” thì chọn Redshift.",
-    why: ["Đúng.", "Sai: DynamoDB là NoSQL cho ứng dụng (OLTP).", "Sai: RDS dùng cho giao dịch (OLTP), không tối ưu cho phân tích petabyte.", "Sai: ElastiCache là cache."]
+    why: ["Đúng: Redshift là data warehouse dạng cột, tối ưu cho truy vấn phân tích trên hàng petabyte.", "Sai: DynamoDB là NoSQL cho ứng dụng (OLTP).", "Sai: RDS dùng cho giao dịch (OLTP), không tối ưu cho phân tích petabyte.", "Sai: ElastiCache là cache trong bộ nhớ, không chạy truy vấn phân tích trên petabyte dữ liệu."]
   },
   {
     id: "d3-15", d: 3,
     en: "A company wants to improve the performance of a read-heavy application by caching frequently accessed data in memory. Which AWS service should it use?",
     vi: "Công ty muốn tăng hiệu năng cho ứng dụng đọc nhiều bằng cách cache dữ liệu hay dùng trong bộ nhớ. Nên dùng dịch vụ nào?",
-    opts: [["Amazon ElastiCache", "Amazon ElastiCache"], ["Amazon Redshift", "Amazon Redshift"], ["Amazon S3 Glacier", "Amazon S3 Glacier"], ["Amazon EBS", "Amazon EBS"]],
+    opts: [["Amazon ElastiCache", "Amazon ElastiCache"], ["Amazon Redshift", "Amazon Redshift"], ["Amazon RDS read replicas", "Amazon RDS read replica"], ["Amazon EBS", "Amazon EBS"]],
     ans: [0],
     exp: "Cache trong bộ nhớ (in-memory) là ElastiCache (Redis/Memcached).",
-    why: ["Đúng.", "Sai: Redshift là data warehouse.", "Sai: Glacier là lưu trữ lâu dài, chậm.", "Sai: EBS là ổ đĩa."]
+    why: ["Đúng: ElastiCache là cache in-memory (Redis/Memcached), giảm tải đọc cho database.", "Sai: Redshift là data warehouse cho phân tích, không phải cache.", "Sai: read replica giúp chia tải đọc nhưng vẫn là database đọc từ đĩa, không phải cache trong bộ nhớ.", "Sai: EBS là ổ đĩa block cho EC2, không phải cache trong bộ nhớ."]
   },
   {
     id: "d3-16", d: 3,
@@ -327,16 +327,16 @@ window.CLF.questions.push(
     opts: [["Amazon Simple Queue Service (Amazon SQS)", "Amazon SQS"], ["Amazon Simple Notification Service (Amazon SNS)", "Amazon SNS"], ["Amazon Route 53", "Amazon Route 53"], ["AWS CloudTrail", "AWS CloudTrail"]],
     ans: [0],
     exp: "Thấy “queue” thì chọn SQS. Thấy “notification” hoặc “pub/sub” thì chọn SNS.",
-    why: ["Đúng.", "Sai: SNS đẩy thông báo tới subscriber, không lưu hàng đợi chờ xử lý.", "Sai: Route 53 là DNS.", "Sai: CloudTrail ghi lại API calls."]
+    why: ["Đúng: SQS lưu message trong hàng đợi đến khi consumer xử lý, giúp tách rời các thành phần.", "Sai: SNS đẩy thông báo tới subscriber, không lưu hàng đợi chờ xử lý.", "Sai: Route 53 là DNS, không truyền message giữa các thành phần.", "Sai: CloudTrail ghi lại API calls để kiểm toán, không phải hàng đợi."]
   },
   {
     id: "d3-17", d: 3,
     en: "Which AWS service uses a publish/subscribe model to send notifications to subscribers through email, SMS, and other endpoints?",
     vi: "Dịch vụ nào dùng mô hình publish/subscribe để gửi thông báo tới người đăng ký qua email, SMS và các endpoint khác?",
-    opts: [["Amazon Simple Notification Service (Amazon SNS)", "Amazon SNS"], ["Amazon Simple Queue Service (Amazon SQS)", "Amazon SQS"], ["Amazon CloudWatch Logs", "Amazon CloudWatch Logs"], ["AWS Step Functions", "AWS Step Functions"]],
+    opts: [["Amazon Simple Notification Service", "Amazon SNS"], ["Amazon Simple Queue Service (Amazon SQS)", "Amazon SQS"], ["Amazon CloudWatch Logs", "Amazon CloudWatch Logs"], ["AWS Step Functions", "AWS Step Functions"]],
     ans: [0],
-    exp: "SNS là pub/sub: một message được gửi tới nhiều subscriber cùng lúc.",
-    why: ["Đúng.", "Sai: SQS là hàng đợi, consumer chủ động lấy message.", "Sai: dùng để lưu log.", "Sai: dùng để điều phối các bước trong workflow."]
+    exp: "SNS (Simple Notification Service) là pub/sub: một message được gửi tới nhiều subscriber cùng lúc.",
+    why: ["Đúng: SNS là pub/sub, đẩy một message tới nhiều subscriber qua email, SMS, HTTP, SQS, Lambda.", "Sai: SQS là hàng đợi, consumer chủ động lấy message.", "Sai: CloudWatch Logs dùng để lưu và tìm kiếm log, không gửi thông báo tới subscriber.", "Sai: Step Functions dùng để điều phối các bước trong workflow."]
   },
   {
     id: "d3-18", d: 3,
@@ -345,7 +345,7 @@ window.CLF.questions.push(
     opts: [["AWS CloudFormation", "AWS CloudFormation"], ["AWS Elastic Beanstalk", "AWS Elastic Beanstalk"], ["AWS Systems Manager", "AWS Systems Manager"], ["AWS CloudTrail", "AWS CloudTrail"]],
     ans: [0],
     exp: "Infrastructure as Code (IaC) bằng template là CloudFormation.",
-    why: ["Đúng.", "Sai: Beanstalk triển khai ứng dụng từ code, không phải công cụ template hạ tầng tổng quát.", "Sai: Systems Manager quản lý và vận hành instance (patch, chạy lệnh).", "Sai: CloudTrail ghi lại API calls."]
+    why: ["Đúng: CloudFormation tạo tài nguyên từ template (IaC), chạy lại nhiều lần cho kết quả giống nhau.", "Sai: Beanstalk triển khai ứng dụng từ code, không phải công cụ template hạ tầng tổng quát.", "Sai: Systems Manager quản lý và vận hành instance (patch, chạy lệnh).", "Sai: CloudTrail ghi lại API calls."]
   },
   {
     id: "d3-19", d: 3,
@@ -354,7 +354,7 @@ window.CLF.questions.push(
     opts: [["AWS Elastic Beanstalk", "AWS Elastic Beanstalk"], ["AWS CloudFormation", "AWS CloudFormation"], ["Amazon EC2", "Amazon EC2"], ["Amazon Lightsail", "Amazon Lightsail"]],
     ans: [0],
     exp: "Thấy “upload code” và AWS lo phần còn lại thì chọn Elastic Beanstalk (PaaS).",
-    why: ["Đúng.", "Sai: CloudFormation cần bạn tự viết template hạ tầng.", "Sai: EC2 cần tự quản lý mọi thứ.", "Sai: Lightsail là VPS đơn giản, không tự auto scaling."]
+    why: ["Đúng: Beanstalk nhận code rồi tự lo triển khai, cấp phát, cân bằng tải và auto scaling.", "Sai: CloudFormation cần bạn tự viết template hạ tầng.", "Sai: EC2 cần tự quản lý mọi thứ.", "Sai: Lightsail là VPS đơn giản, không tự auto scaling."]
   },
   {
     id: "d3-20", d: 3,
@@ -363,7 +363,7 @@ window.CLF.questions.push(
     opts: [["AWS Fargate", "AWS Fargate"], ["Amazon EC2", "Amazon EC2"], ["AWS Outposts", "AWS Outposts"], ["Amazon Lightsail", "Amazon Lightsail"]],
     ans: [0],
     exp: "Fargate là compute serverless cho container, dùng cùng ECS hoặc EKS.",
-    why: ["Đúng.", "Sai: phải tự quản lý instance.", "Sai: Outposts đưa hạ tầng AWS về data center của khách hàng.", "Sai: Lightsail là VPS."]
+    why: ["Đúng: Fargate là compute serverless cho container, dùng với ECS hoặc EKS, không cần quản lý EC2.", "Sai: với EC2 bạn phải tự quản lý instance và cụm máy chạy container.", "Sai: Outposts đưa hạ tầng AWS về data center của khách hàng.", "Sai: Lightsail là VPS giá cố định, vẫn là server bạn phải quản lý."]
   },
   {
     id: "d3-21", d: 3,
@@ -372,7 +372,7 @@ window.CLF.questions.push(
     opts: [["Edge locations", "Edge location"], ["Availability Zones", "Availability Zone"], ["Regions", "Region"], ["VPCs", "VPC"]],
     ans: [0],
     exp: "Edge location có số lượng nhiều hơn Region và AZ rất nhiều, đặt gần người dùng.",
-    why: ["Đúng.", "Sai: AZ là nơi chạy tài nguyên trong Region.", "Sai: Region là khu vực địa lý.", "Sai: VPC là mạng riêng ảo."]
+    why: ["Đúng: CloudFront cache nội dung tại edge location, số lượng nhiều và đặt gần người dùng.", "Sai: AZ là nơi chạy tài nguyên trong Region, không phải điểm cache của CloudFront.", "Sai: Region là khu vực địa lý chứa nhiều AZ, số lượng ít hơn edge location rất nhiều.", "Sai: VPC là mạng riêng ảo, không phải thành phần hạ tầng toàn cầu."]
   },
   {
     id: "d3-22", d: 3,
@@ -381,7 +381,7 @@ window.CLF.questions.push(
     opts: [["AWS Site-to-Site VPN", "AWS Site-to-Site VPN"], ["AWS Direct Connect", "AWS Direct Connect"], ["Internet gateway", "Internet gateway"], ["Amazon CloudFront", "Amazon CloudFront"]],
     ans: [0],
     exp: "Nhanh, mã hóa, qua internet thì chọn VPN. Riêng, ổn định, không qua internet thì chọn Direct Connect (triển khai lâu hơn).",
-    why: ["Đúng.", "Sai: Direct Connect cần thời gian lắp đặt đường truyền vật lý.", "Sai: Internet gateway chỉ cho VPC ra internet, không tạo kết nối mã hóa tới on-premises.", "Sai: CloudFront là CDN."]
+    why: ["Đúng: Site-to-Site VPN tạo đường hầm IPsec mã hóa qua internet, thiết lập nhanh.", "Sai: Direct Connect cần thời gian lắp đặt đường truyền vật lý.", "Sai: Internet gateway chỉ cho VPC ra internet, không tạo kết nối mã hóa tới on-premises.", "Sai: CloudFront là CDN."]
   },
   {
     id: "d3-23", d: 3,
@@ -390,7 +390,7 @@ window.CLF.questions.push(
     opts: [["AWS Storage Gateway", "AWS Storage Gateway"], ["Amazon EFS", "Amazon EFS"], ["Amazon EBS", "Amazon EBS"], ["Amazon S3 Glacier", "Amazon S3 Glacier"]],
     ans: [0],
     exp: "Thấy “hybrid storage” và “on-premises applications” thì chọn Storage Gateway.",
-    why: ["Đúng.", "Sai: EFS là file system cho tài nguyên trên AWS.", "Sai: EBS là ổ đĩa cho EC2.", "Sai: Glacier là lớp lưu trữ của S3, không phải cổng kết nối hybrid."]
+    why: ["Đúng: Storage Gateway cho ứng dụng on-premises dùng lưu trữ trên AWS (S3, FSx...) qua giao thức file, volume, tape.", "Sai: EFS là file system cho tài nguyên trên AWS.", "Sai: EBS là ổ đĩa cho EC2.", "Sai: Glacier là lớp lưu trữ của S3, không phải cổng kết nối hybrid."]
   },
   {
     id: "d3-24", d: 3,
@@ -399,7 +399,7 @@ window.CLF.questions.push(
     opts: [["AWS SDK", "AWS SDK"], ["AWS Management Console", "AWS Management Console"], ["AWS CLI", "AWS CLI"], ["AWS Trusted Advisor", "AWS Trusted Advisor"]],
     ans: [0],
     exp: "Trong code thì dùng SDK. Trên dòng lệnh thì dùng CLI. Trên giao diện web thì dùng Console.",
-    why: ["Đúng.", "Sai: Console là giao diện web.", "Sai: CLI dùng trên terminal hoặc script shell.", "Sai: Trusted Advisor chỉ đưa khuyến nghị."]
+    why: ["Đúng: AWS SDK (với Python là Boto3) cho phép gọi API AWS ngay trong code ứng dụng.", "Sai: Console là giao diện web để thao tác thủ công, không gọi từ code.", "Sai: CLI dùng trên terminal hoặc script shell.", "Sai: Trusted Advisor chỉ đưa khuyến nghị, không phải công cụ lập trình."]
   },
   {
     id: "d3-25", d: 3,
@@ -408,7 +408,7 @@ window.CLF.questions.push(
     opts: [["AWS Outposts", "AWS Outposts"], ["AWS Local Zones", "AWS Local Zones"], ["AWS Direct Connect", "AWS Direct Connect"], ["Amazon CloudFront", "Amazon CloudFront"]],
     ans: [0],
     exp: "Outposts là rack phần cứng AWS đặt tại data center của khách hàng.",
-    why: ["Đúng.", "Sai: Local Zones là hạ tầng AWS ở gần các thành phố lớn, nhưng không nằm trong data center của khách hàng.", "Sai: Direct Connect chỉ là đường truyền.", "Sai: CloudFront là CDN."]
+    why: ["Đúng: Outposts đặt rack phần cứng AWS ngay trong data center của khách hàng.", "Sai: Local Zones là hạ tầng AWS ở gần các thành phố lớn, nhưng không nằm trong data center của khách hàng.", "Sai: Direct Connect chỉ là đường truyền.", "Sai: CloudFront là CDN."]
   },
   {
     id: "d3-26", d: 3,
@@ -417,7 +417,7 @@ window.CLF.questions.push(
     opts: [["Memory optimized", "Tối ưu bộ nhớ"], ["Compute optimized", "Tối ưu tính toán"], ["Storage optimized", "Tối ưu lưu trữ"], ["General purpose", "Đa dụng"]],
     ans: [0],
     exp: "Memory optimized (R, X) dùng cho tải cần nhiều RAM. Compute optimized (C) dùng cho tải cần nhiều CPU. Storage optimized (I, D) dùng cho tải đọc/ghi đĩa nhiều. General purpose (T, M) là cân bằng.",
-    why: ["Đúng.", "Sai: phù hợp với xử lý nặng CPU (batch, game server).", "Sai: phù hợp với đọc/ghi đĩa tốc độ cao.", "Sai: cân bằng, không tối ưu cho bộ nhớ."]
+    why: ["Đúng: Memory optimized (R, X) có tỷ lệ RAM/CPU cao, hợp với database trong bộ nhớ.", "Sai: phù hợp với xử lý nặng CPU (batch, game server).", "Sai: phù hợp với đọc/ghi đĩa tốc độ cao.", "Sai: cân bằng, không tối ưu cho bộ nhớ."]
   },
 
   // ───────── Domain 4 ─────────
@@ -428,7 +428,7 @@ window.CLF.questions.push(
     opts: [["AWS Cost Explorer", "AWS Cost Explorer"], ["AWS Budgets", "AWS Budgets"], ["AWS Pricing Calculator", "AWS Pricing Calculator"], ["AWS Artifact", "AWS Artifact"]],
     ans: [0],
     exp: "Phân tích quá khứ và dự báo là Cost Explorer.",
-    why: ["Đúng.", "Sai: Budgets dùng để đặt ngân sách và cảnh báo.", "Sai: Pricing Calculator ước tính trước khi dùng.", "Sai: Artifact cung cấp báo cáo tuân thủ."]
+    why: ["Đúng: Cost Explorer có biểu đồ chi phí theo thời gian, lọc theo dịch vụ/tag và dự báo chi phí.", "Sai: Budgets dùng để đặt ngân sách và cảnh báo.", "Sai: Pricing Calculator ước tính trước khi dùng.", "Sai: Artifact cung cấp báo cáo tuân thủ."]
   },
   {
     id: "d4-8", d: 4,
@@ -437,7 +437,7 @@ window.CLF.questions.push(
     opts: [["Compute Savings Plans", "Compute Savings Plans"], ["Standard Reserved Instances", "Standard Reserved Instances"], ["Spot Instances", "Spot Instances"], ["Dedicated Hosts", "Dedicated Hosts"]],
     ans: [0],
     exp: "Compute Savings Plans linh hoạt nhất: áp dụng cho EC2 (mọi họ instance và Region), Fargate và Lambda.",
-    why: ["Đúng.", "Sai: Reserved Instances chỉ áp dụng cho EC2 (và một số dịch vụ DB), gắn với loại instance.", "Sai: Spot không có cam kết.", "Sai: Dedicated Hosts là server vật lý riêng."]
+    why: ["Đúng: Compute Savings Plans cam kết $/giờ trong 1 hoặc 3 năm, áp dụng cho EC2, Fargate và Lambda.", "Sai: Reserved Instances chỉ áp dụng cho EC2 (và một số dịch vụ DB), gắn với loại instance.", "Sai: Spot không có cam kết.", "Sai: Dedicated Hosts là server vật lý riêng."]
   },
   {
     id: "d4-9", d: 4,
@@ -446,7 +446,7 @@ window.CLF.questions.push(
     opts: [["Cost allocation tags", "Cost allocation tag"], ["Service control policies (SCPs)", "Service control policy (SCP)"], ["IAM roles", "IAM role"], ["Security groups", "Security group"]],
     ans: [0],
     exp: "Gắn tag (ví dụ Project=A) cho tài nguyên, bật tag đó là cost allocation tag, rồi xem chi phí theo tag trong Cost Explorer.",
-    why: ["Đúng.", "Sai: SCP giới hạn quyền trong Organizations.", "Sai: IAM role dùng để cấp quyền.", "Sai: security group là tường lửa."]
+    why: ["Đúng: gắn tag theo dự án/phòng ban rồi kích hoạt làm cost allocation tag để xem chi phí theo tag.", "Sai: SCP giới hạn quyền trong Organizations, không phân bổ chi phí.", "Sai: IAM role dùng để cấp quyền, không theo dõi chi phí.", "Sai: security group là tường lửa ở cấp instance, không liên quan chi phí."]
   },
   {
     id: "d4-10", d: 4,
@@ -455,7 +455,7 @@ window.CLF.questions.push(
     opts: [["AWS Trusted Advisor", "AWS Trusted Advisor"], ["Amazon Inspector", "Amazon Inspector"], ["Amazon GuardDuty", "Amazon GuardDuty"], ["AWS Config", "AWS Config"]],
     ans: [0],
     exp: "Trusted Advisor kiểm tra theo 6 nhóm: cost optimization, performance, security, fault tolerance, service limits, operational excellence.",
-    why: ["Đúng.", "Sai: Inspector quét lỗ hổng.", "Sai: GuardDuty phát hiện mối đe dọa.", "Sai: Config theo dõi cấu hình."]
+    why: ["Đúng: nhóm kiểm tra cost optimization của Trusted Advisor chỉ ra tài nguyên nhàn rỗi và EC2 dùng chưa hết công suất.", "Sai: Inspector quét lỗ hổng phần mềm, không đưa khuyến nghị chi phí.", "Sai: GuardDuty phát hiện mối đe dọa bảo mật từ log.", "Sai: Config theo dõi và đánh giá cấu hình, không khuyến nghị giảm chi phí."]
   },
   {
     id: "d4-11", d: 4,
@@ -464,7 +464,7 @@ window.CLF.questions.push(
     opts: [["Basic Support", "Basic Support"], ["AWS Business Support+", "AWS Business Support+"], ["AWS Enterprise Support", "AWS Enterprise Support"], ["AWS Unified Operations", "AWS Unified Operations"]],
     ans: [0],
     exp: "Basic miễn phí: gồm tài liệu, diễn đàn, các kiểm tra cốt lõi của Trusted Advisor, và hỗ trợ về billing/tài khoản.",
-    why: ["Đúng.", "Sai: có phí.", "Sai: có phí.", "Sai: có phí."]
+    why: ["Đúng: Basic Support có sẵn miễn phí cho mọi tài khoản (tài liệu, re:Post, hỗ trợ billing/tài khoản).", "Sai: Business Support+ là gói trả phí, phải đăng ký thêm.", "Sai: Enterprise Support là gói trả phí cho doanh nghiệp có workload quan trọng.", "Sai: Unified Operations là gói cao nhất, trả phí, dành cho workload trọng yếu."]
   },
   {
     id: "d4-12", d: 4,
@@ -473,7 +473,7 @@ window.CLF.questions.push(
     opts: [["Dedicated Hosts", "Dedicated Hosts"], ["Spot Instances", "Spot Instances"], ["On-Demand Instances", "On-Demand Instances"], ["Compute Savings Plans", "Compute Savings Plans"]],
     ans: [0],
     exp: "Thấy “server-bound licenses”, “per socket/per core” hoặc “BYOL” thì chọn Dedicated Hosts, vì bạn thấy được server vật lý.",
-    why: ["Đúng.", "Sai: Spot dùng phần cứng dùng chung và có thể bị thu hồi.", "Sai: On-Demand chạy trên phần cứng dùng chung.", "Sai: Savings Plans chỉ là mô hình giảm giá."]
+    why: ["Đúng: Dedicated Hosts cho thấy socket/core của server vật lý, nên dùng được license BYOL theo socket/core.", "Sai: Spot dùng phần cứng dùng chung và có thể bị thu hồi.", "Sai: On-Demand chạy trên phần cứng dùng chung.", "Sai: Savings Plans chỉ là mô hình giảm giá."]
   },
   {
     id: "d4-13", d: 4,
@@ -482,7 +482,7 @@ window.CLF.questions.push(
     opts: [["AWS Marketplace", "AWS Marketplace"], ["AWS Artifact", "AWS Artifact"], ["AWS Service Catalog", "AWS Service Catalog"], ["AWS Partner Network (APN)", "AWS Partner Network (APN)"]],
     ans: [0],
     exp: "Marketplace là “chợ” phần mềm bên thứ ba, tính tiền qua hóa đơn AWS.",
-    why: ["Đúng.", "Sai: Artifact cung cấp báo cáo tuân thủ.", "Sai: Service Catalog là danh mục sản phẩm nội bộ do công ty tự duyệt.", "Sai: APN là chương trình dành cho đối tác của AWS (công ty tư vấn, công ty phần mềm)."]
+    why: ["Đúng: Marketplace là danh mục phần mềm bên thứ ba, mua và triển khai nhanh, tính tiền qua hóa đơn AWS.", "Sai: Artifact cung cấp báo cáo tuân thủ.", "Sai: Service Catalog là danh mục sản phẩm nội bộ do công ty tự duyệt.", "Sai: APN là chương trình dành cho đối tác của AWS (công ty tư vấn, công ty phần mềm)."]
   }
 );
 
