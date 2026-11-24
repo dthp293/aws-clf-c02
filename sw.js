@@ -4,7 +4,7 @@
  *   ở nền để lần mở sau có nội dung cập nhật (stale-while-revalidate).
  * Thêm file mới vào website → thêm vào FILES và tăng VERSION.
  */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
@@ -12,7 +12,7 @@ const FILES = [
   'extra/extra-d2.js', 'extra/extra-d3.js', 'extra/extra-d4.js',
   'extra/more-d1.js', 'extra/more-d2.js', 'extra/more-d3.js', 'extra/more-d4.js',
   'meta/tags-a.js', 'meta/tags-b.js',
-  'exam/exam-d1.js', 'exam/exam-d2.js', 'exam/exam-d3.js', 'exam/exam-d4.js',
+  'exam/exam-d1.js', 'exam/exam-d2.js', 'exam/exam-d3.js', 'exam/exam-d4.js', 'exam/exam-e.js',
   'course/course-a.js', 'course/course-b.js', 'course/course-c.js', 'course/course-d.js', 'course/course-e.js', 'course/course-f.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'
 ];

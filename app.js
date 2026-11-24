@@ -38,24 +38,76 @@
     exam: null,         // bài thi thử đang làm dở
     exams: []           // lịch sử thi thử (mới nhất trước)
   };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  const num = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+  const LANGS = ['bi', 'en-first', 'en-only'];
+  /* Chuẩn hóa dữ liệu (từ localStorage hoặc file nhập): mỗi khóa đúng kiểu, số là Number, sai thì về mặc định */
+  function normalize(s) {
+    if (!isObj(s)) s = {};
+    const out = clone(DEFAULTS);
+    const objMap = (v, f) => { const o = {}; if (isObj(v)) Object.keys(v).forEach(k => { const x = f(v[k]); if (x !== undefined) o[k] = x; }); return o; };
+    const ac = v => isObj(v) ? { a: num(v.a), c: num(v.c) } : undefined;
+    out.cards = objMap(s.cards, c => {
+      if (!isObj(c)) return undefined;
+      return { ...c, ef: Math.max(1.3, num(c.ef, 2.5)), reps: num(c.reps), ivl: num(c.ivl), lapses: num(c.lapses), due: num(c.due, Date.now()), last: num(c.last) };
+    });
+    out.stats = objMap(s.stats, ac);
+    out.examStats = objMap(s.examStats, ac);
+    out.activity = objMap(s.activity, v => num(v));
+    out.examSeen = objMap(s.examSeen, v => num(v));
+    out.done = objMap(s.done, v => num(v, Date.now()));
+    const st = isObj(s.settings) ? s.settings : {};
+    const npd = parseInt(st.newPerDay, 10);
+    out.settings = {
+      ...out.settings, ...st,
+      lang: LANGS.includes(st.lang) ? st.lang : out.settings.lang,
+      newPerDay: Number.isFinite(npd) ? Math.max(0, Math.min(100, npd)) : out.settings.newPerDay,
+      kw: st.kw === undefined ? out.settings.kw : !!st.kw,
+      esl: !!st.esl,
+      examDate: typeof st.examDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(st.examDate) ? st.examDate : ''
+    };
+    if (isObj(s.newLog) && typeof s.newLog.date === 'string') out.newLog = { date: s.newLog.date, count: num(s.newLog.count) };
+    const ids = v => Array.isArray(v) ? v.filter(x => typeof x === 'string') : [];
+    const ansMap = v => objMap(v, a => Array.isArray(a) ? a.map(Number).filter(Number.isInteger) : undefined);
+    const ordMap = v => objMap(v, a => Array.isArray(a) ? a.map(Number).filter(Number.isInteger) : undefined);
+    out.exams = (Array.isArray(s.exams) ? s.exams : []).filter(isObj).map(r => {
+      const n = num(r.n);
+      if (!(n > 0)) return null;
+      return {
+        ...r, date: num(r.date), ids: ids(r.ids), ans: ansMap(r.ans), order: ordMap(r.order), flag: ids(r.flag),
+        correct: num(r.correct), n, score: num(r.score), used: num(r.used), auto: !!r.auto,
+        fresh: r.fresh == null ? null : num(r.fresh),
+        per: objMap(r.per, p => isObj(p) && num(p.t) > 0 ? { c: num(p.c), t: num(p.t) } : undefined)
+      };
+    }).filter(Boolean).slice(0, 20);
+    if (isObj(s.exam) && Array.isArray(s.exam.ids)) {
+      const E = s.exam;
+      out.exam = { ids: ids(E.ids), order: ordMap(E.order), ans: ansMap(E.ans), flag: ids(E.flag),
+        cur: Math.max(0, Math.floor(num(E.cur))), start: num(E.start, Date.now()), dur: num(E.dur, 90 * MIN) };
+    }
+    return out;
+  }
   let S = load();
   function load() {
     let s = null;
     try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { /* ignore */ }
-    if (!s || typeof s !== 'object') s = {};
-    const base = JSON.parse(JSON.stringify(DEFAULTS));
-    return { ...base, ...s, settings: { ...base.settings, ...(s.settings || {}) } };
+    return normalize(s);
   }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
-    updateBadge();
+    try { updateBadge(); } catch (e) { /* ignore */ }
   }
 
   /* ───────── Helpers ───────── */
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  const today = () => ymd(new Date());
-  const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  // Ngày học chuyển lúc 04:00 sáng (giống Anki): ôn lúc 1–2 giờ sáng vẫn tính cho "hôm qua".
+  const ROLL_H = 4;
+  const studyDate = (t = Date.now()) => new Date(t - ROLL_H * 3600e3);
+  const today = () => ymd(studyDate());
+  const startOfDay = t => { const d = studyDate(t); d.setHours(ROLL_H, 0, 0, 0); return d.getTime(); };
+  const calStart = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const dom = id => D.domains.find(d => d.id === id);
   let onKey = null;
@@ -82,7 +134,9 @@
       c.due = now + 10 * MIN;
     } else {
       if (c.reps === 0) c.ivl = g === 4 ? 3 : 1;
-      else if (c.reps === 1) c.ivl = g === 2 ? 2 : g === 3 ? 4 : 7;
+      // Không để khoảng cách ngắn lại khi trả lời đúng: Khó ≥ khoảng hiện tại, Tốt/Dễ > khoảng hiện tại
+      // (ví dụ Dễ → 3 ngày rồi Khó → vẫn 3 ngày, không tụt về 2).
+      else if (c.reps === 1) c.ivl = Math.max(g === 2 ? c.ivl : c.ivl + 1, g === 2 ? 2 : g === 3 ? 4 : 7);
       else c.ivl = Math.max(c.ivl + 1, Math.round(c.ivl * (g === 2 ? 1.2 : g === 3 ? c.ef : c.ef * 1.3)));
       const q = g + 1; // 3..5 theo thang SM-2
       c.ef = Math.max(1.3, c.ef + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
@@ -94,10 +148,13 @@
   }
   const fmtIvl = c => c.ivl === 0 ? '10 phút' : c.ivl < 30 ? c.ivl + ' ngày' : (c.ivl / 30).toFixed(1).replace('.0', '') + ' tháng';
 
+  // Chỉ thẻ mới được giới thiệu trong phiên "Ôn hôm nay" mới tính vào hạn mức thẻ mới/ngày.
+  // Luyện tập tự do vẫn tạo lịch SRS cho câu đó nhưng không "ăn" hạn mức.
+  let curSession = null;
   function grade(id, g) {
     const isNew = !S.cards[id];
     S.cards[id] = nextCard(S.cards[id], g);
-    if (isNew) {
+    if (isNew && curSession && curSession.review) {
       if (S.newLog.date !== today()) S.newLog = { date: today(), count: 0 };
       S.newLog.count++;
     }
@@ -119,7 +176,7 @@
     return out;
   }
   function streak() {
-    let n = 0; const d = new Date();
+    let n = 0; const d = studyDate();
     if (!S.activity[ymd(d)]) d.setDate(d.getDate() - 1);
     while (S.activity[ymd(d)]) { n++; d.setDate(d.getDate() - 1); }
     return n;
@@ -165,7 +222,8 @@
 
   /* ───────── Session ───────── */
   function runSession(items, title, opt = {}) {
-    const st = { queue: items.slice(), i: 0, right: 0, wrong: 0, again: {} };
+    const st = { queue: items.filter(Boolean), i: 0, right: 0, wrong: 0, again: {} };
+    curSession = opt;
     next();
     function next() {
       if (st.i >= st.queue.length) return finish();
@@ -182,7 +240,7 @@
       window.scrollTo(0, 0);
     }
     function finish() {
-      onKey = null;
+      onKey = null; curSession = null;
       const ans = st.right + st.wrong;
       $app.innerHTML = `<div class="card" style="text-align:center">
         <h1>🎉 Xong phiên “${esc(title)}”</h1>
@@ -215,7 +273,7 @@
       let bottom;
       if (!answered) {
         bottom = `<div class="row"><button class="btn primary" data-a="check" ${sel.size === need ? '' : 'disabled'}>Kiểm tra</button>${viBtn}
-          <span class="muted small">Phím: A–E chọn · Enter kiểm tra</span></div>`;
+          <span class="muted small">Phím: A–${String.fromCharCode(64 + order.length)} chọn · Enter kiểm tra</span></div>`;
       } else if (ok) {
         bottom = `<div class="result ok">✅ <b>Chính xác!</b> ${esc(q.exp)}</div>
           <div class="muted small">Bạn thấy câu này thế nào? (Enter = Tốt)</div>${gradeBtns(it.id, [2, 3, 4])}<div class="row" style="margin-top:10px">${viBtn}</div>`;
@@ -307,7 +365,7 @@
     const due = dueItems().length;
     const nl = Math.min(newLeft(), ITEMS.filter(i => !S.cards[i.id]).length);
     const learned = Object.keys(S.cards).length;
-    const ex = S.settings.examDate ? Math.ceil((new Date(S.settings.examDate + 'T00:00').getTime() - startOfDay(Date.now())) / DAY) : null;
+    const ex = S.settings.examDate ? Math.round((new Date(S.settings.examDate + 'T00:00').getTime() - calStart(Date.now())) / DAY) : null;
     const domains = D.domains.map(d => {
       const s = domStats(d.id);
       return `<div class="card dom"><div class="row" style="justify-content:space-between"><h3>D${d.id}. ${esc(d.vi)}</h3><span class="tag">${d.weight}% đề</span></div>
@@ -324,7 +382,7 @@
         <div class="card stat"><b>${learned}/${ITEMS.length}</b><span class="muted small">thẻ đã học</span></div>
         <div class="card stat"><b>🔥 ${streak()}</b><span class="muted small">ngày liên tiếp</span></div>
         ${ex !== null ? `<div class="card stat"><b>${ex >= 0 ? ex : '—'}</b><span class="muted small">ngày đến kỳ thi</span></div>` : ''}
-        ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b class="v-${verdict(pct(S.exams[0]))[0]}">${pct(S.exams[0])}%</b><span class="muted small">thi thử gần nhất · sẵn sàng ${readiness().ok}/3</span></a>` : ''}
+        ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b class="v-${verdict(pct(S.exams[0]))[0]}">${pct(S.exams[0])}%</b><span class="muted small">thi thử gần nhất · sẵn sàng ${readiness().ok}/3 (đề mới)</span></a>` : ''}
         ${S.exam ? `<a class="card stat" style="text-decoration:none" href="#/exam"><b>⏱</b><span class="muted small">Đang thi dở · tiếp tục</span></a>` : ''}
       </div>
       <div class="card row" style="justify-content:space-between">
@@ -359,7 +417,7 @@
 
   function viewReview() {
     const q = [...dueItems(), ...newItems(newLeft())];
-    if (q.length) return runSession(q, 'Ôn hôm nay');
+    if (q.length) return runSession(q, 'Ôn hôm nay', { review: true });
     const dues = Object.values(S.cards).map(c => c.due).filter(Boolean);
     const nextDue = dues.length ? new Date(Math.min(...dues)) : null;
     const remainNew = ITEMS.filter(i => !S.cards[i.id]).length;
@@ -370,7 +428,7 @@
         <a class="btn" href="#/practice">Luyện tập tự do</a></div>
       <p class="muted small">Còn ${remainNew} thẻ chưa học.</p></div>`;
     const m = document.getElementById('more');
-    if (m) m.onclick = () => runSession(newItems(10), 'Thẻ mới thêm');
+    if (m) m.onclick = () => runSession(newItems(10), 'Thẻ mới thêm', { review: true });
   }
 
   function viewPractice(arg) {
@@ -453,7 +511,7 @@
           <div class="small"><b>⏱ ${secs}s</b> để đọc đề${secs > 80 ? ' (hơi lâu, hãy luyện đọc lướt tìm từ khóa)' : ''}.
             Từ bạn chọn: <i>${mine ? esc(mine) : 'chưa chọn từ nào'}</i></div>
           ${kws.length ? `<div class="small" style="margin-top:6px">🔑 Từ khóa gợi ý: ${kws.map(g => `<span class="kw">${esc(g.term)}</span> = ${esc(g.vi)}${g.hint ? ` <span class="muted">(${esc(g.hint)})</span>` : ''}`).join(' · ')}</div>` : ''}
-          <div class="vi" style="margin-top:6px">${esc(q.vi)}</div></div>`;
+          ${S.settings.lang === 'en-only' ? '' : `<div class="vi" style="margin-top:6px">${esc(q.vi)}</div>`}</div>`;
         renderQuestion(it, header + box, done);
       }
     };
@@ -471,7 +529,7 @@
     // #/learn            → lộ trình khóa học
     // #/learn/<d>        → lộ trình, cuộn tới module d
     // #/learn/sum/<d>    → tóm tắt nhanh (bảng ôn tập)
-    if (arg === 'sum') return viewSummary(+location.hash.split('/')[3] || 1);
+    if (arg === 'sum') { const d = +location.hash.split('/')[3]; return viewSummary(dom(d) && D.lessons && D.lessons[d] ? d : 1); }
     const doneN = COURSE.filter(l => isDone(l.id)).length;
     const nl = nextLesson();
     const tabs = `<div class="tabs"><a class="btn on" href="#/learn">📚 Khóa học</a><a class="btn" href="#/learn/sum/1">📋 Tóm tắt nhanh</a></div>`;
@@ -508,7 +566,7 @@
       <div class="tabs"><a class="btn" href="#/learn">📚 Khóa học</a><a class="btn on" href="#/learn/sum/1">📋 Tóm tắt nhanh</a></div>
       <div class="tabs">${D.domains.map(x => `<a class="btn ${x.id === d ? 'on' : ''}" href="#/learn/sum/${x.id}">D${x.id}. ${esc(x.vi)}</a>`).join('')}</div>
       <p class="muted small">Bảng tóm tắt để ôn lại sau khi đã học bài chi tiết. ${esc(dom(d).en)} · ${dom(d).weight}% đề thi</p>
-      ${D.lessons[d].map(l => `<div class="card lesson"><h3>${esc(l.t)}</h3><div class="scroll-x">${l.h}</div></div>`).join('')}
+      ${((D.lessons || {})[d] || []).map(l => `<div class="card lesson"><h3>${esc(l.t)}</h3><div class="scroll-x">${l.h}</div></div>`).join('')}
       <a class="btn primary" href="#/practice/${d}">Luyện câu hỏi Domain ${d} →</a>`;
   }
 
@@ -583,7 +641,7 @@
         ${L.map(([v, t, d]) => `<label class="radio"><input type="radio" name="lang" value="${v}" ${st.lang === v ? 'checked' : ''}> <b>${t}</b> <span class="muted small">· ${d}</span></label>`).join('')}
         <label class="radio"><input type="checkbox" id="kw" ${st.kw ? 'checked' : ''}> Tô màu từ khóa trong đề</label></div>
       <div class="card"><h3 style="margin-top:0">Lịch học</h3>
-        <div class="row"><label>Số thẻ mới mỗi ngày: <input type="number" id="npd" min="0" max="100" value="${st.newPerDay}" style="width:80px"></label></div>
+        <div class="row"><label>Số thẻ mới mỗi ngày: <input type="number" id="npd" min="0" max="100" value="${esc(st.newPerDay)}" style="width:80px"></label></div>
         <div class="row" style="margin-top:10px"><label>Ngày thi: <input type="date" id="exam" value="${esc(st.examDate)}"></label></div></div>
       ${pwaCard()}
       <div class="card"><h3 style="margin-top:0">Dữ liệu</h3>
@@ -596,7 +654,11 @@
     bindPwaCard();
     $app.querySelectorAll('[name=lang]').forEach(r => r.onchange = () => { st.lang = r.value; save(); msg('Đã lưu.'); });
     document.getElementById('kw').onchange = e => { st.kw = e.target.checked; save(); msg('Đã lưu.'); };
-    document.getElementById('npd').onchange = e => { st.newPerDay = Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)); save(); msg('Đã lưu.'); };
+    document.getElementById('npd').onchange = e => {
+      const v = parseInt(e.target.value, 10);
+      if (!Number.isFinite(v)) { e.target.value = st.newPerDay; msg('Giữ nguyên ' + st.newPerDay + ' thẻ/ngày (ô trống không hợp lệ).'); return; }
+      st.newPerDay = Math.max(0, Math.min(100, v)); e.target.value = st.newPerDay; save(); msg('Đã lưu.');
+    };
     document.getElementById('exam').onchange = e => { st.examDate = e.target.value; save(); msg('Đã lưu.'); };
     document.getElementById('exp').onclick = () => {
       const a = document.createElement('a');
@@ -605,17 +667,20 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     };
     document.getElementById('imp').onchange = e => {
-      const f = e.target.files[0]; if (!f) return;
+      const input = e.target, f = input.files[0]; if (!f) return;
       f.text().then(t => {
         const d = JSON.parse(t);
-        if (!d || typeof d !== 'object' || !d.cards) throw new Error('bad');
-        localStorage.setItem(KEY, t); S = load(); save(); msg('✅ Đã nhập dữ liệu.');
-      }).catch(() => msg('❌ File không hợp lệ.'));
+        if (!isObj(d) || !isObj(d.cards)) throw new Error('bad');
+        const next = normalize(d);   // chuẩn hóa trước khi ghi, tránh dữ liệu hỏng làm trắng trang
+        S = next; save();
+        viewSettings(); msg('✅ Đã nhập dữ liệu.');
+      }).catch(() => { input.value = ''; msg('❌ File không hợp lệ.'); });
     };
     document.getElementById('reset').onclick = () => {
-      if (!confirm('Xóa toàn bộ tiến độ học? Không thể hoàn tác.')) return;
-      const keep = S.settings; S = load(); S.cards = {}; S.stats = {}; S.newLog = { date: '', count: 0 }; S.activity = {}; S.settings = keep;
-      save(); msg('Đã xóa tiến độ.');
+      if (!confirm('Xóa toàn bộ tiến độ học (thẻ SRS, thống kê, bài đã học, lịch sử thi thử, bài thi dở)? Cài đặt được giữ lại. Không thể hoàn tác.')) return;
+      const keep = S.settings; S = clone(DEFAULTS); S.settings = keep;
+      clearInterval(examTimer); examTimer = null;
+      save(); viewSettings(); msg('Đã xóa tiến độ.');
     };
   }
 
@@ -630,10 +695,28 @@
   const examSize = () => Math.min(EXAM_FULL, D.questions.length + POOL.length);
   const seenCount = id => (S.examSeen && S.examSeen[id]) || 0;
   const pct = r => Math.round(r.correct / r.n * 100);
+  // Một đề chỉ được tính vào "mức sẵn sàng" khi phần lớn câu là câu mới gặp lần đầu (fresh ≥ n/2);
+  // đề toàn câu đã gặp phản ánh trí nhớ nhiều hơn năng lực.
+  const isFreshExam = r => r.fresh != null && r.fresh >= r.n / 2;
   function readiness() {
-    const last = (S.exams || []).slice(0, 3);
+    const all = S.exams || [];
+    const last = all.filter(isFreshExam).slice(0, 3);
     const ok = last.filter(r => r.correct / r.n >= READY).length;
-    return { last, ok, ready: last.length === 3 && ok === 3 };
+    return { last, ok, ready: last.length === 3 && ok === 3, skipped: all.length - all.filter(isFreshExam).length };
+  }
+  // Phân bổ số câu theo tỷ trọng domain (phần dư lớn nhất để tổng đúng bằng n; 65 câu → 16/19/22/8)
+  function domainQuota(n) {
+    const raw = D.domains.map(d => ({ d, x: n * d.weight / 100 }));
+    raw.forEach(r => { r.k = Math.floor(r.x); });
+    let left = n - raw.reduce((s, r) => s + r.k, 0);
+    raw.slice().sort((a, b) => (b.x - b.k) - (a.x - a.k)).forEach(r => { if (left > 0) { r.k++; left--; } });
+    return raw;
+  }
+  // Số đề còn lại mà toàn bộ câu đều là câu chưa từng gặp trong kho đề riêng (tính theo quota từng domain)
+  function freshExamsLeft() {
+    const n = examSize(); if (!n || !POOL.length) return 0;
+    const unseen = POOL.filter(q => seenCount(q.id) === 0);
+    return Math.min(...domainQuota(n).filter(r => r.k > 0).map(r => Math.floor(unseen.filter(q => q.d === r.d.id).length / r.k)));
   }
   function verdict(p) {
     return p >= READY * 100 ? ['ok', '✅ Đạt ngưỡng an toàn (≥ 80%)']
@@ -654,10 +737,7 @@
     const candidates = dId => [...byFresh(POOL.filter(q => q.d === dId)), ...byFresh(D.questions.filter(q => q.d === dId))];
     // chia số câu theo tỷ trọng domain
     // phân bổ theo phần dư lớn nhất để tổng đúng bằng n (65 câu → 16/19/22/8)
-    const raw = D.domains.map(d => ({ d, x: n * d.weight / 100 }));
-    raw.forEach(r => { r.k = Math.floor(r.x); });
-    let left = n - raw.reduce((s, r) => s + r.k, 0);
-    raw.slice().sort((a, b) => (b.x - b.k) - (a.x - a.k)).forEach(r => { if (left > 0) { r.k++; left--; } });
+    const raw = domainQuota(n);
     const out = [];
     raw.forEach(r => out.push(...candidates(r.d.id).slice(0, r.k)));
     const rest = byFresh([...POOL, ...D.questions].filter(q => !out.includes(q)));
@@ -671,9 +751,10 @@
     const n = examSize(), st = S.settings;
     const hist = (S.exams || []).map((r, i) => { const p = pct(r), v = verdict(p);
       return `<tr><td><a href="#/exam/r${i}">${new Date(r.date).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</a></td>
-      <td><b class="v-${v[0]}">${p}%</b></td><td>${r.correct}/${r.n}</td>
-      <td>${r.fresh != null ? `${r.fresh}/${r.n}` : '—'}</td><td>${fmtTime(r.used)}</td></tr>`; }).join('');
+      <td><b class="v-${v[0]}">${p}%</b></td><td>${esc(r.correct)}/${esc(r.n)}</td>
+      <td>${r.fresh != null ? `${esc(r.fresh)}/${esc(r.n)}${isFreshExam(r) ? '' : ' <span class="muted small">(không tính sẵn sàng)</span>'}` : '—'}</td><td>${fmtTime(r.used)}</td></tr>`; }).join('');
     const poolSeen = POOL.filter(q => seenCount(q.id) > 0).length;
+    const freshLeft = freshExamsLeft();
     const rd = readiness();
     $app.innerHTML = `<h1>Thi thử</h1>
       <div class="card">
@@ -682,6 +763,10 @@
         <ul class="small">
           <li>Giống thi thật: <b>chỉ tiếng Anh</b>, không tô màu từ khóa, không xem đáp án giữa chừng.</li>
           <li>Đề ưu tiên lấy từ <b>kho đề riêng ${POOL.length} câu</b>. Các câu này <b>không xuất hiện</b> khi luyện tập hay ôn SRS, nên kết quả phản ánh năng lực thật chứ không phải trí nhớ. Bạn đã gặp ${poolSeen}/${POOL.length} câu trong các lần thi trước.</li>
+          <li>${freshLeft > 0
+            ? `Kho còn đủ câu chưa gặp cho <b>${freshLeft} đề hoàn toàn mới</b>.`
+            : '<b>Đã hết đề hoàn toàn mới</b>: các đề tiếp theo sẽ lặp lại câu bạn đã gặp, điểm có thể cao hơn năng lực thật.'}
+            Mỗi đề làm xong sẽ “tiêu” các câu mới đó, nên hãy <b>để dành đề mới cho giai đoạn cuối</b> (1–2 tuần trước ngày thi) để đo mức sẵn sàng; giai đoạn đầu nên dùng Luyện tập và Ôn hôm nay.</li>
           <li>Có thể <b>đánh dấu</b> câu để xem lại và chuyển qua lại giữa các câu. Hết giờ thì bài tự nộp.</li>
           <li>Kết quả tính bằng <b>% câu đúng</b>. Đề thật dùng thang điểm scaled (đậu 700/1000) và có thể khó hơn, nên hãy nhắm <b>≥ 80%</b>.</li>
         </ul>
@@ -702,8 +787,26 @@
     };
   }
 
+  // Thứ tự lựa chọn hợp lệ = hoán vị đầy đủ các chỉ số lựa chọn của câu
+  const validOrder = (q, o) => Array.isArray(o) && o.length === q.opts.length && q.opts.every((_, i) => o.includes(i));
+  // Bỏ câu không còn trong ngân hàng (ví dụ sau khi cập nhật nội dung) và sửa thứ tự lựa chọn bị lệch
+  function cleanExamIds(E) {
+    E.order = E.order || {}; E.ans = E.ans || {}; E.flag = (E.flag || []).filter(id => QBY.has(id));
+    E.ids = (E.ids || []).filter(id => QBY.has(id));
+    E.ids.forEach(id => { const q = QBY.get(id); if (!validOrder(q, E.order[id])) E.order[id] = q.opts.map((_, i) => i); });
+    return E.ids.length;
+  }
+  const partialIds = E => E.ids.filter(x => { const a = E.ans[x] || []; return a.length > 0 && a.length < QBY.get(x).ans.length; });
+
   function examRun() {
-    const E = S.exam, n = E.ids.length;
+    const E = S.exam;
+    if (!cleanExamIds(E)) {
+      S.exam = null; save();
+      $app.innerHTML = `<div class="card">Bài thi đang làm dở không còn câu hỏi hợp lệ (ngân hàng câu hỏi đã được cập nhật), nên đã được hủy. <a href="#/exam">Bắt đầu bài thi mới</a></div>`;
+      return;
+    }
+    const n = E.ids.length;
+    E.cur = Math.min(Math.max(0, E.cur || 0), n - 1);
     const remaining = () => E.start + E.dur - Date.now();
     if (remaining() <= 0) return examSubmit(true);
     draw();
@@ -717,7 +820,8 @@
 
     function draw() {
       const id = E.ids[E.cur], q = QBY.get(id), sel = E.ans[id] || [], need = q.ans.length, flagged = E.flag.includes(id);
-      const answered = E.ids.filter(x => (E.ans[x] || []).length).length;
+      const isFull = x => (E.ans[x] || []).length >= QBY.get(x).ans.length;
+      const answered = E.ids.filter(isFull).length;
       $app.innerHTML = `
         <div class="card exambar"><b>Câu ${E.cur + 1}/${n}</b>
           <span id="timer" class="timer ${remaining() < 5 * MIN ? 'low' : ''}">⏱ ${fmtTime(remaining())}</span>
@@ -728,11 +832,11 @@
             <span class="mark">${String.fromCharCode(65 + k)}</span><div>${esc(q.opts[oi][0])}</div></li>`).join('')}</ul>
           <div class="row"><button class="btn" data-a="prev" ${E.cur ? '' : 'disabled'}>← Câu trước</button>
             <button class="btn primary" data-a="next" ${E.cur < n - 1 ? '' : 'disabled'}>Câu sau →</button>
-            <span class="muted small">Phím: A–E chọn · ←/→ chuyển câu · F đánh dấu</span></div>
+            <span class="muted small">Phím: A–${String.fromCharCode(64 + E.order[id].length)} chọn · ←/→ chuyển câu · M đánh dấu</span></div>
         </div>
         <div class="card">
-          <div class="muted small">Bảng câu hỏi · Đã trả lời ${answered}/${n} · Đánh dấu ${E.flag.length}</div>
-          <div class="qnav">${E.ids.map((x, i) => `<button class="${i === E.cur ? 'cur' : ''} ${(E.ans[x] || []).length ? 'ans' : ''} ${E.flag.includes(x) ? 'flag' : ''}" data-j="${i}">${i + 1}</button>`).join('')}</div>
+          <div class="muted small">Bảng câu hỏi · Đã trả lời đủ ${answered}/${n} · Đánh dấu ${E.flag.length}${partialIds(E).length ? ` · Chọn chưa đủ ${partialIds(E).length} (viền nét đứt)` : ''}</div>
+          <div class="qnav">${E.ids.map((x, i) => `<button class="${i === E.cur ? 'cur' : ''} ${isFull(x) ? 'ans' : (E.ans[x] || []).length ? 'part' : ''} ${E.flag.includes(x) ? 'flag' : ''}" data-j="${i}">${i + 1}</button>`).join('')}</div>
           <div class="row" style="margin-top:14px"><button class="btn primary" data-a="submit">Nộp bài</button>
             <button class="btn" data-a="quit" style="color:var(--bad)">Hủy bài thi</button></div>
         </div>`;
@@ -756,8 +860,8 @@
       if (a === 'next') go(E.cur + 1);
       if (a === 'flag') flag();
       if (a === 'submit') {
-        const left = E.ids.filter(x => !(E.ans[x] || []).length).length;
-        const msg = (left ? `Còn ${left} câu chưa trả lời. ` : '') + (E.flag.length ? `Có ${E.flag.length} câu đang đánh dấu. ` : '') + 'Nộp bài?';
+        const left = E.ids.filter(x => !(E.ans[x] || []).length).length, part = partialIds(E).length;
+        const msg = (left ? `Còn ${left} câu chưa trả lời. ` : '') + (part ? `Có ${part} câu chọn nhiều đáp án nhưng chưa chọn đủ số lượng. ` : '') + (E.flag.length ? `Có ${E.flag.length} câu đang đánh dấu. ` : '') + 'Nộp bài?';
         if (confirm(msg)) examSubmit(false);
       }
       if (a === 'quit' && confirm('Hủy bài thi này? Kết quả sẽ không được lưu.')) {
@@ -766,8 +870,9 @@
     };
     onKey = e => {
       const k = e.key.toUpperCase(), ord = E.order[E.ids[E.cur]];
-      if (k.length === 1 && k >= 'A' && k < String.fromCharCode(65 + ord.length) && k !== 'F') { choose(ord[k.charCodeAt(0) - 65]); }
-      else if (k === 'F') flag();
+      // M = đánh dấu (không dùng F vì F là lựa chọn thứ 6 của câu Choose THREE)
+      if (k === 'M') flag();
+      else if (k.length === 1 && k >= 'A' && k < String.fromCharCode(65 + ord.length)) { choose(ord[k.charCodeAt(0) - 65]); }
       else if (e.key === 'ArrowRight') go(E.cur + 1);
       else if (e.key === 'ArrowLeft') go(E.cur - 1);
     };
@@ -779,13 +884,15 @@
     return `<div class="card ready ${rd.ready ? 'yes' : ''}"><b>${rd.ready ? '🎯 Sẵn sàng đi thi' : '🎯 Mức sẵn sàng'}</b>
       <div class="dots">${dots}</div>
       <p class="small muted" style="margin:6px 0 0">${rd.ready
-        ? 'Bạn đã đạt ≥ 80% ở 3 đề gần nhất. Hãy thử thêm Official Practice Question Set trên AWS Skill Builder trước khi đăng ký thi.'
-        : `Mục tiêu: đạt ≥ 80% ở <b>3 đề liên tiếp</b> (hiện ${rd.ok}/${rd.last.length || 0} đề gần nhất đạt).`}</p></div>`;
+        ? 'Bạn đã đạt ≥ 80% ở 3 đề mới gần nhất. Hãy thử thêm Official Practice Question Set trên AWS Skill Builder trước khi đăng ký thi.'
+        : `Mục tiêu: đạt ≥ 80% ở <b>3 đề mới liên tiếp</b> (hiện ${rd.ok}/${rd.last.length || 0} đề gần nhất đạt).`}</p>
+      <p class="small muted" style="margin:6px 0 0">Chỉ tính các đề có <b>ít nhất một nửa số câu là câu mới gặp lần đầu</b>; đề lặp lại nhiều câu cũ đo trí nhớ hơn là năng lực.${rd.skipped ? ` ${rd.skipped} đề trong lịch sử không được tính vì vậy.` : ''}</p></div>`;
   }
 
   function examSubmit(auto) {
     clearInterval(examTimer); examTimer = null; onKey = null;
     const E = S.exam; if (!E) return;
+    if (!cleanExamIds(E)) { S.exam = null; save(); location.hash = '#/exam'; return; }
     const per = {}; let correct = 0;
     E.ids.forEach(id => {
       const q = QBY.get(id), ok = sameAns(q, E.ans[id] || []);
@@ -817,7 +924,9 @@
   function examResult(i) {
     const R = (S.exams || [])[i];
     if (!R) { $app.innerHTML = `<div class="card">Không tìm thấy bài thi. <a href="#/exam">Quay lại</a></div>`; return; }
-    R.ids = R.ids.filter(id => QBY.has(id));   // bỏ câu đã bị xóa khỏi ngân hàng
+    R.ids = (R.ids || []).filter(id => QBY.has(id));   // bỏ câu đã bị xóa khỏi ngân hàng
+    R.order = R.order || {}; R.ans = R.ans || {}; R.flag = R.flag || []; R.per = R.per || {};
+    R.ids.forEach(id => { const q = QBY.get(id); if (!validOrder(q, R.order[id])) R.order[id] = q.opts.map((_, j) => j); });
     const p100 = pct(R), v = verdict(p100);
     let filter = 'all', showVi = false;
     const wrongIds = R.ids.filter(id => !sameAns(QBY.get(id), R.ans[id] || []));
@@ -849,8 +958,8 @@
           <div class="muted small">${new Date(R.date).toLocaleString('vi-VN')}${R.auto ? ' · tự nộp khi hết giờ' : ''}</div>
           <div class="score v-${v[0]}">${p100}<small>% đúng</small></div>
           <h2 style="margin:4px 0">${v[1]}</h2>
-          <p>Đúng <b>${R.correct}/${R.n}</b> câu · Thời gian làm ${fmtTime(R.used)}${R.fresh != null ? ` · Câu mới gặp lần đầu: <b>${R.fresh}/${R.n}</b>` : ''}</p>
-          <p class="note">Quy đổi thô theo thang 1000 ≈ ${R.score} điểm, chỉ để tham khảo. Đề thật dùng thang scaled (đậu ${PASS}) và có thể khó hơn, nên hãy nhắm ≥ 80% ở 3 đề liên tiếp.${R.fresh != null && R.fresh < R.n / 2 ? ' ⚠️ Đề này có nhiều câu bạn đã gặp, nên kết quả có thể cao hơn năng lực thật.' : ''}</p>
+          <p>Đúng <b>${esc(R.correct)}/${esc(R.n)}</b> câu · Thời gian làm ${fmtTime(R.used)}${R.fresh != null ? ` · Câu mới gặp lần đầu: <b>${esc(R.fresh)}/${esc(R.n)}</b>` : ''}</p>
+          <p class="note">Quy đổi thô theo thang 1000 ≈ ${esc(R.score)} điểm, chỉ để tham khảo. Đề thật dùng thang scaled (đậu ${PASS}) và có thể khó hơn, nên hãy nhắm ≥ 80% ở 3 đề liên tiếp.${R.fresh != null && R.fresh < R.n / 2 ? ' ⚠️ Đề này có nhiều câu bạn đã gặp, nên kết quả có thể cao hơn năng lực thật và không được tính vào mức sẵn sàng.' : ''}</p>
           <div class="row" style="justify-content:center">
             <a class="btn primary" href="#/exam">Thi lại</a>
             ${drillIds.length ? `<button class="btn" data-a="drill">Ôn ngay ${drillIds.length} câu sai (câu luyện tập)</button>` : ''}
@@ -863,7 +972,7 @@
         <h2>Xem lại bài làm</h2>
         <div class="row" style="margin-bottom:12px">
           <div class="tabs" style="margin:0">
-            <button class="btn ${filter === 'all' ? 'on' : ''}" data-f="all">Tất cả (${R.n})</button>
+            <button class="btn ${filter === 'all' ? 'on' : ''}" data-f="all">Tất cả (${R.ids.length})</button>
             <button class="btn ${filter === 'wrong' ? 'on' : ''}" data-f="wrong">Sai / bỏ trống (${wrongIds.length})</button>
             <button class="btn ${filter === 'flag' ? 'on' : ''}" data-f="flag">Đã đánh dấu (${R.flag.length})</button>
           </div>
@@ -884,17 +993,25 @@
   const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (location.hash.startsWith('#/settings')) route(); });
   addEventListener('appinstalled', () => { installEvt = null; if (location.hash.startsWith('#/settings')) route(); });
+  let updateRequested = false;
   function showUpdateBar(sw) {
     if (document.getElementById('updbar')) return;
     const bar = document.createElement('div');
     bar.id = 'updbar';
     bar.innerHTML = '<span>🔄 Có nội dung mới</span><button>Cập nhật</button>';
-    bar.querySelector('button').onclick = () => { if (sw) sw.postMessage('skipWaiting'); else location.reload(); };
+    bar.querySelector('button').onclick = () => { updateRequested = true; if (sw) sw.postMessage('skipWaiting'); else location.reload(); };
     document.body.appendChild(bar);
   }
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    // Lần đầu cài, sw.js gọi clients.claim() nên cũng phát sinh 'controllerchange': không tải lại trong trường hợp đó.
+    // Chỉ tải lại khi trang đã có service worker từ trước VÀ người dùng bấm "Cập nhật" ở tab này;
+    // nếu bản mới được kích hoạt từ tab khác thì chỉ hiện thanh cập nhật.
+    const hadController = !!navigator.serviceWorker.controller;
     let reloading = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading) { reloading = true; location.reload(); } });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloading) return;
+      if (updateRequested) { reloading = true; location.reload(); } else showUpdateBar(null);
+    });
     navigator.serviceWorker.register('sw.js').then(reg => {
       if (reg.waiting && navigator.serviceWorker.controller) showUpdateBar(reg.waiting);
       reg.addEventListener('updatefound', () => {
@@ -930,14 +1047,47 @@
 
   /* ───────── Router ───────── */
   const ROUTES = { '': viewHome, review: viewReview, practice: viewPractice, exam: viewExam, learn: viewLearn, lesson: viewLesson, glossary: viewGlossary, settings: viewSettings };
+  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
   function route() {
-    hideTip(); onKey = null; $app.onclick = null; clearInterval(examTimer); examTimer = null;
-    const [path, arg] = location.hash.replace(/^#\/?/, '').split('/');
-    document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === (ROUTES[path] ? path : '')));
-    (ROUTES[path] || viewHome)(arg);
-    window.scrollTo(0, 0);
+    hideTip(); onKey = null; $app.onclick = null; clearInterval(examTimer); examTimer = null; curSession = null;
+    try {
+      const [path, arg] = location.hash.replace(/^#\/?/, '').split('/');
+      const p = own(ROUTES, path) ? path : '';
+      document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === p));
+      ROUTES[p](arg);
+      window.scrollTo(0, 0);
+    } catch (err) { showRecovery(err); }
+  }
+  /* Màn hình khôi phục khi dữ liệu hỏng làm app lỗi: cho xuất bản sao dữ liệu thô rồi xóa */
+  function showRecovery(err) {
+    onKey = null; $app.onclick = null;
+    try { console.error(err); } catch (e) { /* ignore */ }
+    $app.innerHTML = `<div class="card"><h2 style="margin-top:0">⚠️ Ứng dụng gặp lỗi khi hiển thị</h2>
+      <p>Có thể dữ liệu tiến độ trên trình duyệt này bị hỏng (ví dụ do nhập file không đúng định dạng).</p>
+      <p class="muted small">Chi tiết: ${esc(err && err.message || err)}</p>
+      <div class="row"><a class="btn" href="#/">Thử lại trang chủ</a>
+        <button class="btn" id="rcExp">Tải bản sao dữ liệu hiện tại</button>
+        <button class="btn" id="rcReset" style="color:var(--bad)">Xóa dữ liệu và bắt đầu lại</button></div></div>`;
+    document.getElementById('rcExp').onclick = () => {
+      let raw = ''; try { raw = localStorage.getItem(KEY) || ''; } catch (e) { /* ignore */ }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
+      a.download = `clf-c02-backup-${today()}.json`; a.click();
+    };
+    document.getElementById('rcReset').onclick = () => {
+      if (!confirm('Xóa toàn bộ dữ liệu tiến độ trên trình duyệt này?')) return;
+      try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
+      S = clone(DEFAULTS); save(); location.hash = '#/'; route();
+    };
   }
   addEventListener('hashchange', route);
-  updateBadge();
+  // Bấm vào liên kết trỏ tới đúng trang đang mở (ví dụ "Ôn hôm nay" khi đang ở #/review) → vẽ lại trang đó
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const norm = h => (h === '' || h === '#') ? '#/' : h;
+    if (norm(a.getAttribute('href')) === norm(location.hash)) { e.preventDefault(); route(); }
+  });
+  try { updateBadge(); } catch (err) { /* badge không quan trọng */ }
   route();
 })();

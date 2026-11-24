@@ -102,6 +102,7 @@ label.radio { display: block; padding: 6px 0; cursor: pointer; }
 .qnav { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px; margin-top: 8px; }
 .qnav button { font: inherit; font-size: 14px; padding: 6px 0; border-radius: 6px; border: 1.5px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; position: relative; }
 .qnav button.ans { background: var(--sel); border-color: var(--sel-line); }
+.qnav button.part { border-style: dashed; border-color: var(--sel-line); }
 .qnav button.cur { outline: 2px solid var(--accent); outline-offset: 1px; }
 .qnav button.flag::after { content: ""; position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .score { font-size: 56px; font-weight: 800; line-height: 1.1; margin-top: 6px; }
