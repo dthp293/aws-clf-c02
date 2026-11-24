@@ -5,7 +5,7 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 👉 **Mở website:** https://dthp293.github.io/aws-clf-c02/
 
 - 39 bài học (khoảng 57.000 từ): nền tảng IT → 4 domain của đề thi → 5 bài thực hành
-- 323 câu luyện tập + 130 câu **kho đề thi thử riêng** (không lẫn vào phần luyện tập)
+- 323 câu luyện tập + 195 câu **kho đề thi thử riêng** (đủ cho 3 đề 65 câu hoàn toàn mới, không lẫn vào phần luyện tập)
 - Ôn tập theo **lặp lại ngắt quãng (SRS)**, thi thử 65 câu / 90 phút, thống kê theo task statement
 - Chạy **offline** trên điện thoại (PWA), không cần tài khoản, dữ liệu lưu ngay trên máy
 
@@ -29,7 +29,7 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 2. Học **1 bài mới** trong mục **Bài học**, rồi bấm **"✍️ Luyện N câu của bài này"** ở cuối bài.
 3. Bấm **"✓ Đánh dấu đã học"** để app theo dõi tiến độ.
 
-**Khi nào sẵn sàng đi thi?** Khi thẻ **"🎯 Sẵn sàng đi thi"** sáng lên, tức là đạt **≥ 80% ở 3 đề thi thử liên tiếp**, và bạn cũng làm tốt bộ đề chính thức miễn phí của AWS trên Skill Builder. Ngưỡng đậu thật là 700/1000 (thang điểm scaled), nên nhắm 80% để có khoảng an toàn.
+**Khi nào sẵn sàng đi thi?** Khi thẻ **"🎯 Sẵn sàng đi thi"** sáng lên, tức là đạt **≥ 80% ở 3 đề thi thử mới liên tiếp** (chỉ tính đề có ít nhất một nửa số câu là câu gặp lần đầu), và bạn cũng làm tốt bộ đề chính thức miễn phí của AWS trên Skill Builder. Ngưỡng đậu thật là 700/1000 (thang điểm scaled), nên nhắm 80% để có khoảng an toàn.
 
 ---
 
@@ -44,7 +44,8 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 Trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ AWS. Sau mỗi thẻ, tự chấm **Lại / Khó / Tốt / Dễ**:
 - Trả lời sai thì thẻ quay lại sau **10 phút**.
 - Trả lời đúng thì khoảng cách ôn giãn dần (1 → 4 → 10… ngày).
-- Số thẻ mới mỗi ngày chỉnh được trong **Cài đặt** (mặc định 15).
+- Số thẻ mới mỗi ngày chỉnh được trong **Cài đặt** (mặc định 15). Chỉ thẻ mới học trong **Ôn hôm nay** mới tính vào hạn mức này; luyện tập tự do không làm giảm số thẻ mới.
+- Ngày học được tính sang ngày mới lúc **4 giờ sáng** (giống Anki), nên ôn khuya sau 0 giờ vẫn tính cho hôm trước.
 
 ### ✍️ Luyện tập
 - Luyện theo **domain**, **trộn tất cả**, **câu hay sai**, **🔥 câu nâng cao**, **☑️ câu chọn nhiều đáp án** (Choose TWO/THREE).
@@ -54,7 +55,8 @@ Trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ AWS. Sau mỗi th
 ### 📝 Thi thử
 - 65 câu / 90 phút (bật **ESL +30 phút** nếu bạn đăng ký hỗ trợ này khi đặt lịch thi), chia đúng tỷ trọng **16 / 19 / 22 / 8** câu theo 4 domain.
 - Câu hỏi lấy từ **kho đề riêng**: các câu này **không xuất hiện khi luyện tập**, nên điểm phản ánh năng lực thật chứ không phải trí nhớ. App ưu tiên câu bạn chưa gặp.
-- Có thể đánh dấu câu, chuyển qua lại giữa các câu. Phím tắt: A–E chọn đáp án (lựa chọn thứ 6 thì bấm chuột), ←/→ chuyển câu, F đánh dấu.
+- Trang Thi thử cho biết kho còn đủ câu chưa gặp cho **bao nhiêu đề hoàn toàn mới**. Mỗi đề làm xong sẽ dùng hết các câu mới đó, nên hãy **để dành đề mới cho 1–2 tuần cuối** để đo mức sẵn sàng.
+- Có thể đánh dấu câu, chuyển qua lại giữa các câu. Phím tắt: A–F chọn đáp án, ←/→ chuyển câu, **M** đánh dấu. Câu chọn nhiều đáp án mà chọn chưa đủ sẽ hiện viền nét đứt và được nhắc khi nộp bài.
 - Kết quả gồm: **% đúng**, phân tích theo domain, **task cần ôn thêm**, số câu mới gặp lần đầu, và xem lại từng câu kèm giải thích (bật được tiếng Việt).
 
 ### 🔤 Hỗ trợ tiếng Anh
@@ -100,7 +102,7 @@ Rồi mở http://localhost:8766. Service worker (offline) chỉ chạy trên `l
 | `course/course-a.js` … `course-f.js` | Bài học: nền tảng + D1, D2, D3 (2 file), D4, thực hành |
 | `data.js` | Domain, câu hỏi gốc, từ vựng, thẻ dịch vụ, bảng tóm tắt nhanh |
 | `questions-2.js`, `content-3.js`, `questions-4.js`, `extra/*.js` | Câu hỏi luyện tập (và từ vựng, thẻ dịch vụ bổ sung) |
-| `exam/exam-d1.js` … `exam-d4.js` | **Kho đề thi thử riêng**: không gắn vào bài học hay luyện tập |
+| `exam/exam-d1.js` … `exam-d4.js`, `exam/exam-e.js` | **Kho đề thi thử riêng**: không gắn vào bài học hay luyện tập |
 | `meta/tags-*.js` | Gắn mỗi câu hỏi với **task statement** (1.1 → 4.3) và bài học |
 | `manifest.webmanifest`, `sw.js`, `icons/` | PWA và chế độ offline |
 
