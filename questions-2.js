@@ -16,7 +16,7 @@ window.CLF.questions.push(
     vi: "Trụ cột nào của Well-Architected Framework có nguyên tắc thiết kế “thực hiện vận hành bằng code”?",
     opts: [["Operational Excellence", "Vận hành xuất sắc"], ["Reliability", "Độ tin cậy"], ["Performance Efficiency", "Hiệu quả hiệu năng"], ["Security", "Bảo mật"]],
     ans: [0],
-    exp: "Operational Excellence gồm: perform operations as code, thay đổi nhỏ và thường xuyên, học từ sự cố.",
+    exp: "Operational Excellence gồm: perform operations as code, thay đổi nhỏ và thường xuyên, học từ sự cố. (Framework hiện tại đổi tên thành “Safely automate where possible”, vẫn thuộc Operational Excellence.)",
     why: ["Đúng: “perform operations as code” là nguyên tắc thiết kế của Operational Excellence.", "Sai: Reliability có nguyên tắc như tự động phục hồi, scale ngang.", "Sai: Performance Efficiency có nguyên tắc như dùng serverless, go global in minutes.", "Sai: Security có nguyên tắc như least privilege, bật traceability."]
   },
   {
@@ -56,7 +56,7 @@ window.CLF.questions.push(
     why: ["Đúng: trên cloud chỉ cần cấp đúng công suất đang cần và co giãn khi tải đổi, không phải mua thừa cho đỉnh tải.", "Sai: nói về việc triển khai ra nhiều Region nhanh chóng, không giải quyết việc mua thừa công suất.", "Sai: nói về giá rẻ do quy mô.", "Sai: nói về việc tập trung vào kinh doanh thay vì vận hành hạ tầng."]
   },
   {
-    id: "d1-12", d: 1,
+    id: "d1-12", d: 3,
     en: "Which cloud deployment model connects a company's on-premises infrastructure with resources in the cloud?",
     vi: "Mô hình triển khai nào kết nối hạ tầng tại chỗ của công ty với tài nguyên trên cloud?",
     opts: [["Hybrid deployment", "Triển khai hybrid"], ["Cloud deployment", "Triển khai hoàn toàn trên cloud"], ["On-premises deployment", "Triển khai tại chỗ"], ["Edge deployment", "Triển khai ở biên"]],
@@ -234,7 +234,7 @@ window.CLF.questions.push(
     vi: "Dịch vụ nào cung cấp góc nhìn tập trung về cảnh báo bảo mật và tình trạng bảo mật trên nhiều tài khoản AWS?",
     opts: [["AWS Security Hub", "AWS Security Hub"], ["Amazon GuardDuty", "Amazon GuardDuty"], ["AWS Trusted Advisor", "AWS Trusted Advisor"], ["AWS CloudTrail", "AWS CloudTrail"]],
     ans: [0],
-    exp: "Security Hub tổng hợp kết quả từ GuardDuty, Inspector, Macie... và kiểm tra theo các chuẩn bảo mật.",
+    exp: "Security Hub tổng hợp kết quả từ GuardDuty, Inspector, Macie... và kiểm tra theo các chuẩn bảo mật. Lưu ý: từ 2025, phần kiểm tra tư thế bảo mật theo chuẩn (CIS, AWS Foundational Security Best Practices…) mang tên AWS Security Hub CSPM; exam guide CLF-C02 vẫn gọi là AWS Security Hub.",
     why: ["Đúng: Security Hub gom cảnh báo từ nhiều dịch vụ và tài khoản về một nơi, kèm kiểm tra theo chuẩn bảo mật.", "Sai: GuardDuty là một nguồn cảnh báo, không phải nơi tổng hợp.", "Sai: Trusted Advisor đưa khuyến nghị best practice chung.", "Sai: CloudTrail ghi lại API calls."]
   },
   {

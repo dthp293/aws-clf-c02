@@ -147,8 +147,8 @@ C.questions.push(
   Q("d3-33", 3, "A company needs fully managed shared file storage for its Windows-based applications that use the SMB protocol. Which AWS service should it use?",
     "Công ty cần lưu trữ file dùng chung, được quản lý hoàn toàn, cho ứng dụng Windows dùng giao thức SMB. Nên dùng dịch vụ nào?",
     same(["Amazon FSx for Windows File Server", "Amazon Elastic File System (Amazon EFS)", "Amazon FSx for Lustre", "Amazon S3"]), [0],
-    "Windows/SMB thì chọn FSx for Windows File Server. Linux/NFS thì chọn EFS. HPC/machine learning cần file system tốc độ cao thì chọn FSx for Lustre.",
-    ["Đúng: FSx for Windows File Server là file system Windows được quản lý, hỗ trợ SMB và Active Directory.", "Sai: EFS dành cho Linux (NFS).", "Sai: FSx for Lustre là file system hiệu năng cao cho HPC và ML trên Linux, không phục vụ chia sẻ file SMB cho Windows.", "Sai: S3 là object storage truy cập qua API, không phải file share SMB."]),
+    "Windows/SMB thì chọn FSx for Windows File Server. Linux/NFS thì chọn EFS. (FSx for Lustre dành cho HPC/ML nhưng nằm trong danh sách out-of-scope chính thức của CLF-C02, chỉ cần nhận ra nó là lựa chọn sai.)",
+    ["Đúng: FSx for Windows File Server là file system Windows được quản lý, hỗ trợ SMB và Active Directory.", "Sai: EFS dành cho Linux (NFS).", "Sai: FSx for Lustre (out of scope với CLF-C02) là file system hiệu năng cao cho HPC/ML trên Linux, không phục vụ chia sẻ file SMB cho Windows.", "Sai: S3 là object storage truy cập qua API, không phải file share SMB."]),
   Q("d3-34", 3, "A company wants Amazon S3 objects to move automatically to S3 Glacier after 90 days and be deleted after 5 years. What should it use?",
     "Công ty muốn object S3 tự chuyển sang S3 Glacier sau 90 ngày và tự xóa sau 5 năm. Nên dùng gì?",
     [["S3 Lifecycle configuration", "Cấu hình S3 Lifecycle"], ["S3 Versioning", "S3 Versioning"], ["S3 Transfer Acceleration", "S3 Transfer Acceleration"], ["S3 Cross-Region Replication", "S3 Cross-Region Replication"]], [0],
@@ -169,17 +169,17 @@ C.questions.push(
     same(["AWS Schema Conversion Tool", "AWS DataSync", "AWS Application Migration Service", "AWS Migration Hub"]), [0],
     "Đổi sang loại DB khác (heterogeneous): dùng SCT để chuyển schema, rồi DMS để chuyển dữ liệu. (Hiện DMS cũng có tính năng DMS Schema Conversion, nhưng đề thi thường lấy SCT làm đáp án.)",
     ["Đúng: AWS SCT chuyển đổi schema và code database (ví dụ Oracle sang PostgreSQL) khi đổi loại DB.", "Sai: chuyển file/dữ liệu lưu trữ, không chuyển đổi schema database.", "Sai: dùng để rehost server.", "Sai: dùng để theo dõi tiến độ."]),
-  Q("d3-38", 3, "A company wants to rehost (lift and shift) a large number of physical and virtual servers to AWS with minimal changes. Which AWS service should it use?",
+  Q("d3-38", 1, "A company wants to rehost (lift and shift) a large number of physical and virtual servers to AWS with minimal changes. Which AWS service should it use?",
     "Công ty muốn rehost (lift and shift) số lượng lớn server vật lý và ảo lên AWS với ít thay đổi nhất. Nên dùng dịch vụ nào?",
     same(["AWS Application Migration Service", "AWS Database Migration Service (AWS DMS)", "AWS Schema Conversion Tool (AWS SCT)", "AWS Elastic Beanstalk"]), [0],
     "Application Migration Service (MGN) là công cụ chính để rehost server.",
     ["Đúng: Application Migration Service (MGN) replicate server vật lý/ảo và chạy lại trên EC2 gần như không cần sửa đổi.", "Sai: dành cho database.", "Sai: dùng để chuyển đổi schema.", "Sai: dùng để triển khai code."]),
-  Q("d3-39", 3, "Before migrating, a company needs to collect information about its on-premises servers, including configuration, usage, and dependencies. Which AWS service should it use?",
+  Q("d3-39", 1, "Before migrating, a company needs to collect information about its on-premises servers, including configuration, usage, and dependencies. Which AWS service should it use?",
     "Trước khi migration, công ty cần thu thập thông tin về server tại chỗ: cấu hình, mức dùng, phụ thuộc. Nên dùng dịch vụ nào?",
     same(["AWS Application Discovery Service", "AWS CloudTrail", "AWS Config", "AWS Application Migration Service (AWS MGN)"]), [0],
     "Discovery Service dùng ở giai đoạn lập kế hoạch migration. Lưu ý: từ 7/11/2025, dịch vụ này ngừng nhận khách hàng mới (AWS khuyên dùng AWS Transform), nhưng đề thi vẫn có thể hỏi theo mô tả này.",
     ["Đúng: Application Discovery Service thu thập cấu hình, mức sử dụng và phụ thuộc của server tại chỗ để lập kế hoạch migration.", "Sai: ghi lại API calls trên AWS.", "Sai: theo dõi cấu hình tài nguyên AWS.", "Sai: MGN thực hiện việc replicate và chuyển server (rehost), không phải bước khảo sát thu thập thông tin trước migration."]),
-  Q("d3-40", 3, "Which AWS service provides a single location to track the progress of application migrations across multiple AWS and partner tools?",
+  Q("d3-40", 1, "Which AWS service provides a single location to track the progress of application migrations across multiple AWS and partner tools?",
     "Dịch vụ nào là nơi duy nhất để theo dõi tiến độ migration ứng dụng trên nhiều công cụ của AWS và đối tác?",
     same(["AWS Migration Hub", "AWS Control Tower", "Amazon CloudWatch", "AWS Systems Manager"]), [0],
     "Migration Hub là bảng theo dõi tiến độ migration. Lưu ý: từ 7/11/2025, dịch vụ này ngừng nhận khách hàng mới (AWS khuyên dùng AWS Transform), nhưng đề thi vẫn có thể hỏi theo mô tả này.",
@@ -237,7 +237,7 @@ C.questions.push(
   Q("d3-51", 3, "Which AWS service is a generative AI-powered assistant that can answer questions, generate content, and help developers write code?",
     "Dịch vụ nào là trợ lý dùng AI tạo sinh (generative AI), có thể trả lời câu hỏi, tạo nội dung và giúp lập trình viên viết code?",
     same(["Amazon Q", "Amazon Lex", "Amazon SageMaker AI", "Amazon Comprehend"]), [0],
-    "Amazon Q là trợ lý generative AI cho doanh nghiệp và lập trình viên.",
+    "Amazon Q là trợ lý generative AI cho doanh nghiệp và lập trình viên. Trạng thái 11/2026: Amazon Q Business không còn nhận khách hàng mới (AWS gợi ý Amazon Quick); plugin IDE của Amazon Q Developer ngừng hỗ trợ từ 30/4/2027 (thay bằng Kiro); trò chuyện với Q trong Console nay gọi là AWS assistant. Exam guide CLF-C02 vẫn liệt kê Amazon Q.",
     ["Đúng: Amazon Q là trợ lý generative AI dựng sẵn, trả lời câu hỏi, tạo nội dung và hỗ trợ viết code (Amazon Q Developer).", "Sai: dùng để xây chatbot của riêng bạn.", "Sai: dùng để tự xây mô hình ML.", "Sai: Comprehend phân tích văn bản (NLP), không phải trợ lý tạo nội dung hay viết code."]),
   Q("d3-52", 3, "A company wants to run standard SQL queries directly on data stored in Amazon S3 without loading it into a database or managing servers. Which AWS service should it use?",
     "Công ty muốn chạy truy vấn SQL trực tiếp trên dữ liệu trong S3, không cần nạp vào database hay quản lý server. Nên dùng dịch vụ nào?",
@@ -256,12 +256,12 @@ C.questions.push(
     ["Đúng: Glue là dịch vụ ETL serverless, có crawler khám phá dữ liệu và Data Catalog lưu metadata.", "Sai: dùng để truy vấn.", "Sai: EMR chạy cụm big data (Spark/Hadoop) do bạn cấu hình, không phải lựa chọn serverless ETL điển hình.", "Sai: streaming."]),
   Q("d3-55", 3, "A company wants to process vast amounts of data by using open-source big data frameworks such as Apache Spark and Apache Hadoop. Which AWS service should it use?",
     "Công ty muốn xử lý khối dữ liệu khổng lồ bằng framework big data mã nguồn mở như Apache Spark, Hadoop. Nên dùng dịch vụ nào?",
-    same(["Amazon EMR", "Amazon OpenSearch Service", "Amazon Kinesis", "Amazon Quick"]), [0],
+    same(["Amazon EMR", "Amazon OpenSearch Service", "Amazon Kinesis", "Amazon Quick (formerly Amazon QuickSight)"]), [0],
     "Spark/Hadoop thì chọn EMR.",
     ["Đúng: EMR chạy các framework big data mã nguồn mở như Spark, Hadoop, Hive trên cụm được quản lý.", "Sai: tìm kiếm và phân tích log.", "Sai: streaming.", "Sai: dashboard BI."]),
   Q("d3-56", 3, "Which AWS service lets business users create interactive dashboards and visualizations from their data?",
     "Dịch vụ nào cho người dùng nghiệp vụ tạo dashboard tương tác và biểu đồ từ dữ liệu?",
-    same(["Amazon Quick", "Amazon Athena", "AWS Glue", "Amazon Kinesis"]), [0],
+    same(["Amazon Quick (formerly Amazon QuickSight)", "Amazon Athena", "AWS Glue", "Amazon Kinesis"]), [0],
     "Business intelligence (BI) và dashboard thì chọn Amazon Quick (trước đây là Amazon QuickSight).",
     ["Đúng: Amazon Quick (trước là QuickSight) là dịch vụ BI để tạo dashboard và biểu đồ tương tác.", "Sai: truy vấn SQL.", "Sai: Glue chuẩn bị và biến đổi dữ liệu (ETL), không tạo dashboard.", "Sai: streaming."]),
   Q("d3-57", 3, "Which AWS service is a serverless event bus that routes events from AWS services and SaaS applications to targets based on rules?",
@@ -344,7 +344,7 @@ C.questions.push(
     [["A public subnet", "Public subnet"], ["A private subnet", "Private subnet"], ["An edge location", "Edge location"], ["An Availability Zone", "Availability Zone"]], [0],
     "Public subnet có route ra internet gateway. Private subnet thì không (có thể ra ngoài qua NAT gateway).",
     ["Đúng: subnet có route 0.0.0.0/0 trỏ tới internet gateway được gọi là public subnet.", "Sai: private subnet không có route tới internet gateway (nếu cần ra ngoài thì đi qua NAT gateway).", "Sai: edge location là điểm của CloudFront/Route 53 ngoài Region, không phải một loại subnet.", "Sai: AZ là data center trong một Region chứa subnet, không phải tên gọi của subnet."]),
-  Q("d3-73", 3, "A company wants to quickly set up and govern a secure multi-account AWS environment (landing zone) based on best practices. Which AWS service should it use?",
+  Q("d3-73", 2, "A company wants to quickly set up and govern a secure multi-account AWS environment (landing zone) based on best practices. Which AWS service should it use?",
     "Công ty muốn nhanh chóng thiết lập và quản trị môi trường AWS nhiều tài khoản an toàn (landing zone) theo best practice. Nên dùng dịch vụ nào?",
     same(["AWS Control Tower", "AWS Organizations", "AWS Config", "AWS Service Catalog"]), [0],
     "Thấy “landing zone” thì chọn Control Tower. Control Tower dùng Organizations bên dưới và tự động hóa việc thiết lập.",
@@ -364,17 +364,17 @@ C.questions.push(
     same(["AWS Compute Optimizer", "Amazon Inspector", "Amazon EC2 Auto Scaling", "AWS CloudTrail"]), [0],
     "Compute Optimizer hỗ trợ việc rightsizing.",
     ["Đúng: Compute Optimizer phân tích metric sử dụng bằng ML để khuyến nghị loại và kích thước instance phù hợp.", "Sai: quét lỗ hổng.", "Sai: tự thay đổi số lượng instance, không khuyến nghị loại instance.", "Sai: ghi lại API calls."]),
-  Q("d3-77", 3, "Where can a company view AWS service events and scheduled maintenance that may affect the resources in its account?",
+  Q("d3-77", 4, "Where can a company view AWS service events and scheduled maintenance that may affect the resources in its account?",
     "Công ty xem sự kiện dịch vụ AWS và lịch bảo trì có thể ảnh hưởng đến tài nguyên trong tài khoản ở đâu?",
     same(["AWS Health Dashboard", "Amazon CloudWatch", "AWS CloudTrail", "AWS Trusted Advisor"]), [0],
     "Health Dashboard hiển thị tình trạng dịch vụ AWS và sự kiện riêng cho tài khoản. AWS Health API cho phép lấy dữ liệu này bằng lập trình.",
     ["Đúng: Health Dashboard hiển thị sự kiện dịch vụ và lịch bảo trì ảnh hưởng tới tài nguyên trong tài khoản của bạn.", "Sai: metric của tài nguyên của bạn.", "Sai: API calls.", "Sai: khuyến nghị best practice."]),
-  Q("d3-78", 3, "Which AWS tool helps a company review its workloads against the best practices of the AWS Well-Architected Framework?",
+  Q("d3-78", 1, "Which AWS tool helps a company review its workloads against the best practices of the AWS Well-Architected Framework?",
     "Công cụ nào giúp công ty đánh giá hệ thống theo best practice của AWS Well-Architected Framework?",
     same(["AWS Well-Architected Tool", "AWS Trusted Advisor", "AWS Config", "Amazon Inspector"]), [0],
     "Tên dịch vụ đã nói lên chức năng: Well-Architected Tool đánh giá theo 6 trụ cột.",
     ["Đúng: Well-Architected Tool hướng dẫn trả lời bộ câu hỏi review workload theo 6 trụ cột và đưa ra kế hoạch cải thiện.", "Sai: kiểm tra tài nguyên tự động, không phải review theo framework.", "Sai: Config ghi lại và đánh giá cấu hình tài nguyên theo rule, không review workload theo Well-Architected.", "Sai: Inspector quét lỗ hổng phần mềm trên EC2, container, Lambda, không đánh giá kiến trúc."]),
-  Q("d3-79", 3, "Which AWS service helps a company manage and track its software licenses from vendors such as Microsoft and Oracle?",
+  Q("d3-79", 1, "Which AWS service helps a company manage and track its software licenses from vendors such as Microsoft and Oracle?",
     "Dịch vụ nào giúp công ty quản lý và theo dõi license phần mềm từ các hãng như Microsoft, Oracle?",
     same(["AWS License Manager", "AWS Artifact", "AWS Marketplace", "AWS Organizations"]), [0],
     "License thì chọn License Manager. Thường dùng cùng BYOL.",
@@ -409,7 +409,7 @@ C.questions.push(
   Q("d4-19", 4, "Which AWS billing resource provides the most comprehensive and detailed set of cost and usage data, delivered to an Amazon S3 bucket?",
     "Nguồn dữ liệu billing nào cung cấp dữ liệu chi phí và mức dùng chi tiết, đầy đủ nhất, được gửi vào S3 bucket?",
     same(["AWS Cost and Usage Report", "AWS Cost Explorer", "AWS Budgets", "AWS Pricing Calculator"]), [0],
-    "CUR là dữ liệu chi tiết nhất, có thể kèm cost allocation tags, và phân tích được bằng Athena hoặc Quick. Hiện CUR 2.0 được tạo qua AWS Data Exports.",
+    "CUR là dữ liệu chi tiết nhất, có thể kèm cost allocation tags, và phân tích được bằng Athena hoặc Amazon Quick (trước đây là Amazon QuickSight). Hiện CUR 2.0 được tạo qua AWS Data Exports.",
     ["Đúng: Cost and Usage Report chứa dữ liệu chi phí và mức dùng chi tiết nhất, được gửi định kỳ vào S3 bucket.", "Sai: giao diện phân tích và biểu đồ.", "Sai: cảnh báo ngân sách.", "Sai: ước tính trước."]),
   Q("d4-20", 4, "Which types of cost allocation tags does AWS support? (Choose TWO.)",
     "AWS hỗ trợ những loại cost allocation tag nào? (Chọn 2.)",
@@ -469,7 +469,7 @@ C.glossary.push(
   { term: "scanned documents", vi: "tài liệu scan", hint: "Amazon Textract" },
   { term: "streaming data", vi: "dữ liệu luồng liên tục", hint: "Amazon Kinesis" },
   { term: "real-time", vi: "thời gian thực", hint: "Kinesis" },
-  { term: "dashboards", vi: "bảng điều khiển trực quan", hint: "Amazon Quick, CloudWatch" },
+  { term: "dashboards", vi: "bảng điều khiển trực quan", hint: "Amazon Quick (trước đây là QuickSight), CloudWatch" },
   { term: "event bus", vi: "kênh trung chuyển sự kiện", hint: "Amazon EventBridge" },
   { term: "contact center", vi: "tổng đài chăm sóc khách hàng", hint: "Amazon Connect" },
   { term: "virtual Windows and Linux desktops", vi: "máy tính để bàn ảo", hint: "Amazon WorkSpaces" },
@@ -488,7 +488,7 @@ C.services.push(
   { name: "AWS Resource Access Manager", d: 2, vi: "Chia sẻ tài nguyên (subnet, Transit Gateway...) giữa các tài khoản.", confuse: "" },
   { name: "Amazon ECS / EKS / ECR", d: 3, vi: "ECS: điều phối container của AWS. EKS: Kubernetes. ECR: lưu container image.", confuse: "Fargate (serverless compute cho container)" },
   { name: "AWS Batch", d: 3, vi: "Chạy job tính toán theo lô ở quy mô lớn.", confuse: "Lambda, Step Functions" },
-  { name: "Amazon FSx", d: 3, vi: "File system bên thứ ba được quản lý: Windows File Server (SMB), Lustre (HPC/ML tốc độ cao), NetApp ONTAP, OpenZFS.", confuse: "EFS (Linux NFS)" },
+  { name: "Amazon FSx", d: 3, vi: "File system bên thứ ba được quản lý: Windows File Server (SMB), NetApp ONTAP, OpenZFS, Lustre (HPC/ML; FSx for Lustre nằm trong danh sách out-of-scope của CLF-C02).", confuse: "EFS (Linux NFS)" },
   { name: "AWS Backup", d: 3, vi: "Sao lưu tập trung cho nhiều dịch vụ.", confuse: "Elastic Disaster Recovery" },
   { name: "AWS Elastic Disaster Recovery", d: 3, vi: "Replicate server liên tục, phục hồi nhanh khi có thảm họa.", confuse: "AWS Backup" },
   { name: "AWS DMS / AWS SCT", d: 3, vi: "DMS: chuyển dữ liệu DB (có replicate liên tục). SCT: chuyển đổi schema giữa các loại DB.", confuse: "Nhầm lẫn giữa DMS và SCT" },
@@ -506,7 +506,7 @@ C.services.push(
   { name: "Amazon Translate", d: 3, vi: "Dịch ngôn ngữ.", confuse: "" },
   { name: "Amazon Comprehend", d: 3, vi: "NLP: phân tích cảm xúc, trích xuất thực thể.", confuse: "" },
   { name: "Amazon Lex", d: 3, vi: "Xây dựng chatbot bằng giọng nói và văn bản.", confuse: "Polly, Connect" },
-  { name: "Amazon Q", d: 3, vi: "Trợ lý generative AI cho doanh nghiệp và lập trình viên.", confuse: "Lex" },
+  { name: "Amazon Q", d: 3, vi: "Trợ lý generative AI cho doanh nghiệp (Q Business) và lập trình viên (Q Developer). Q Business không còn nhận khách hàng mới; plugin IDE của Q Developer ngừng hỗ trợ 30/4/2027.", confuse: "Lex" },
   { name: "Amazon Athena", d: 3, vi: "Truy vấn SQL trực tiếp trên S3, serverless.", confuse: "Redshift" },
   { name: "Amazon Kinesis", d: 3, vi: "Thu thập và xử lý dữ liệu streaming thời gian thực.", confuse: "SQS" },
   { name: "AWS Glue", d: 3, vi: "ETL serverless và data catalog.", confuse: "EMR" },
@@ -561,7 +561,8 @@ L[1].push(
 <li><b>Automation</b>: IaC, Auto Scaling, tự tắt tài nguyên không dùng giúp giảm công sức và lãng phí.</li></ul>` },
   { t: "AWS CAF: lợi ích kinh doanh & tài nguyên migration (Task 1.3)", h: `
 <p>4 kết quả kinh doanh: <b>reduced business risk</b>, <b>improved ESG performance</b>, <b>increased revenue</b>, <b>increased operational efficiency</b>.</p>
-<p>Công cụ migration: Migration Evaluator (business case) → Application Discovery Service (thu thập thông tin) → Application Migration Service (rehost server) / DMS + SCT (database) → Migration Hub (theo dõi tiến độ).</p>` }
+<p>Công cụ migration: Migration Evaluator (business case) → Application Discovery Service (thu thập thông tin) → Application Migration Service (rehost server) / DMS + SCT (database) → Migration Hub (theo dõi tiến độ).</p>
+<p class="note">Lưu ý: từ 7/11/2025, AWS Migration Hub và AWS Application Discovery Service ngừng nhận khách hàng mới (AWS Transform là dịch vụ kế nhiệm). Exam guide vẫn liệt kê hai dịch vụ này nên đề có thể hỏi theo mô tả cũ.</p>` }
 );
 L[2].push(
   { t: "Mã hóa: at rest & in transit", h: `
@@ -570,7 +571,7 @@ L[2].push(
 <tr><td>In transit</td><td>Dữ liệu đang truyền</td><td>TLS/HTTPS, chứng chỉ từ ACM</td></tr></table>` },
   { t: "Root user & quản lý danh tính (Task 2.3)", h: `
 <p><b>Việc chỉ root làm được</b> (ví dụ): đổi email/mật khẩu root, đóng tài khoản, khôi phục quyền IAM, đăng ký bán trên Reserved Instance Marketplace, bật MFA Delete cho S3.</p>
-<ul><li><b>Bảo vệ root</b>: bật MFA, không tạo access key, khóa thông tin đăng nhập, dùng IAM cho việc hằng ngày.</li>
+<ul><li><b>Bảo vệ root</b>: AWS hiện bắt buộc MFA cho root user ở mọi loại tài khoản (standalone, management, member; phải đăng ký trong 14 ngày kể từ lần đăng nhập đầu nếu chưa có). Ngoài ra: không tạo access key, khóa thông tin đăng nhập, dùng IAM cho việc hằng ngày.</li>
 <li><b>Password policy</b>: độ dài, độ phức tạp, thời hạn đổi mật khẩu.</li>
 <li><b>Federation</b>: dùng danh tính của công ty (AD, SAML) để đăng nhập AWS, qua IAM Identity Center.</li>
 <li><b>Cross-account role</b>: user tài khoản A assume role ở tài khoản B để nhận quyền tạm thời.</li>
@@ -630,7 +631,7 @@ L[3].push(
 <tr><td>ETL serverless, data catalog</td><td>AWS Glue</td></tr>
 <tr><td>Big data (Spark, Hadoop)</td><td>Amazon EMR</td></tr>
 <tr><td>Tìm kiếm, phân tích log</td><td>Amazon OpenSearch Service</td></tr>
-<tr><td>Dashboard BI</td><td>Amazon Quick</td></tr>
+<tr><td>Dashboard BI</td><td>Amazon Quick (trước đây là QuickSight)</td></tr>
 <tr><td>Data warehouse</td><td>Amazon Redshift</td></tr></table>` },
   { t: "Các nhóm dịch vụ khác (Task 3.8)", h: `
 <ul><li><b>Application integration</b>: EventBridge (event bus, lịch chạy), SNS (thông báo pub/sub), SQS (hàng đợi), Step Functions (workflow).</li>
@@ -668,7 +669,7 @@ L[4].push(
   { t: "Chi phí truyền dữ liệu", h: `
 <table><tr><th>Loại</th><th>Phí</th></tr>
 <tr><td>Từ internet vào AWS</td><td>Miễn phí</td></tr>
-<tr><td>Từ AWS ra internet</td><td>Tính phí</td></tr>
+<tr><td>Từ AWS ra internet</td><td>Tính phí; 100 GB đầu tiên mỗi tháng miễn phí (gộp cho mọi dịch vụ và Region, trừ China và GovCloud)</td></tr>
 <tr><td>Giữa các Region</td><td>Tính phí</td></tr>
 <tr><td>Giữa các AZ trong cùng Region</td><td>Tính phí (thấp)</td></tr>
 <tr><td>Trong cùng AZ qua IP private</td><td>Miễn phí</td></tr></table>` },

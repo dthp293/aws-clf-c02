@@ -149,7 +149,7 @@ window.CLF = {
       exp: "Root user có toàn quyền. Hãy bật MFA, không tạo access key cho root, và dùng IAM user/role cho công việc hằng ngày.",
       why: [
         "Đúng: MFA thêm lớp bảo vệ khi đăng nhập, và hạn chế dùng root giảm rủi ro lộ thông tin có toàn quyền.",
-        "Sai: không thể gắn IAM policy cho root user; root luôn có toàn quyền trong tài khoản của nó.",
+        "Sai: không thể gắn IAM policy cho root user; root có toàn quyền trong tài khoản của nó (ngoại trừ khi bị SCP giới hạn đối với tài khoản thành viên trong AWS Organizations).",
         "Sai: AWS khuyến nghị không tạo access key cho root vì key dài hạn có toàn quyền rất dễ bị lộ.",
         "Sai: CloudTrail chỉ ghi lại sau khi sự việc xảy ra, không ngăn được việc mật khẩu root bị đánh cắp; vẫn cần MFA."
       ]

@@ -67,7 +67,7 @@ const Q = (id, d, en, vi, opts, ans, exp, why) => ({ id, d, lvl: 2, en, vi, opts
 
   Q("d4-74", 4,
     "A startup is launching a new customer-facing application on Amazon EC2 for a 3-month pilot. Usage is impossible to predict, the servers must not be interrupted while customers use them, and the business may cancel the project after the pilot. Which purchasing option is the MOST cost-effective?",
-    "Một startup ra mắt ứng dụng mới cho khách hàng trên Amazon EC2 trong giai đoạn thử nghiệm 3 tháng. Không thể dự đoán mức sử dụng, máy chủ không được bị gián đoạn khi khách đang dùng, và doanh nghiệp có thể hủy dự án sau giai đoạn thử nghiệm. Lựa chọn mua nào MOST cost-effective?",
+    "Một startup ra mắt ứng dụng mới cho khách hàng trên Amazon EC2 trong giai đoạn thử nghiệm 3 tháng. Không thể dự đoán mức sử dụng, máy chủ không được bị gián đoạn khi khách đang dùng, và doanh nghiệp có thể hủy dự án sau giai đoạn thử nghiệm. Lựa chọn mua nào TIẾT KIỆM CHI PHÍ NHẤT?",
     [["On-Demand Instances with Auto Scaling", "On-Demand Instances kết hợp Auto Scaling"],
      ["1-year Standard Reserved Instances", "Standard Reserved Instances 1 năm"],
      ["Spot Instances in an Auto Scaling group", "Spot Instances trong một Auto Scaling group"],
@@ -87,7 +87,7 @@ const Q = (id, d, en, vi, opts, ans, exp, why) => ({ id, d, lvl: 2, en, vi, opts
      ["An Amazon CloudWatch billing alarm", "Một Amazon CloudWatch billing alarm"],
      ["AWS Cost Explorer cost forecasts", "Dự báo chi phí trong AWS Cost Explorer"]],
     [1],
-    "Từ khóa: machine learning + chi tiêu bất thường + root cause, không cần ngưỡng cố định → AWS Cost Anomaly Detection. Budgets và CloudWatch billing alarm đều dựa trên ngưỡng do bạn đặt; Cost Explorer xem/dự báo chi phí nhưng không tự phát hiện bất thường.",
+    "Từ khóa: machine learning + chi tiêu bất thường + root cause, không cần ngưỡng cố định → AWS Cost Anomaly Detection. Budgets và CloudWatch billing alarm đều dựa trên ngưỡng do bạn đặt; Cost Explorer xem/dự báo chi phí nhưng không tự phát hiện bất thường. (Nâng cao — ít gặp trong đề thật)",
     ["Sai: Budgets cảnh báo khi chi phí thực tế/dự báo vượt ngưỡng bạn tự đặt — đúng điều đội tài chính không làm được.",
      "Đúng: dùng ML để học baseline, phát hiện chi tiêu bất thường theo dịch vụ/tài khoản và chỉ ra nguyên nhân có thể.",
      "Sai: CloudWatch billing alarm cũng dựa trên ngưỡng tĩnh của tổng phí ước tính.",
@@ -246,3 +246,65 @@ Object.assign(window.CLF_TAGS = window.CLF_TAGS || {}, {
   "d4-83": ["4.3", "4-4"],
   "d4-84": ["4.3", "4-4"],
 });
+
+/* Bổ sung 11/2026: d4-85..d4-88 (lvl 2). Nhãn [task statement, bài học] ở cuối khối. */
+(() => {
+const Q = (id, d, en, vi, opts, ans, exp, why) => ({ id, d, lvl: 2, en, vi, opts, ans, exp, why });
+(window.CLF.questions = window.CLF.questions || []).push(
+  Q("d4-85", 4, "A consulting company that builds solutions for its customers on AWS wants its engineers to receive partner-focused AWS training and to earn AWS Certifications so that AWS recognizes the company's expertise. What should the company do?",
+    "Một công ty tư vấn xây giải pháp trên AWS cho khách hàng muốn kỹ sư của mình được đào tạo AWS dành cho đối tác và đạt chứng chỉ AWS để AWS công nhận năng lực của công ty. Công ty nên làm gì?",
+    [["Join the AWS Partner Network (APN) and use its training benefits", "Tham gia AWS Partner Network (APN) và dùng quyền lợi đào tạo của APN"],
+     ["Buy AWS Enterprise Support for each engineer", "Mua AWS Enterprise Support cho từng kỹ sư"],
+     ["Open an AWS Support case to ask AWS to certify the engineers without exams", "Mở AWS Support case để nhờ AWS cấp chứng chỉ cho kỹ sư mà không cần thi"],
+     ["Subscribe to training listings in AWS Marketplace", "Đăng ký các sản phẩm đào tạo trên AWS Marketplace"]], [0],
+    "Quyền lợi của AWS Partner Network: partner training and certification (đào tạo, chứng chỉ cho nhân viên đối tác), partner events, partner volume discounts, hỗ trợ go-to-market, chương trình chuyên môn hóa (specializations/Competency) để được công nhận.",
+    ["Đúng: APN cung cấp đào tạo và chứng chỉ dành cho đối tác, cùng các chương trình công nhận năng lực.",
+     "Sai: gói Support cung cấp hỗ trợ kỹ thuật, không phải chương trình đào tạo đối tác.",
+     "Sai: AWS Support không cấp chứng chỉ; chứng chỉ phải thi.",
+     "Sai: Marketplace bán phần mềm/dịch vụ của bên thứ ba, không phải chương trình đối tác."]),
+
+  Q("d4-86", 4, "A software company is deciding whether to join the AWS Partner Network (APN). Which benefits can APN members receive? (Choose TWO.)",
+    "Một công ty phần mềm đang cân nhắc tham gia AWS Partner Network (APN). Thành viên APN có thể nhận những quyền lợi nào? (Chọn 2.)",
+    [["Access to partner events, such as partner summits and product briefings", "Tham dự sự kiện dành cho đối tác như partner summit và buổi giới thiệu sản phẩm"],
+     ["Partner volume discounts on eligible AWS offerings", "Giảm giá theo khối lượng (volume discount) cho đối tác trên các dịch vụ đủ điều kiện"],
+     ["A designated Technical Account Manager for each of its customers at no cost", "Designated TAM miễn phí cho mỗi khách hàng của mình"],
+     ["The right to change the AWS shared responsibility model for its customers", "Quyền thay đổi mô hình trách nhiệm chia sẻ cho khách hàng của mình"],
+     ["Free AWS Unified Operations for all of its AWS accounts", "AWS Unified Operations miễn phí cho mọi tài khoản AWS của mình"]], [0, 1],
+    "Theo exam guide, các quyền lợi của đối tác gồm partner training and certification, partner events và partner volume discounts (cùng hỗ trợ go-to-market). APN không cấp miễn phí các gói Support hay TAM.",
+    ["Đúng: partner events là một quyền lợi của APN.",
+     "Đúng: partner volume discounts là một quyền lợi của APN.",
+     "Sai: TAM thuộc gói Enterprise Support trở lên, không được cấp miễn phí qua APN.",
+     "Sai: không đối tác nào thay đổi được mô hình trách nhiệm chia sẻ.",
+     "Sai: Unified Operations là gói Support trả phí."]),
+
+  Q("d4-87", 4, "A growing company is designing its first large application on AWS. It wants guidance from AWS technical experts on choosing services and applying Well-Architected best practices for its architecture, usually through its AWS account team. Whom should the company engage?",
+    "Một công ty đang phát triển thiết kế ứng dụng lớn đầu tiên trên AWS. Công ty muốn được chuyên gia kỹ thuật của AWS hướng dẫn chọn dịch vụ và áp dụng best practice Well-Architected cho kiến trúc, thường thông qua đội phụ trách tài khoản (account team). Công ty nên liên hệ ai?",
+    [["AWS Solutions Architects", "AWS Solutions Architects"],
+     ["AWS Trust & Safety team", "AWS Trust & Safety team"],
+     ["AWS re:Post community", "AWS re:Post community"],
+     ["AWS Billing and Cost Management support", "AWS Billing and Cost Management support"]], [0],
+    "AWS Solutions Architects là chuyên gia kỹ thuật của AWS (làm cùng account team) giúp khách hàng thiết kế kiến trúc: chọn dịch vụ, áp dụng Well-Architected, đánh giá phương án. Professional Services là đội chuyên gia triển khai dự án theo hợp đồng trả phí.",
+    ["Đúng: Solutions Architects tư vấn thiết kế kiến trúc trên AWS.",
+     "Sai: Trust & Safety xử lý báo cáo lạm dụng tài nguyên AWS.",
+     "Sai: re:Post là cộng đồng hỏi đáp, không phải chuyên gia được giao cho công ty.",
+     "Sai: hỗ trợ billing trả lời câu hỏi về hóa đơn, không tư vấn kiến trúc."]),
+
+  Q("d4-88", 4, "Match the need to the right AWS resource. A company needs a team of AWS experts to deliver a large data center migration under a paid engagement, and separately wants architecture advice early in a design discussion. Which pair is correct?",
+    "Ghép nhu cầu với nguồn hỗ trợ phù hợp. Công ty cần một đội chuyên gia AWS thực hiện dự án migration data center lớn theo hợp đồng trả phí, và riêng việc muốn được tư vấn kiến trúc ngay từ giai đoạn thảo luận thiết kế. Cặp nào đúng?",
+    [["AWS Professional Services for the migration; AWS Solutions Architects for architecture advice", "AWS Professional Services cho migration; AWS Solutions Architects cho tư vấn kiến trúc"],
+     ["AWS Trust & Safety for the migration; AWS Marketplace listings for architecture advice", "AWS Trust & Safety cho migration; các sản phẩm trên AWS Marketplace cho tư vấn kiến trúc"],
+     ["AWS re:Post for the migration; AWS Artifact for architecture advice", "AWS re:Post cho migration; AWS Artifact cho tư vấn kiến trúc"],
+     ["Basic Support for the migration; AWS Health Dashboard for architecture advice", "Basic Support cho migration; AWS Health Dashboard cho tư vấn kiến trúc"]], [0],
+    "AWS Professional Services: đội chuyên gia AWS triển khai dự án (ví dụ migration lớn) theo hợp đồng. AWS Solutions Architects: tư vấn thiết kế kiến trúc. Ngoài ra có thể thuê đối tác APN để triển khai.",
+    ["Đúng: Professional Services triển khai, Solutions Architects tư vấn kiến trúc.",
+     "Sai: Trust & Safety xử lý lạm dụng; Marketplace bán phần mềm.",
+     "Sai: re:Post là cộng đồng hỏi đáp; Artifact là báo cáo tuân thủ.",
+     "Sai: Basic Support không có hỗ trợ kỹ thuật; Health Dashboard báo tình trạng dịch vụ."])
+);
+Object.assign(window.CLF_TAGS = window.CLF_TAGS || {}, {
+  "d4-85": ["4.3", "4-4"],
+  "d4-86": ["4.3", "4-4"],
+  "d4-87": ["4.3", "4-4"],
+  "d4-88": ["4.3", "4-4"],
+});
+})();
