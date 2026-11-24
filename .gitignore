@@ -1,2 +1,5 @@
 .DS_Store
 course/*.md
+exam/*.md
+meta/*.md
+meta/*.json
