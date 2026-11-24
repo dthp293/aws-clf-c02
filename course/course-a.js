@@ -287,6 +287,13 @@
 <h3>Region selector và dịch vụ như những viên Lego</h3>
 <p>AWS có data center ở nhiều nơi trên thế giới, chia thành các <b>Region</b> (vùng địa lý), ví dụ Singapore, Tokyo, Frankfurt. Ở góc trên bên phải Console có ô chọn Region. Hầu hết tài nguyên bạn tạo sẽ nằm trong Region đang được chọn.</p>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Người mới hay "mất" tài nguyên: tạo máy ở Tokyo, hôm sau mở Console đang chọn Singapore nên không thấy, tưởng đã bị xóa, nhưng máy vẫn chạy và vẫn tính tiền. Luôn nhìn Region đang chọn trước khi tìm hay tạo tài nguyên.</p></div>
+<p>Khi chọn Region cho một hệ thống thật, có 4 yếu tố hay được nhắc đến:</p>
+<ul>
+<li><b>Compliance / data sovereignty</b> (tuân thủ, chủ quyền dữ liệu): luật có bắt dữ liệu phải nằm trong một quốc gia/khu vực không? Yếu tố này thường được xét đầu tiên.</li>
+<li><b>Proximity</b> (gần người dùng): càng gần khách hàng, latency càng thấp.</li>
+<li><b>Service availability</b>: không phải Region nào cũng có đủ mọi dịch vụ, nhất là dịch vụ mới.</li>
+<li><b>Pricing</b>: giá cùng một dịch vụ có thể khác nhau giữa các Region.</li>
+</ul>
 <p>AWS có hơn 200 dịch vụ. Đừng hoảng: hãy coi mỗi dịch vụ là một viên <b>Lego</b> làm đúng một việc. Một dịch vụ để chạy máy ảo, một dịch vụ để lưu file, một dịch vụ cho database, một dịch vụ cho DNS… Bạn ghép các viên lại thành ứng dụng. Kỳ thi chủ yếu hỏi: "Việc này thì dùng viên Lego nào?".</p>
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Đi siêu thị, bạn không cần biết mọi sản phẩm. Bạn chỉ cần biết quầy rau ở đâu, quầy thịt ở đâu. Học AWS cho kỳ thi này cũng vậy: biết dịch vụ nào giải quyết nhu cầu nào là đủ.</p></div>
 
@@ -305,7 +312,7 @@
 <tr><th>Mục</th><th>Chi tiết</th></tr>
 <tr><td>Số câu</td><td>65 câu: 50 câu tính điểm + 15 câu không tính điểm (AWS dùng để thử câu mới, bạn không biết câu nào)</td></tr>
 <tr><td>Multiple choice</td><td>Chọn 1 đáp án đúng trong 4</td></tr>
-<tr><td>Multiple response</td><td>Chọn 2 đáp án đúng trở lên trong 5 lựa chọn trở lên (đề ghi "Choose TWO")</td></tr>
+<tr><td>Multiple response</td><td>Chọn 2 đáp án đúng trở lên trong 5 lựa chọn trở lên (đề ghi "Choose TWO" hoặc "Choose THREE")</td></tr>
 <tr><td>Thời gian</td><td>90 phút</td></tr>
 <tr><td>Điểm</td><td>Thang điểm quy đổi 100–1000, đạt từ 700</td></tr>
 <tr><td>Trừ điểm khi sai?</td><td>Không. Bỏ trống cũng tính là sai, nên <b>không bao giờ bỏ trống</b></td></tr>
@@ -325,14 +332,15 @@
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"MOST cost-effective" → chọn phương án rẻ nhất mà <i>vẫn đáp ứng yêu cầu</i>, không phải rẻ nhất tuyệt đối.</li>
 <li>"LEAST operational overhead" / "without managing servers" → ưu tiên dịch vụ <b>managed</b> hoặc <b>serverless</b>.</li>
-<li>"Choose TWO" → phải chọn đủ 2; thiếu một là sai cả câu.</li>
+<li>"Choose TWO" / "Choose THREE" → phải chọn đủ số đáp án; thiếu hoặc sai một là mất điểm cả câu.</li>
 <li>"alert when costs exceed a threshold" → <b>AWS Budgets</b>.</li>
+<li>"factors when choosing a Region" → <b>data sovereignty/compliance</b>, <b>proximity to customers (latency)</b>, dịch vụ có sẵn, giá.</li>
 </ul></div>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Đáp án nghe "xịn" nhất chưa chắc đúng. Nếu đề hỏi cách rẻ nhất, một giải pháp nhiều Region, nhiều tầng bảo vệ thường là sai vì quá đắt so với yêu cầu.</p></div>
 `,
     summary: [
       "AWS account chứa tài nguyên và là đơn vị tính tiền; root user có toàn quyền, cần bảo vệ bằng MFA.",
-      "Console là giao diện web; luôn kiểm tra Region đang chọn.",
+      "Console là giao diện web; luôn kiểm tra Region đang chọn. Chọn Region theo: tuân thủ/chủ quyền dữ liệu, gần người dùng, dịch vụ có sẵn, giá.",
       "Mỗi dịch vụ AWS như một viên Lego; đề thi hỏi nhu cầu nào dùng dịch vụ nào.",
       "Đặt cảnh báo chi phí (AWS Budgets) và xóa tài nguyên sau khi thực hành; Free Tier có giới hạn.",
       "Đề có 65 câu (50 tính điểm), 90 phút, điểm 100–1000, đạt 700, không trừ điểm khi sai.",
@@ -487,6 +495,11 @@
 
 <h3>High availability, fault tolerance và durability</h3>
 <p><b>High availability</b> (tính sẵn sàng cao) nghĩa là hệ thống hầu như luôn hoạt động, thời gian ngừng (downtime) rất ít. Cách làm phổ biến: chạy ở nhiều <b>Availability Zone</b> (AZ, các cụm data center tách biệt trong một Region). Một AZ gặp sự cố thì AZ khác vẫn phục vụ.</p>
+<p>Vì sao nhiều AZ lại giúp sẵn sàng cao? Vì mỗi AZ có <b>nguồn điện, hệ thống làm mát và mạng độc lập</b>, đặt cách nhau đủ xa để một vụ cháy hay mất điện không ảnh hưởng cả hai, nhưng đủ gần để kết nối với nhau có độ trễ thấp. Ở mức lớn hơn, các <b>Region</b> nằm ở những vùng địa lý khác nhau và <b>cô lập với nhau</b>.</p>
+<ul>
+<li>Dữ liệu bạn lưu ở một Region <b>không tự động được sao chép</b> sang Region khác. Muốn có bản sao ở Region khác, bạn phải tự bật tính năng sao chép.</li>
+<li>Cần <b>disaster recovery</b> (khôi phục sau thảm họa) ở nơi cách xa hàng trăm km? Không cần xây data center thứ hai: chỉ việc dựng tài nguyên ở một Region khác, theo yêu cầu và trả theo mức dùng.</li>
+</ul>
 <p><b>Fault tolerance</b> (khả năng chịu lỗi) là mức cao hơn: hệ thống tiếp tục chạy <i>bình thường</i> ngay cả khi một thành phần hỏng, người dùng gần như không nhận ra. Để làm được cần dư thừa (redundancy) ở mọi thành phần quan trọng.</p>
 <p><b>Durability</b> (độ bền dữ liệu) là dữ liệu <i>không bị mất</i> theo thời gian. Ví dụ Amazon S3 được thiết kế cho độ bền 99.999999999% (11 số 9) cho dữ liệu lưu trữ. Lưu ý: bền khác với sẵn sàng. Dữ liệu có thể tạm thời không truy cập được nhưng vẫn không mất.</p>
 <table>
@@ -509,14 +522,18 @@
 <li>"deploy in multiple Regions around the world quickly" → <b>Go global in minutes</b>.</li>
 <li>"experiment quickly", "reduce time to market" → <b>Increase speed and agility</b>.</li>
 <li>"automatically acquire and release resources as demand changes" → <b>Elasticity</b>.</li>
-<li>"multiple Availability Zones, keeps running if one AZ fails" → <b>High availability</b>.</li>
+<li>"multiple Availability Zones, keeps running if one AZ fails" → <b>High availability</b>; lý do: mỗi AZ có <b>independent power, cooling, and networking</b>.</li>
+<li>"keep adding capacity as the business grows, without redesign" (tăng dần theo thời gian, không nhắc chuyện co lại) → <b>Scalability</b>; "grow and shrink automatically during a short sale" → <b>Elasticity</b>.</li>
+<li>"metric that shows agility" → thời gian có môi trường mới giảm từ <i>vài tuần xuống vài phút</i>.</li>
+<li>"engineers spend time replacing disks, cooling, data center leases" → <b>Stop spending money running and maintaining data centers</b>.</li>
 </ul></div>
-<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Elasticity luôn có ý "cả tăng và giảm, tự động". Nếu đề chỉ nói "có thể lớn lên" thì là scalability. Và đừng nhầm durability (dữ liệu không mất) với availability (truy cập được lúc cần).</p><p>Đề cũng hay cài đáp án sai như "Customer responsibility for physical security" hay "requirement to purchase hardware upfront": đó là đặc điểm của on-premises, không phải lợi ích của cloud.</p></div>
+<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Elasticity luôn có ý "cả tăng và giảm, tự động". Nếu đề chỉ nói "có thể lớn lên" thì là scalability. Và đừng nhầm durability (dữ liệu không mất) với availability (truy cập được lúc cần).</p><p>Đề cũng hay cài đáp án sai như "Customer responsibility for physical security" hay "requirement to purchase hardware upfront": đó là đặc điểm của on-premises, không phải lợi ích của cloud.</p><p>Một kiểu "NOT a benefit" khác: "AWS chịu toàn bộ trách nhiệm cấu hình ai được truy cập dữ liệu của công ty" là <b>sai</b>. AWS lo hạ tầng; quyền truy cập dữ liệu vẫn do khách hàng cấu hình. Tương tự, "dữ liệu tự được sao chép sang Region khác" cũng sai.</p></div>
 `,
     summary: [
       "6 lợi ích: fixed → variable expense; economies of scale; stop guessing capacity; speed & agility; stop running data centers; go global in minutes.",
       "Scalability = có thể mở rộng; elasticity = tự động tăng và giảm theo nhu cầu.",
-      "High availability = ít downtime, thường dùng nhiều AZ; fault tolerance = hỏng một phần vẫn chạy bình thường.",
+      "High availability = ít downtime, thường dùng nhiều AZ (mỗi AZ có điện, làm mát, mạng độc lập); fault tolerance = hỏng một phần vẫn chạy bình thường.",
+      "Region cô lập với nhau; dữ liệu không tự sao chép sang Region khác. DR ở xa = dựng tài nguyên ở Region khác theo yêu cầu.",
       "Durability = dữ liệu không mất (S3: 11 số 9), khác với availability.",
       "Agility = có tài nguyên nhanh, thử nghiệm rẻ, ra thị trường nhanh."
     ],
@@ -533,6 +550,7 @@
       ["Downtime", "thời gian ngừng hoạt động"],
       ["Availability Zone (AZ)", "vùng sẵn sàng"],
       ["Redundancy", "dư thừa dự phòng"],
+      ["Disaster recovery (DR)", "khôi phục sau thảm họa"],
       ["Time to market", "thời gian đưa sản phẩm ra thị trường"]
     ],
     qids: ["d1-1", "d1-10", "d1-11", "d1-17", "d1-4", "d1-16", "d3-28"]
@@ -553,6 +571,7 @@
 <h3>Chi phí cố định và chi phí biến đổi</h3>
 <p><b>Fixed cost</b> (chi phí cố định) là khoản bạn trả dù dùng nhiều hay ít, như tiền mua máy, tiền thuê mặt bằng. <b>Variable cost</b> (chi phí biến đổi) thay đổi theo mức sử dụng, như tiền điện, tiền cước taxi.</p>
 <p>On-premises chủ yếu là chi phí cố định: mua máy xong, tháng vắng khách máy vẫn nằm đó. Cloud chuyển phần lớn sang chi phí biến đổi: tháng vắng khách, hóa đơn thấp.</p>
+<p>Ví dụ chi phí biến đổi trên AWS: Amazon S3 tính theo số GB lưu mỗi tháng; EC2 On-Demand tính theo giây sử dụng. Còn tiền mua server, hợp đồng thuê data center nhiều năm là chi phí cố định.</p>
 
 <h3>CapEx và OpEx</h3>
 <p><b>CapEx</b> (Capital Expenditure, chi phí đầu tư vốn) là tiền bỏ ra một lần để mua tài sản dùng lâu dài: server, thiết bị mạng, xây data center. <b>OpEx</b> (Operational Expenditure, chi phí vận hành) là tiền trả định kỳ để dùng dịch vụ: hóa đơn AWS hằng tháng.</p>
@@ -572,6 +591,16 @@
 <p><b>TCO</b> (Total Cost of Ownership, tổng chi phí sở hữu) là tổng <i>mọi</i> chi phí trực tiếp và gián tiếp để sở hữu và vận hành một hệ thống trong suốt vòng đời của nó. Khi tính TCO đầy đủ, cloud thường có lợi hơn nhiều so với chỉ nhìn giá máy.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Minh thử tính TCO cho 3 năm. Phía on-prem: tiền mua 2 server (một chiếc dự phòng), bộ lưu điện, điều hòa chạy suốt ngày đêm, tiền điện, một phần lương của chính Minh để trông máy, và khoản thay máy vào năm thứ 3. Phía AWS: hóa đơn hằng tháng ước tính theo mức dùng thực tế, cộng thời gian Minh quản lý tài khoản. Khi cộng đủ, chênh lệch lớn hơn nhiều so với lúc chỉ so "giá server" với "giá thuê máy ảo".</p></div>
 <p>Lưu ý: TCO không chỉ là tiền. Thời gian của nhân viên, rủi ro sập hệ thống, tốc độ ra sản phẩm mới cũng là "chi phí" cần tính đến.</p>
+<h4>Chi phí nào giảm, chi phí nào vẫn còn?</h4>
+<table>
+<tr><th>Giảm hoặc mất hẳn khi lên AWS</th><th>Vẫn còn (khách hàng tự lo)</th></tr>
+<tr><td>Mua và thay mới server, thiết bị mạng</td><td>Thời gian vá hệ điều hành bên trong EC2 (guest OS)</td></tr>
+<tr><td>Điện, làm mát, mặt bằng, an ninh vật lý data center</td><td>License phần mềm thương mại bạn cài lên máy</td></tr>
+<tr><td>Máy mua dư nằm không</td><td>Cấu hình ứng dụng, quản lý dữ liệu và quyền truy cập</td></tr>
+<tr><td>Công thay ổ cứng, lắp rack</td><td>Thời gian lập trình viên viết tính năng mới cho doanh nghiệp</td></tr>
+</table>
+<p>Với dịch vụ managed (như Amazon RDS), AWS gánh thêm việc vá database engine, sao lưu tự động. Nhưng công viết tính năng kinh doanh thì gần như không đổi dù bạn chạy ở đâu.</p>
+<div class="box idea"><b>🧠 Hiểu đơn giản: vì sao giá theo giờ "đắt hơn" mà tổng vẫn rẻ hơn</b><p>Chia giá server tự mua cho số giờ trong 3 năm, có khi còn thấp hơn giá thuê EC2 theo giờ. Nhưng nếu server tự mua chỉ chạy trung bình 15% công suất, bạn đang trả tiền cho 85% nằm không. Trên AWS, công suất bám theo mức dùng thực tế, nên tổng chi phí thấp hơn. Giống thuê taxi đắt hơn tính theo km, nhưng rẻ hơn nuôi một chiếc xe nằm trong gara cả tuần.</p></div>
 <p>Để ước tính chi phí trên AWS trước khi chuyển, có <b>AWS Pricing Calculator</b>. Để xây dựng phân tích kinh doanh dựa trên dữ liệu hệ thống hiện tại, có <b>Migration Evaluator</b> (bạn sẽ gặp ở bài migration).</p>
 
 <h3>Economies of scale: vì sao AWS rẻ</h3>
@@ -584,16 +613,28 @@
 <li><b>BYOL</b> (Bring Your Own License, mang license của bạn): công ty đã mua license từ trước thì đem lên AWS dùng tiếp, không trả lại tiền license, giúp tiết kiệm. Một số license tính theo socket/core vật lý đòi hỏi dùng máy chủ riêng như <b>EC2 Dedicated Hosts</b>.</li>
 </ul>
 <p>BYOL có thể tiết kiệm nhưng phải tuân thủ điều khoản của nhà cung cấp phần mềm.</p>
+<table>
+<tr><th>Tình huống</th><th>Chọn gì</th></tr>
+<tr><td>Chưa có license, không muốn tự mua/theo dõi license (ví dụ Amazon RDS for SQL Server)</td><td><b>License Included</b>: tiền license nằm trong giá theo giờ</td></tr>
+<tr><td>Đã có license, muốn dùng lại</td><td><b>BYOL</b></td></tr>
+<tr><td>License tính theo socket/core vật lý, cần thấy máy chủ vật lý và giữ instance trên cùng một host lâu dài</td><td><b>EC2 Dedicated Hosts</b></td></tr>
+<tr><td>Muốn dùng phần mềm bên thứ ba (firewall, phần mềm bảo mật…), trả theo giờ trên hóa đơn AWS, không tự đàm phán hợp đồng với hãng</td><td><b>AWS Marketplace</b> (danh mục phần mềm bán sẵn, có loại tính phí pay-as-you-go)</td></tr>
+<tr><td>Theo dõi số license đang dùng, chặn việc chạy vượt số license đã mua</td><td><b>AWS License Manager</b></td></tr>
+</table>
 
 <h3>Rightsizing và automation</h3>
-<p><b>Rightsizing</b> (chọn đúng kích cỡ) là điều chỉnh tài nguyên cho khớp với nhu cầu thực tế. Nếu máy chủ chỉ dùng 10% CPU, đổi sang loại nhỏ hơn và rẻ hơn. Trên cloud việc này dễ, vì đổi loại máy chỉ mất vài phút.</p>
+<p><b>Rightsizing</b> (chọn đúng kích cỡ) là điều chỉnh tài nguyên cho khớp với nhu cầu thực tế. Nếu máy chủ chỉ dùng 10% CPU, đổi sang loại nhỏ hơn và rẻ hơn. Trên cloud việc này dễ, vì đổi loại máy chỉ mất vài phút và đổi được bất cứ lúc nào, nên công suất bám sát mức dùng thực tế. Ở on-prem, máy đã mua thì không "thu nhỏ" được.</p>
+<p>Trước khi đổi, hãy lấy bằng chứng: số liệu sử dụng (CPU, bộ nhớ…) từ <b>Amazon CloudWatch</b> và gợi ý kích cỡ phù hợp từ <b>AWS Compute Optimizer</b> (dịch vụ dùng machine learning phân tích mức dùng để đề xuất loại instance hợp hơn).</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Xem biểu đồ giám sát, Minh thấy máy chủ website ngày thường chỉ dùng khoảng 8% CPU. Anh chuyển sang loại máy nhỏ hơn, hóa đơn giảm gần một nửa mà khách không thấy khác biệt. Đó là rightsizing.</p></div>
 <p><b>Automation</b> (tự động hóa) cũng giúp tiết kiệm: tự tắt máy thử nghiệm ngoài giờ làm việc, tự co giãn theo tải, dựng hạ tầng bằng code thay vì bấm tay. Ít việc thủ công thì ít lỗi, ít giờ công, và không quên tài nguyên chạy không.</p>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"costs eliminated by moving to AWS" → <b>mua/thay phần cứng</b>, <b>điện và làm mát data center</b>. (Bảo mật dữ liệu khách hàng và thiết kế ứng dụng vẫn là việc của bạn.)</li>
 <li>"use existing licenses on AWS" → <b>BYOL</b>; license theo socket/core → <b>Dedicated Hosts</b>.</li>
 <li>"instances use less than 10% CPU, change to smaller types" → <b>Rightsizing</b>.</li>
-<li>"how does automation reduce costs" → giảm công việc thủ công, giảm lỗi, tắt/mở tài nguyên theo nhu cầu.</li>
+<li>"rightsizing evidence before changing instance types" → <b>CloudWatch</b> (metrics) + <b>AWS Compute Optimizer</b> (recommendations).</li>
+<li>"how does automation reduce costs" → giảm công việc thủ công, giảm lỗi, tắt/mở tài nguyên theo nhu cầu. "Dev/test chỉ dùng giờ hành chính" → <b>tự động stop instance ngoài giờ làm việc</b>.</li>
+<li>"no license, do not want to track licenses" → <b>License Included</b>; "third-party software billed by the hour on AWS bill" → <b>AWS Marketplace</b>; "track license usage, prevent exceeding owned licenses" → <b>AWS License Manager</b>.</li>
+<li>"which costs remain after rehosting to EC2" → vá guest OS, license phần mềm, cấu hình ứng dụng.</li>
 <li>"estimate monthly cost before migrating" → <b>AWS Pricing Calculator</b>.</li>
 </ul></div>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Lên cloud <i>không</i> xóa bỏ mọi chi phí license: nếu dùng phần mềm thương mại bạn vẫn phải trả, hoặc qua license-included hoặc BYOL. Cũng không xóa bỏ chi phí bảo vệ dữ liệu, vì bảo mật dữ liệu vẫn là trách nhiệm của khách hàng.</p></div>
@@ -603,8 +644,9 @@
       "On-prem có nhiều chi phí ẩn: điện, làm mát, chỗ đặt, nhân sự, thay phần cứng, máy dư thừa.",
       "TCO là tổng mọi chi phí sở hữu và vận hành trong cả vòng đời; so sánh cloud và on-prem phải dùng TCO.",
       "Economies of scale giúp AWS có giá thấp hơn.",
-      "BYOL = mang license sẵn có lên AWS; license-included = giá đã gồm bản quyền.",
-      "Rightsizing và automation giúp không trả tiền cho tài nguyên thừa hay công việc thủ công."
+      "Sau khi lên EC2 vẫn còn: vá guest OS, license phần mềm, cấu hình ứng dụng, công viết tính năng mới.",
+      "BYOL = mang license sẵn có lên AWS; License Included = giá đã gồm bản quyền; Dedicated Hosts cho license theo socket/core; Marketplace mua phần mềm bên thứ ba trả theo giờ; License Manager theo dõi license.",
+      "Rightsizing (dựa trên CloudWatch + Compute Optimizer) và automation giúp không trả tiền cho tài nguyên thừa hay công việc thủ công."
     ],
     terms: [
       ["Fixed cost", "chi phí cố định"],
@@ -619,6 +661,9 @@
       ["BYOL (Bring Your Own License)", "mang giấy phép của bạn"],
       ["License-included", "giá đã gồm bản quyền"],
       ["Rightsizing", "chọn đúng kích cỡ tài nguyên"],
+      ["Utilization", "mức sử dụng"],
+      ["AWS Marketplace", "chợ phần mềm bên thứ ba trên AWS"],
+      ["AWS License Manager", "dịch vụ quản lý giấy phép"],
       ["Automation", "tự động hóa"]
     ],
     qids: ["d1-1", "d1-10", "d1-18", "d1-19", "d1-20", "d1-22", "d4-4", "d4-12"]
@@ -666,12 +711,27 @@
 <tr><td>Cost Optimization</td><td>Có tránh chi phí thừa không?</td><td>avoid unnecessary costs, pay-as-you-go, measure efficiency</td></tr>
 <tr><td>Sustainability</td><td>Có giảm tác động môi trường không?</td><td>environmental impact, maximize utilization, energy, carbon</td></tr>
 </table>
+
+<h3>Design principles: đề thi hay hỏi nguyên văn</h3>
+<p>Đề thường đưa tên một <b>design principle</b> (nguyên tắc thiết kế) bằng tiếng Anh rồi hỏi nó thuộc trụ cột nào. Bảng dưới là các nguyên tắc hay gặp (AWS thỉnh thoảng chỉnh câu chữ trong tài liệu, nhưng ý chính giữ nguyên):</p>
+<table>
+<tr><th>Pillar</th><th>Design principles hay gặp</th><th>Hiểu đơn giản</th></tr>
+<tr><td>Operational Excellence</td><td>Perform operations as code; Make frequent, small, reversible changes; Refine operations procedures frequently; Anticipate failure; Learn from all operational failures</td><td>Tự động hóa bằng code (kể cả runbook), đổi ít một và quay lại được, họp rút kinh nghiệm sau sự cố theo kiểu không đổ lỗi (blameless)</td></tr>
+<tr><td>Security</td><td>Implement a strong identity foundation; Enable traceability; Apply security at all layers; Automate security best practices; Protect data in transit and at rest; Keep people away from data; Prepare for security events</td><td>Quyền tối thiểu, ghi vết, nhiều lớp bảo vệ (edge, VPC, subnet, instance, code), mã hóa, dùng dashboard/công cụ thay vì để người truy cập trực tiếp dữ liệu</td></tr>
+<tr><td>Reliability</td><td>Automatically recover from failure; Test recovery procedures; Scale horizontally to increase aggregate workload availability; Stop guessing capacity; Manage change in automation</td><td>Tự phục hồi, diễn tập khôi phục, nhiều máy nhỏ thay vì một máy to</td></tr>
+<tr><td>Performance Efficiency</td><td>Democratize advanced technologies; Go global in minutes; Use serverless architectures; Experiment more often; Consider mechanical sympathy</td><td>Dùng dịch vụ có sẵn (AI, database…) thay vì tự xây, chọn công nghệ hợp với cách dữ liệu được dùng</td></tr>
+<tr><td>Cost Optimization</td><td>Implement Cloud Financial Management; Adopt a consumption model; Measure overall efficiency; Stop spending money on undifferentiated heavy lifting; Analyze and attribute expenditure</td><td>Có đội tài chính + kỹ thuật lo văn hóa chi phí, trả theo mức dùng, gắn tag để biết ai tiêu bao nhiêu</td></tr>
+<tr><td>Sustainability</td><td>Understand your impact; Establish sustainability goals; Maximize utilization; Anticipate and adopt new, more efficient hardware and software offerings; Use managed services; Reduce the downstream impact of your cloud workloads</td><td>Đo tác động, không để máy chạy không, lên đời phần cứng hiệu quả hơn, dùng chung hạ tầng qua dịch vụ managed</td></tr>
+</table>
+<p><b>Cloud Financial Management</b> (quản lý tài chính cloud) là xây dựng năng lực và văn hóa quản lý chi phí: một nhóm gồm người tài chính và kỹ thuật đào tạo kỹ sư về ý thức chi phí, đặt mục tiêu chi tiêu, cùng các đội sản phẩm xem lại mức dùng. Việc này thuộc <b>Cost Optimization</b>.</p>
+<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Stop guessing capacity" vừa là một trong 6 lợi ích của cloud, vừa là nguyên tắc của <b>Reliability</b> (không phải Cost Optimization). "Democratize advanced technologies" (dùng dịch vụ AI managed thay vì tự huấn luyện mô hình) thuộc <b>Performance Efficiency</b>. "Keep people away from data" thuộc <b>Security</b>.</p></div>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Sau một năm trên AWS, Minh dùng <b>AWS Well-Architected Tool</b> trong Console để tự trả lời các câu hỏi về hệ thống BánhNgon. Công cụ chỉ ra: chưa diễn tập khôi phục dữ liệu (Reliability), có vài máy chạy không suốt đêm (Cost Optimization và Sustainability), và một tài khoản có quyền quá rộng (Security). Minh lên kế hoạch sửa từng mục.</p></div>
-<p><b>AWS Well-Architected Tool</b> là dịch vụ miễn phí trong Console giúp bạn review workload theo các best practice của framework và đưa ra danh sách cải tiến.</p>
+<p><b>AWS Well-Architected Tool</b> là dịch vụ miễn phí trong Console giúp bạn review workload theo các best practice của framework. Bạn trả lời bộ câu hỏi theo từng trụ cột, công cụ đánh dấu các <b>high-risk issues</b> (vấn đề rủi ro cao), cho bạn lưu <b>milestone</b> (ảnh chụp trạng thái tại một thời điểm để so sánh về sau) và tạo <b>improvement plan</b> (kế hoạch cải tiến).</p>
+<p><b>Well-Architected Lenses</b> (lăng kính) là bộ câu hỏi và hướng dẫn <i>bổ sung</i> cho một ngành hoặc một loại công nghệ cụ thể, dùng thêm sau khi đã review theo 6 trụ cột chung. Ví dụ: lens cho Financial Services Industry, Serverless, SaaS, Machine Learning, Data Analytics. Trong Well-Architected Tool có thể áp dụng lens từ thư viện có sẵn, hoặc tự tạo custom lens.</p>
 
 <h3>Đánh đổi giữa các trụ cột</h3>
 <p>Các trụ cột đôi khi "kéo nhau" theo hướng ngược lại. Chạy hệ thống ở nhiều Region giúp Reliability tốt hơn nhưng tốn tiền hơn (Cost Optimization). Dùng máy thật mạnh giúp Performance nhưng có thể lãng phí khi vắng khách. Vì vậy framework khuyên bạn <b>review định kỳ</b>, không chỉ một lần, và chọn mức cân bằng phù hợp với mục tiêu kinh doanh.</p>
-<p>Thường thì Security và Reliability được ưu tiên cao vì hậu quả khi hỏng rất nặng. Nhưng một website thử nghiệm nội bộ thì không cần thiết kế chịu lỗi như hệ thống thanh toán.</p>
+<p>Theo tài liệu Well-Architected, <b>Security</b> và <b>Operational Excellence</b> nhìn chung <b>không nên bị đánh đổi</b> với các trụ cột khác. Sự đánh đổi thường xảy ra giữa Reliability, Performance Efficiency, Cost Optimization và Sustainability. Ví dụ một website thử nghiệm nội bộ có thể chấp nhận độ tin cậy thấp hơn hệ thống thanh toán để tiết kiệm, nhưng không được bỏ qua bảo mật.</p>
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống chọn xe giao bánh: xe to chở nhiều nhưng tốn xăng, xe máy rẻ nhưng chở ít. Không có xe "tốt nhất", chỉ có xe hợp với nhu cầu và túi tiền của tiệm lúc đó.</p></div>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"recover from failures and meet demand" → <b>Reliability</b>.</li>
@@ -679,7 +739,15 @@
 <li>"minimize environmental impact", "maximize utilization" → <b>Sustainability</b>.</li>
 <li>"use computing resources efficiently", "select the right instance type" → <b>Performance Efficiency</b>.</li>
 <li>"avoid unnecessary costs" → <b>Cost Optimization</b>.</li>
-<li>"review workloads against Well-Architected best practices" → <b>AWS Well-Architected Tool</b>.</li>
+<li>"review workloads against Well-Architected best practices", "milestone", "improvement plan", "high-risk issues" → <b>AWS Well-Architected Tool</b>.</li>
+<li>"additional best-practice guidance specific to an industry or technology" → <b>Well-Architected lens</b>.</li>
+<li>"pillars generally NOT traded off" → <b>Security</b> và <b>Operational Excellence</b>.</li>
+<li>"strong identity foundation", "traceability", "apply security at all layers", "keep people away from data" → <b>Security</b>.</li>
+<li>"test recovery procedures", "scale horizontally", "stop guessing capacity" → <b>Reliability</b>.</li>
+<li>"frequent, small, reversible changes", "blameless post-incident review", "runbooks as code" → <b>Operational Excellence</b>.</li>
+<li>"democratize advanced technologies", "use serverless architectures", "experiment more often" → <b>Performance Efficiency</b>.</li>
+<li>"Cloud Financial Management", "consumption model", "undifferentiated heavy lifting", "tag and attribute costs per team" → <b>Cost Optimization</b>.</li>
+<li>"adopt new, more efficient hardware", "use managed services to share infrastructure" → <b>Sustainability</b>.</li>
 </ul></div>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Maximize utilization" có thể khiến bạn nghĩ đến Performance hay Cost, nhưng khi đề nhắc đến <i>môi trường</i> (environmental impact, energy) thì đáp án là <b>Sustainability</b>. Còn "go global in minutes" vừa là một trong 6 lợi ích của cloud, vừa là nguyên tắc của Performance Efficiency: đọc kỹ đề đang hỏi về lợi ích hay về trụ cột.</p></div>
 `,
@@ -687,9 +755,10 @@
       "Well-Architected Framework là bộ best practice giúp đánh giá và cải tiến hệ thống trên AWS.",
       "6 trụ cột: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability.",
       "Operations as code → Operational Excellence; recover from failures → Reliability.",
-      "Chọn đúng loại tài nguyên → Performance Efficiency; tránh chi phí thừa → Cost Optimization.",
+      "Chọn đúng loại tài nguyên, serverless, democratize → Performance Efficiency; tránh chi phí thừa → Cost Optimization; identity, traceability, all layers → Security.",
       "Giảm tác động môi trường, tối đa hóa mức sử dụng → Sustainability.",
-      "AWS Well-Architected Tool giúp review workload theo framework."
+      "AWS Well-Architected Tool giúp review workload theo framework (milestone, improvement plan, high-risk issues); lens bổ sung câu hỏi cho từng ngành/công nghệ.",
+      "Security và Operational Excellence nhìn chung không đánh đổi; Cloud Financial Management thuộc Cost Optimization."
     ],
     terms: [
       ["Well-Architected Framework", "khung kiến trúc tốt của AWS"],
@@ -704,7 +773,9 @@
       ["Sustainability", "bền vững"],
       ["Operations as code", "vận hành bằng code"],
       ["Workload", "khối lượng công việc / hệ thống ứng dụng"],
-      ["Traceability", "khả năng truy vết"]
+      ["Traceability", "khả năng truy vết"],
+      ["Lens", "bộ câu hỏi bổ sung theo ngành/công nghệ"],
+      ["Cloud Financial Management", "quản lý tài chính cloud"]
     ],
     qids: ["d1-2", "d1-6", "d1-7", "d3-78"]
   },
@@ -743,17 +814,23 @@
 <tr><td>Retain</td><td>Giữ nguyên tại chỗ</td><td>keep on-premises, not ready to migrate</td></tr>
 <tr><td>Relocate</td><td>Không</td><td>VMware, move hypervisor-level infrastructure</td></tr>
 </table>
+<p>Ba điểm hay bị hỏi kỹ hơn:</p>
+<ul>
+<li><b>Vì sao chọn Rehost trước?</b> Khi có hạn chót gấp (hết hợp đồng thuê data center, phải chuyển hàng trăm ứng dụng), rehost giúp chuyển <i>nhanh, quy mô lớn, ít thay đổi</i>; tối ưu dần sau khi đã lên cloud.</li>
+<li><b>Replatform không nhất thiết phải sửa code.</b> Ví dụ chuyển ứng dụng Java đang chạy trên Tomcat tự cài, tự vá sang AWS Elastic Beanstalk, code giữ nguyên, nhưng giờ AWS lo nền tảng, công suất, chia tải. Đổi "nền" sang dịch vụ managed = Replatform.</li>
+<li><b>Relocate</b> giữ nguyên cả công cụ và quy trình vận hành hiện có (ví dụ hàng nghìn máy ảo VMware), không mua phần cứng mới, không viết lại ứng dụng.</li>
+</ul>
 
 <h3>AWS Cloud Adoption Framework (AWS CAF)</h3>
 <p>Di chuyển lên cloud không chỉ là chuyện kỹ thuật. Con người, quy trình, ngân sách cũng phải thay đổi. <b>AWS CAF</b> (Cloud Adoption Framework, khung áp dụng cloud) là bộ hướng dẫn giúp tổ chức chuẩn bị toàn diện, chia thành <b>6 perspectives</b> (góc nhìn):</p>
 <table>
 <tr><th>Nhóm</th><th>Perspective</th><th>Ý nghĩa đơn giản</th></tr>
-<tr><td rowspan="3">Kinh doanh</td><td><b>Business</b></td><td>Đầu tư cloud phải phục vụ mục tiêu kinh doanh</td></tr>
+<tr><td rowspan="3">Kinh doanh</td><td><b>Business</b></td><td>Đầu tư cloud phải phục vụ mục tiêu kinh doanh (chiến lược, sản phẩm, dữ liệu)</td></tr>
 <tr><td><b>People</b></td><td>Văn hóa, cơ cấu tổ chức, lãnh đạo, kỹ năng nhân viên</td></tr>
-<tr><td><b>Governance</b></td><td>Điều phối chương trình, quản lý rủi ro, quản lý chi phí và lợi ích</td></tr>
+<tr><td><b>Governance</b></td><td>Quản lý chương trình/dự án, theo dõi lợi ích mang lại, quản lý chi phí cloud (financial management), quản lý rủi ro. Thường là việc của CFO, giám đốc rủi ro</td></tr>
 <tr><td rowspan="3">Kỹ thuật</td><td><b>Platform</b></td><td>Xây nền tảng cloud lai, quy mô doanh nghiệp, có thể mở rộng</td></tr>
-<tr><td><b>Security</b></td><td>Bảo mật, bảo vệ dữ liệu và hệ thống</td></tr>
-<tr><td><b>Operations</b></td><td>Vận hành dịch vụ cloud đạt mức kinh doanh cần</td></tr>
+<tr><td><b>Security</b></td><td>Giữ dữ liệu và workload bí mật, toàn vẹn, sẵn sàng: quản lý danh tính và quyền, phát hiện mối đe dọa, ứng phó sự cố. Thường là việc của CISO</td></tr>
+<tr><td><b>Operations</b></td><td>Đảm bảo dịch vụ cloud chạy đúng mức kinh doanh cần: quản lý sự cố (incident/problem), vá lỗi (patch), giám sát (observability), quản lý thay đổi và phát hành</td></tr>
 </table>
 <p>Mẹo nhớ: <b>BPG</b> (Business, People, Governance) là "phía văn phòng"; <b>PSO</b> (Platform, Security, Operations) là "phía kỹ thuật".</p>
 <p>AWS CAF cũng nêu <b>4 business outcomes</b> (kết quả kinh doanh) mà cloud mang lại:</p>
@@ -762,6 +839,23 @@
 <li><b>Improved ESG performance</b>: cải thiện hiệu quả môi trường, xã hội và quản trị.</li>
 <li><b>Increased revenue</b>: tăng doanh thu.</li>
 <li><b>Increased operational efficiency</b>: tăng hiệu quả vận hành.</li>
+</ul>
+<p>Cách nhận diện: phát hiện gian lận nhanh hơn, hệ thống ổn định hơn, bảo mật tốt hơn → <b>reduced business risk</b>. Giảm phát thải carbon → <b>improved ESG performance</b>. Ra sản phẩm mới, tiếp cận khách mới → <b>increased revenue</b>. Giảm chi phí vận hành, làm việc năng suất hơn → <b>increased operational efficiency</b>.</p>
+<h4>4 transformation domains và 4 giai đoạn của CAF</h4>
+<p>CAF còn mô tả cloud "biến đổi" tổ chức ở 4 <b>transformation domains</b> (lĩnh vực chuyển đổi), xếp theo chuỗi giá trị:</p>
+<ul>
+<li><b>Technology</b>: chuyển và hiện đại hóa hạ tầng, ứng dụng, dữ liệu.</li>
+<li><b>Process</b>: số hóa, tự động hóa, tối ưu quy trình nghiệp vụ, thường dùng dữ liệu, analytics, machine learning.</li>
+<li><b>Organization</b>: tổ chức lại cách các nhóm làm việc, quanh sản phẩm và giá trị cho khách hàng.</li>
+<li><b>Product</b>: thiết kế lại mô hình kinh doanh, tạo sản phẩm và nguồn doanh thu mới.</li>
+</ul>
+<p>Hành trình chuyển đổi đi qua 4 <b>phases</b> (giai đoạn), lặp đi lặp lại:</p>
+<div class="flow"><span>Envision</span><span>Align</span><span>Launch</span><span>Scale</span></div>
+<ul>
+<li><b>Envision</b>: xác định cơ hội chuyển đổi gắn với mục tiêu kinh doanh.</li>
+<li><b>Align</b>: tìm khoảng trống năng lực theo 6 perspective, thống nhất giữa các bên liên quan, lập kế hoạch.</li>
+<li><b>Launch</b>: đưa vài dự án thử (pilot) vào production để chứng minh giá trị từng bước.</li>
+<li><b>Scale</b>: mở rộng các pilot ra quy mô lớn, đạt lợi ích kinh doanh mong muốn.</li>
 </ul>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Trước khi chuyển hẳn, chị Lan và Minh ngồi lại theo CAF. <i>Business</i>: mục tiêu là bán được nhiều hơn mùa Tết. <i>People</i>: cho nhân viên đi học khóa AWS cơ bản. <i>Governance</i>: đặt ngân sách tháng và cảnh báo chi phí. <i>Platform</i>: thiết kế hệ thống trên AWS. <i>Security</i>: quy định ai được truy cập gì. <i>Operations</i>: ai trực, xử lý sự cố thế nào. Kết quả mong muốn: tăng doanh thu và giảm rủi ro sập web.</p></div>
 
@@ -772,16 +866,22 @@
 <tr><td><b>Migration Evaluator</b></td><td>Phân tích hệ thống hiện tại, xây dựng business case và ước tính chi phí khi chuyển lên AWS</td><td>Đánh giá</td></tr>
 <tr><td><b>AWS Application Discovery Service</b></td><td>Thu thập thông tin máy chủ on-prem: cấu hình, mức sử dụng, phụ thuộc giữa các máy (lưu ý: từ 7/11/2025 ngừng nhận khách hàng mới, AWS khuyên dùng AWS Transform; đề thi vẫn có thể hỏi theo mô tả này)</td><td>Khảo sát</td></tr>
 <tr><td><b>AWS Application Migration Service</b></td><td>Chuyển máy chủ lên AWS theo kiểu rehost (lift and shift), sao chép liên tục để giảm downtime</td><td>Di chuyển máy chủ</td></tr>
-<tr><td><b>AWS DMS</b> (Database Migration Service)</td><td>Di chuyển database, sao chép thay đổi liên tục để downtime tối thiểu</td><td>Di chuyển database</td></tr>
+<tr><td><b>AWS DMS</b> (Database Migration Service)</td><td>Di chuyển database; database nguồn vẫn hoạt động bình thường trong lúc chuyển; hỗ trợ cùng loại engine (MySQL → MySQL) và khác loại (Oracle → PostgreSQL); sao chép thay đổi liên tục để downtime tối thiểu</td><td>Di chuyển database</td></tr>
 <tr><td><b>AWS SCT</b> (Schema Conversion Tool)</td><td>Chuyển đổi cấu trúc (schema) database khi đổi sang loại database khác, ví dụ Oracle sang PostgreSQL</td><td>Di chuyển database</td></tr>
 <tr><td><b>AWS Migration Hub</b></td><td>Một nơi duy nhất để theo dõi tiến độ migration qua nhiều công cụ (lưu ý: từ 7/11/2025 dịch vụ ngừng nhận khách hàng mới, AWS khuyên dùng AWS Transform; nhưng đề thi vẫn có thể hỏi theo mô tả này)</td><td>Theo dõi</td></tr>
+<tr><td><b>AWS DataSync</b></td><td>Chuyển lượng lớn <i>file</i> qua mạng (internet hoặc Direct Connect) từ file server on-prem (NFS, SMB…) lên S3, EFS, FSx; tự động lên lịch, mã hóa khi truyền, kiểm tra toàn vẹn dữ liệu</td><td>Di chuyển dữ liệu file</td></tr>
 </table>
+<p>Ngoài công cụ, AWS còn có chương trình <b>AWS Migration Acceleration Program (MAP)</b>: dành cho doanh nghiệp muốn chuyển nhiều workload nhưng thiếu kinh nghiệm. MAP cung cấp phương pháp có cấu trúc, công cụ, chuyên gia từ đối tác (AWS Partners) và đầu tư từ AWS (ví dụ credit) để bù một phần chi phí migration.</p>
 <div class="flow"><span>Migration Evaluator</span><span>Application Discovery Service</span><span>Application Migration Service / DMS</span><span>Migration Hub theo dõi</span></div>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"as quickly as possible without changes" → <b>Rehost</b>; "self-managed MySQL → Amazon RDS" → <b>Replatform</b>; "move to SaaS" → <b>Repurchase</b>.</li>
 <li>"perspectives of AWS CAF" → Business, People, Governance, Platform, Security, Operations (đáp án nhiễu: Pricing, Networking, Marketing).</li>
 <li>"culture, organizational structure, leadership, workforce skills" → <b>People</b>; "enterprise-grade, scalable, hybrid cloud platform" → <b>Platform</b>.</li>
-<li>"business outcome of cloud adoption" → ví dụ <b>Reduced business risk</b>.</li>
+<li>"business outcome of cloud adoption" → ví dụ <b>Reduced business risk</b>; "reduce carbon footprint" → <b>Improved ESG performance</b>.</li>
+<li>"program management, benefits, cloud spending, risk" → <b>Governance</b>; "incident, patch, observability, change and release management" → <b>Operations</b>; "identity, threat detection, incident response" → <b>Security</b>.</li>
+<li>"digitize and automate business processes, analytics, ML" → transformation domain <b>Process</b>; "deliver pilot initiatives in production" → phase <b>Launch</b>.</li>
+<li>"one-time online transfer of many TB of files from NFS/SMB to Amazon S3" → <b>AWS DataSync</b>; "Oracle → Aurora PostgreSQL" → <b>SCT</b> (schema) + <b>DMS</b> (dữ liệu).</li>
+<li>"program with methodology, partners, AWS credits for large migrations" → <b>AWS Migration Acceleration Program (MAP)</b>.</li>
 <li>"migrate database with minimal downtime, continuous replication" → <b>AWS DMS</b>.</li>
 <li>"collect information about on-premises servers, dependencies" → <b>AWS Application Discovery Service</b>; "lift and shift many servers" → <b>AWS Application Migration Service</b>; "track progress of migrations" → <b>AWS Migration Hub</b>.</li>
 </ul></div>
@@ -791,9 +891,9 @@
       "7R: Rehost (nguyên trạng), Replatform (chỉnh nhẹ), Refactor (viết lại), Repurchase (đổi sang SaaS), Retire (tắt), Retain (giữ lại), Relocate (dời hạ tầng VMware).",
       "AWS CAF có 6 perspective: Business, People, Governance (kinh doanh) và Platform, Security, Operations (kỹ thuật).",
       "4 business outcome: reduced business risk, improved ESG performance, increased revenue, increased operational efficiency.",
-      "Migration Evaluator: business case; Application Discovery Service: khảo sát máy chủ.",
-      "Application Migration Service: rehost máy chủ; DMS: chuyển database ít downtime; SCT: chuyển schema.",
-      "Migration Hub: theo dõi tiến độ migration ở một nơi."
+      "CAF: 4 transformation domains (Technology, Process, Organization, Product); 4 phases (Envision, Align, Launch, Scale).",
+      "Migration Evaluator: business case; Application Discovery Service: khảo sát máy chủ; Migration Hub: theo dõi tiến độ.",
+      "Application Migration Service: rehost máy chủ; DMS: chuyển database ít downtime; SCT: chuyển schema; DataSync: chuyển file qua mạng; MAP: chương trình hỗ trợ migration lớn."
     ],
     terms: [
       ["Migration", "di chuyển lên cloud"],
@@ -810,7 +910,9 @@
       ["ESG", "môi trường, xã hội và quản trị"],
       ["Schema", "cấu trúc dữ liệu"],
       ["Downtime", "thời gian ngừng hoạt động"],
-      ["Business case", "phân tích lợi ích đầu tư"]
+      ["Business case", "phân tích lợi ích đầu tư"],
+      ["Transformation domain", "lĩnh vực chuyển đổi"],
+      ["Pilot", "dự án thử nghiệm"]
     ],
     qids: ["d1-3", "d1-8", "d1-9", "d1-5", "d1-15", "d1-21", "d1-23", "d3-38", "d3-39", "d3-40"]
   }

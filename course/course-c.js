@@ -71,6 +71,18 @@
 <li><b>AWS Local Zones</b>: AWS đặt một phần hạ tầng (máy chủ, lưu trữ…) ngay tại một thành phố lớn, gần người dùng cuối hơn Region. Phù hợp với game online, chỉnh sửa video trực tiếp… cần độ trễ chỉ vài mili-giây.</li>
 <li><b>AWS Outposts</b>: AWS mang chính phần cứng của mình (dạng tủ rack) <b>đặt vào data center của bạn</b>. Bạn dùng dịch vụ AWS ngay tại chỗ, phù hợp khi dữ liệu phải ở lại nơi bạn (on-premises) hoặc cần độ trễ cực thấp tới hệ thống nội bộ. Đây là một kiểu <b>hybrid</b> (lai).</li>
 </ul>
+<p>Ngoài ra còn <b>AWS Wavelength Zones</b> (Exam Guide CLF-C02 xếp Wavelength vào nhóm <i>ngoài phạm vi thi</i>, chỉ cần biết để không nhầm với Local Zones): hạ tầng AWS đặt bên trong mạng <b>5G</b> của nhà mạng viễn thông, cho ứng dụng di động cần độ trễ cực thấp (xe tự hành, game trên điện thoại…).</p>
+<table>
+<tr><th>Lựa chọn</th><th>Đặt ở đâu</th><th>Ai lo phần cứng</th><th>Khi nào chọn</th></tr>
+<tr><td><b>Region / AZ</b></td><td>Data center của AWS</td><td>AWS</td><td>Mặc định cho hầu hết ứng dụng</td></tr>
+<tr><td><b>Local Zones</b></td><td>Thành phố lớn chưa có Region</td><td>AWS</td><td>Cần độ trễ vài ms tới người dùng ở thành phố đó, không muốn tự quản lý phần cứng</td></tr>
+<tr><td><b>Wavelength Zones</b></td><td>Trong mạng 5G của nhà mạng</td><td>AWS</td><td>Ứng dụng di động 5G cần độ trễ cực thấp</td></tr>
+<tr><td><b>Outposts</b></td><td>Data center / tòa nhà của chính bạn</td><td>AWS cung cấp và bảo trì; bạn lo chỗ đặt, điện, mạng</td><td>Dữ liệu phải ở lại tại chỗ, hoặc cần độ trễ thấp tới hệ thống on-premises, nhưng vẫn muốn cùng API, công cụ và dịch vụ AWS (EC2, EBS…)</td></tr>
+</table>
+
+<div class="box trap"><b>⚠️ Bẫy hay gặp</b>
+<p>Nhiều AZ hay nhiều Region? Nếu yêu cầu chỉ là "chịu được hỏng <b>một data center / một AZ</b>" thì <b>multi-AZ trong cùng Region</b> là đủ và <b>rẻ nhất</b>. Chỉ khi đề nói "cả Region không dùng được" (entire Region unavailable) mới cần thêm Region thứ hai (sao chép dữ liệu và chuẩn bị tài nguyên khôi phục ở đó). Còn khi đã thỏa luật và độ trễ, hai Region còn khác nhau ở <b>giá</b> và <b>dịch vụ/tính năng có sẵn</b>, đó là hai thứ cần so sánh tiếp.</p>
+</div>
 
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b>
 <ul>
@@ -79,7 +91,10 @@
 <li>"an entire Region becomes unavailable", "disaster recovery", "data must stay in a country" → <b>multiple Regions</b></li>
 <li>"factors when choosing a Region" → <b>compliance / data sovereignty, proximity (latency), service availability, pricing</b></li>
 <li>"cache content closer to users" → <b>edge locations</b> + <b>Amazon CloudFront</b></li>
-<li>"run AWS infrastructure in its own data center" → <b>AWS Outposts</b>; "single-digit millisecond latency near a large city" → <b>AWS Local Zones</b></li>
+<li>"run AWS infrastructure in its own data center", "same AWS APIs and tools on premises" → <b>AWS Outposts</b>; "low latency in a metropolitan area with no Region, no hardware to manage" → <b>AWS Local Zones</b>; "5G", "mobile edge" → <b>AWS Wavelength</b></li>
+<li>"which services use edge locations" → <b>Amazon CloudFront</b>, <b>Amazon Route 53</b> (và Global Accelerator)</li>
+<li>"data must stay in a country" → chọn <b>Region đặt tại nước đó</b>; AWS không tự chuyển dữ liệu ra khỏi Region bạn chọn</li>
+<li>"remain available if an AZ fails" → EC2 ở <b>ít nhất 2 AZ</b> + <b>Elastic Load Balancer</b> chia tải (bài 3-5)</li>
 </ul>
 </div>
 `,
@@ -89,7 +104,8 @@
       "Multi-AZ → high availability; multi-Region → disaster recovery, độ trễ thấp toàn cầu, chủ quyền dữ liệu.",
       "Chọn Region theo 4 yếu tố: compliance, độ gần khách hàng (latency), dịch vụ có sẵn, giá.",
       "Edge location dùng cho CloudFront (cache nội dung), Route 53, Global Accelerator; số lượng nhiều hơn Region.",
-      "Local Zones đưa hạ tầng gần thành phố lớn; Outposts đưa hạ tầng AWS vào data center của bạn."
+      "Local Zones đưa hạ tầng gần thành phố lớn; Wavelength Zones nằm trong mạng 5G; Outposts đưa hạ tầng AWS vào data center của bạn.",
+      "Chỉ cần chịu lỗi một AZ → multi-AZ (rẻ hơn); phải chịu được mất cả Region → thêm Region thứ hai."
     ],
     terms: [
       ["Data center", "trung tâm dữ liệu"],
@@ -105,7 +121,8 @@
       ["Compliance", "tuân thủ quy định"],
       ["Cache", "bộ nhớ đệm, lưu tạm để lấy nhanh"],
       ["AWS Local Zones", "hạ tầng AWS đặt gần thành phố lớn"],
-      ["AWS Outposts", "hạ tầng AWS đặt tại data center của khách"]
+      ["AWS Outposts", "hạ tầng AWS đặt tại data center của khách"],
+      ["AWS Wavelength Zones", "hạ tầng AWS đặt trong mạng 5G của nhà mạng"]
     ],
     qids: ["d3-1", "d3-10", "d3-21", "d3-27", "d3-28", "d1-16", "d3-5", "d3-25"]
   },
@@ -133,12 +150,14 @@
 
 <h3>Ba cách ra lệnh cho AWS</h3>
 <h4>1. AWS Management Console</h4>
-<p><b>AWS Management Console</b> (bảng điều khiển web) là trang web bạn đăng nhập để bấm chuột, xem biểu đồ, tạo dịch vụ. Dễ dùng nhất cho người mới, rất hợp để khám phá, học, hoặc làm những việc <b>một lần</b>. Ngoài ra còn có ứng dụng di động AWS Console Mobile App để xem nhanh tình trạng tài nguyên.</p>
+<p><b>AWS Management Console</b> (bảng điều khiển web) là trang web bạn đăng nhập để bấm chuột, xem biểu đồ, tạo dịch vụ. Dễ dùng nhất cho người mới, rất hợp để khám phá, học, hoặc làm những việc <b>một lần</b>, ví dụ xem cấu hình một bucket S3 trong lúc điều tra sự cố.</p>
+<p>Ngoài bản web còn có <b>AWS Console Mobile Application</b> (ứng dụng di động trên iOS/Android). Khi không có laptop bên cạnh, người trực sự cố có thể dùng điện thoại để xem <b>CloudWatch alarm</b> (cảnh báo), sự kiện <b>AWS Health</b>, tình trạng tài nguyên, chi phí, và thực hiện một số thao tác nhẹ. Nó không thay thế được bản web cho việc cấu hình phức tạp.</p>
 <h4>2. AWS CLI</h4>
 <p><b>AWS CLI</b> (Command Line Interface, giao diện dòng lệnh) là công cụ cài trên máy tính, cho phép gõ lệnh dạng chữ để điều khiển AWS. Ví dụ một dòng lệnh để liệt kê các "thùng" lưu trữ S3: <code>aws s3 ls</code>.</p>
-<p>Ưu điểm: có thể ghép nhiều lệnh thành <b>script</b> (kịch bản) để chạy tự động, lặp lại nhiều lần, không phải bấm chuột. Ngoài ra có <b>AWS CloudShell</b>: một cửa sổ dòng lệnh mở ngay trong trình duyệt, có sẵn CLI, không cần cài đặt.</p>
+<p>Ưu điểm: có thể ghép nhiều lệnh thành <b>script</b> (kịch bản, ví dụ shell script trên Linux) để chạy tự động, lặp lại nhiều lần, hẹn giờ chạy mỗi tối, mà <b>không cần biết lập trình</b> bằng một ngôn ngữ như Python hay Java. Ngoài ra có <b>AWS CloudShell</b>: một cửa sổ dòng lệnh mở ngay trong trình duyệt, có sẵn CLI, không cần cài đặt.</p>
 <h4>3. AWS SDK</h4>
 <p><b>AWS SDK</b> (Software Development Kit, bộ công cụ phát triển phần mềm) là thư viện cho các ngôn ngữ lập trình như Python, Java, JavaScript, .NET, Go… Lập trình viên dùng SDK để <b>trong chính code của ứng dụng</b> gọi tới AWS. Ví dụ: app đặt bánh, khi khách tải ảnh lên, code dùng SDK để lưu ảnh vào S3.</p>
+<p>Vì sao không tự gửi lời gọi API qua HTTPS cho nhanh? Vì mỗi lời gọi API phải được <b>ký</b> (request signing) bằng thông tin xác thực, phải xử lý lỗi và <b>tự thử lại</b> (retry) khi mạng chập chờn. SDK làm sẵn những việc đó, lập trình viên chỉ cần gọi hàm.</p>
 
 <table>
 <tr><th>Công cụ</th><th>Dùng như thế nào</th><th>Hợp nhất khi</th></tr>
@@ -152,7 +171,8 @@
 
 <h3>Infrastructure as Code với AWS CloudFormation</h3>
 <p><b>Infrastructure as Code</b> (IaC, hạ tầng dưới dạng mã) nghĩa là mô tả toàn bộ hạ tầng (máy chủ, mạng, cơ sở dữ liệu, quyền…) trong một file văn bản. Sau đó một công cụ đọc file và tự tạo đúng y như mô tả.</p>
-<p>Dịch vụ IaC chính của AWS là <b>AWS CloudFormation</b>. Bạn viết một <b>template</b> (bản mẫu) bằng định dạng JSON hoặc YAML. CloudFormation đọc template và tạo ra một nhóm tài nguyên gọi là <b>stack</b>. Muốn xóa thì xóa stack, mọi tài nguyên trong đó được dọn theo.</p>
+<p>Dịch vụ IaC chính của AWS là <b>AWS CloudFormation</b>. Bạn viết một <b>template</b> (bản mẫu) bằng định dạng JSON hoặc YAML. CloudFormation đọc template và tạo ra một nhóm tài nguyên gọi là <b>stack</b>. Muốn xóa thì xóa stack, mọi tài nguyên trong đó được dọn theo. Cần lại thì tạo stack mới từ <b>cùng template</b>, được môi trường y hệt. Cùng một template có thể triển khai thành stack ở nhiều Region, nhiều tài khoản.</p>
+<p>Nếu không muốn viết JSON/YAML, lập trình viên có thể dùng <b>AWS CDK</b> (Cloud Development Kit): mô tả hạ tầng bằng ngôn ngữ lập trình quen thuộc (Python, TypeScript…), CDK chuyển thành template CloudFormation.</p>
 
 <div class="box idea"><b>🧠 Hiểu đơn giản</b>
 <p>Template giống <b>công thức làm bánh</b> ghi rõ: 200g bột, 3 quả trứng, nướng 180 độ trong 25 phút. Ai cầm công thức cũng làm ra chiếc bánh giống hệt. Muốn làm 10 mẻ ở 10 chi nhánh? Cứ đưa cùng một công thức. Muốn sửa? Sửa công thức rồi làm lại, và công thức cũ được lưu lại để so sánh.</p>
@@ -190,8 +210,11 @@
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b>
 <ul>
 <li>"interact with AWS services from application code (Python, Java…)" → <b>AWS SDK</b></li>
-<li>"manage AWS services from a terminal / automate with scripts" → <b>AWS CLI</b></li>
-<li>"web-based interface" → <b>AWS Management Console</b></li>
+<li>"manage AWS services from a terminal / shell script / scheduled job, no programming language" → <b>AWS CLI</b></li>
+<li>"web-based interface", "one-time task, visual interface" → <b>AWS Management Console</b></li>
+<li>"check alarms, AWS Health events, resource status from a smartphone" → <b>AWS Console Mobile Application</b></li>
+<li>Console, CLI, SDK giống nhau ở chỗ nào? → đều <b>gọi AWS service API</b>; SDK có cho nhiều ngôn ngữ và tự lo <b>ký request, retry, xử lý lỗi</b></li>
+<li>"remove all resources and later rebuild exactly, least effort" → <b>xóa CloudFormation stack, sau đó tạo lại từ template</b></li>
 <li>"provision resources in a repeatable way by using templates", "infrastructure as code" → <b>AWS CloudFormation</b></li>
 <li>"upload code, AWS handles deployment, capacity provisioning, load balancing, auto scaling" → <b>AWS Elastic Beanstalk</b></li>
 <li>"connects on-premises infrastructure with cloud resources" → <b>hybrid deployment</b></li>
@@ -201,7 +224,7 @@
 `,
     summary: [
       "Mọi thao tác với AWS cuối cùng đều là lời gọi API.",
-      "Console = bấm chuột trên web; CLI = gõ lệnh, viết script; SDK = gọi AWS từ code ứng dụng.",
+      "Console = bấm chuột trên web (có cả Console Mobile Application cho điện thoại); CLI = gõ lệnh, viết script; SDK = gọi AWS từ code ứng dụng, tự lo ký request và retry.",
       "Việc một lần dùng Console; việc lặp lại nên tự động hóa.",
       "CloudFormation = Infrastructure as Code: template (JSON/YAML) tạo ra stack tài nguyên, lặp lại được và nhất quán.",
       "Elastic Beanstalk = PaaS: tải code lên, AWS lo triển khai, co giãn, cân bằng tải.",
@@ -210,6 +233,7 @@
     terms: [
       ["API (Application Programming Interface)", "giao diện lập trình ứng dụng"],
       ["AWS Management Console", "bảng điều khiển web của AWS"],
+      ["AWS Console Mobile Application", "ứng dụng di động để xem và quản lý nhanh tài nguyên"],
       ["AWS CLI (Command Line Interface)", "công cụ dòng lệnh"],
       ["AWS SDK (Software Development Kit)", "bộ thư viện để gọi AWS từ code"],
       ["Script", "kịch bản lệnh tự động"],
@@ -264,17 +288,18 @@
 <h3>Instance type: chọn "cấu hình" máy</h3>
 <p><b>Instance type</b> quyết định máy ảo mạnh cỡ nào: bao nhiêu vCPU, bao nhiêu RAM, mạng nhanh ra sao. Tên có dạng như <code>t3.micro</code> hay <code>m5.large</code>: chữ cái đầu là họ (family), số là thế hệ, phần sau dấu chấm là kích cỡ. Bạn không cần thuộc tên, nhưng phải nhớ <b>5 nhóm</b> và việc mỗi nhóm giỏi:</p>
 <table>
-<tr><th>Nhóm</th><th>Mạnh về</th><th>Dùng cho</th></tr>
-<tr><td><b>General purpose</b> (đa dụng)</td><td>Cân bằng CPU, RAM, mạng</td><td>Web server, ứng dụng nhỏ và vừa, môi trường thử nghiệm</td></tr>
-<tr><td><b>Compute optimized</b> (tối ưu tính toán)</td><td>CPU mạnh</td><td>Xử lý hàng loạt, mã hóa video (transcoding), game server, mô phỏng khoa học, web server hiệu năng cao</td></tr>
-<tr><td><b>Memory optimized</b> (tối ưu bộ nhớ)</td><td>RAM rất lớn</td><td>Cơ sở dữ liệu trong bộ nhớ (in-memory), xử lý dữ liệu lớn theo thời gian thực</td></tr>
-<tr><td><b>Storage optimized</b> (tối ưu lưu trữ)</td><td>Đọc/ghi ổ đĩa cục bộ cực nhanh</td><td>Kho dữ liệu, cơ sở dữ liệu cần nhiều thao tác đọc ghi, hệ thống file phân tán</td></tr>
-<tr><td><b>Accelerated computing</b> (tăng tốc)</td><td>Có GPU hoặc chip chuyên dụng</td><td>Huấn luyện machine learning, xử lý đồ họa, tính toán khoa học</td></tr>
+<tr><th>Nhóm</th><th>Ví dụ họ</th><th>Mạnh về</th><th>Dùng cho</th></tr>
+<tr><td><b>General purpose</b> (đa dụng)</td><td>T, M</td><td>Cân bằng CPU, RAM, mạng</td><td>Web server, ứng dụng nhỏ và vừa, môi trường thử nghiệm. Họ <b>T</b> là loại <b>burstable</b>: bình thường chạy nhẹ, khi có đợt tăng ngắn thì "bứt tốc" tạm thời, hợp ứng dụng ít tải, thỉnh thoảng có spike</td></tr>
+<tr><td><b>Compute optimized</b> (tối ưu tính toán)</td><td>C</td><td>CPU mạnh so với RAM</td><td>Xử lý hàng loạt, mã hóa video (transcoding), game server, mô phỏng khoa học, web server hiệu năng cao</td></tr>
+<tr><td><b>Memory optimized</b> (tối ưu bộ nhớ)</td><td>R, X</td><td>RAM rất lớn</td><td>Cơ sở dữ liệu trong bộ nhớ (in-memory), xử lý dữ liệu lớn theo thời gian thực</td></tr>
+<tr><td><b>Storage optimized</b> (tối ưu lưu trữ)</td><td>I, D</td><td>Ổ đĩa <b>gắn cục bộ</b> (instance store) đọc/ghi ngẫu nhiên cực nhanh, IOPS rất cao</td><td>Kho dữ liệu, cơ sở dữ liệu NoSQL tự quản lý, hệ thống file phân tán</td></tr>
+<tr><td><b>Accelerated computing</b> (tăng tốc)</td><td>P, G, Inf, Trn</td><td>Có <b>GPU</b> hoặc chip chuyên dụng, tính toán song song khổng lồ</td><td>Huấn luyện deep learning/machine learning, xử lý đồ họa, tính toán khoa học</td></tr>
 </table>
+<p><b>IOPS</b> (Input/Output Operations Per Second) là số lần đọc/ghi ổ đĩa mỗi giây, càng cao thì ổ càng "nhanh tay". Không cần thuộc tên họ, nhưng nếu đề ghi "for example, C instances" hay "P instances" thì bạn nhận ra ngay nhóm nào.</p>
 <p>Chọn sai cỡ không sao: bạn có thể dừng instance, đổi sang type khác rồi chạy lại. Nếu không chắc, <b>AWS Compute Optimizer</b> dùng machine learning để gợi ý instance type phù hợp hơn dựa trên mức sử dụng thực tế (rightsizing).</p>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p>"In-memory database", "large datasets in memory" → <b>Memory optimized</b>, không phải Storage optimized. "High performance computing", "batch processing", "gaming" → <b>Compute optimized</b>. "Machine learning training", "GPU", "graphics" → <b>Accelerated computing</b>.</p>
+<p>"In-memory database", "large datasets in memory" → <b>Memory optimized</b>, không phải Storage optimized. "High, low-latency random read/write IOPS on locally attached disks" → <b>Storage optimized</b>. "High performance computing", "batch processing", "video transcoding", "CPU-bound, little memory" → <b>Compute optimized</b>. "Deep learning training", "GPU", "massively parallel", "graphics" → <b>Accelerated computing</b>. "Balanced, low traffic with short spikes" → <b>General purpose (burstable T)</b>.</p>
 </div>
 
 <h3>Ổ đĩa và tường lửa của instance</h3>
@@ -285,7 +310,13 @@
 <p>Mỗi instance được gắn ít nhất một <b>security group</b> (nhóm bảo mật): một bức tường lửa ảo ở cấp instance, quy định lưu lượng nào được vào/ra. Ví dụ: chỉ cho phép cổng 443 (HTTPS) từ internet vào web server. Security group chỉ có quy tắc <b>cho phép</b> (allow), và là <b>stateful</b>: đã cho một yêu cầu đi vào thì câu trả lời tự động được đi ra. Phần này thuộc chủ đề bảo mật và mạng, ở đây chỉ cần biết nó luôn đi kèm instance.</p>
 
 <h3>Amazon Lightsail và chuyện giá</h3>
-<p>EC2 rất linh hoạt nhưng có nhiều lựa chọn, người mới dễ bối rối. <b>Amazon Lightsail</b> là phiên bản đơn giản: chọn một "gói" có sẵn (máy ảo, ổ đĩa, lưu lượng mạng) với <b>giá cố định hằng tháng</b> dễ đoán. Phù hợp cho blog, website nhỏ, môi trường thử nghiệm, người không chuyên.</p>
+<p>EC2 rất linh hoạt nhưng có nhiều lựa chọn, người mới dễ bối rối. <b>Amazon Lightsail</b> là phiên bản đơn giản: chọn một "gói" có sẵn gồm máy ảo, ổ đĩa SSD và <b>hạn mức truyền dữ liệu</b> (data transfer allowance) với <b>giá cố định hằng tháng</b>, thấp và dễ đoán. Có sẵn mẫu cài đặt một chạm cho <b>WordPress</b> và các ứng dụng phổ biến. Phù hợp cho blog, website nhỏ, môi trường thử nghiệm, người chưa có kinh nghiệm cloud.</p>
+<table>
+<tr><th></th><th>Amazon EC2</th><th>Amazon Lightsail</th></tr>
+<tr><td>Lựa chọn</td><td>Rất nhiều: hàng trăm instance type, mạng, ổ đĩa tự cấu hình</td><td>Vài gói cố định, đã kèm ổ đĩa và data transfer</td></tr>
+<tr><td>Giá</td><td>Theo giây/giờ, nhiều mô hình mua</td><td>Giá trọn gói hằng tháng</td></tr>
+<tr><td>Hợp với</td><td>Ứng dụng cần linh hoạt, co giãn, kiểm soát</td><td>Website nhỏ, WordPress, người mới</td></tr>
+</table>
 <p>Về giá EC2: có nhiều cách mua như On-Demand, Reserved Instances, Savings Plans, Spot Instances, Dedicated Hosts. Phần này thuộc <b>Domain 4</b> và sẽ học ở bài sau. Ở đây chỉ cần nhớ: mặc định bạn trả theo thời gian chạy, không phải trả trước.</p>
 
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b>
@@ -295,7 +326,8 @@
 <li>"memory-intensive workloads, in-memory databases" → <b>Memory optimized</b></li>
 <li>"temporary block storage physically attached to the host" → <b>instance store</b></li>
 <li>"virtual firewall for an EC2 instance" → <b>security group</b></li>
-<li>"simple virtual private server with a predictable monthly price" → <b>Amazon Lightsail</b></li>
+<li>"simple virtual private server with a predictable monthly price", "WordPress for a beginner, storage and data transfer included" → <b>Amazon Lightsail</b></li>
+<li>"CPU-bound batch, video transcoding" → <b>Compute optimized</b>; "deep learning training, GPU" → <b>Accelerated computing</b>; "very high local IOPS" → <b>Storage optimized</b></li>
 <li>"recommend optimal EC2 instance types" → <b>AWS Compute Optimizer</b></li>
 </ul>
 </div>
@@ -304,7 +336,7 @@
       "Máy ảo là một máy tính độc lập được chia ra từ máy chủ vật lý; EC2 cho thuê máy ảo (instance) theo thời gian dùng.",
       "EC2 là IaaS: khách hàng tự lo hệ điều hành, vá lỗi, phần mềm, cấu hình security group.",
       "AMI = khuôn mẫu gồm hệ điều hành + phần mềm để tạo instance; có thể tự tạo AMI riêng.",
-      "5 nhóm instance: general purpose, compute optimized, memory optimized, storage optimized, accelerated computing.",
+      "5 nhóm instance: general purpose (T burstable, M), compute optimized (C), memory optimized (R, X), storage optimized (I, D: IOPS cục bộ cao), accelerated computing (P, G: GPU cho ML).",
       "Root volume thường là EBS (bền, còn khi stop); instance store nhanh nhưng mất dữ liệu khi stop/terminate.",
       "Lightsail = máy ảo đơn giản, giá cố định hằng tháng; các mô hình giá EC2 học ở Domain 4."
     ],
@@ -320,6 +352,9 @@
       ["Memory optimized", "tối ưu bộ nhớ"],
       ["Storage optimized", "tối ưu lưu trữ"],
       ["Accelerated computing", "tính toán tăng tốc (GPU)"],
+      ["Burstable instance", "instance có thể bứt tốc CPU tạm thời (họ T)"],
+      ["IOPS", "số thao tác đọc/ghi ổ đĩa mỗi giây"],
+      ["Amazon Lightsail", "máy chủ ảo đơn giản, giá trọn gói hằng tháng"],
       ["Root volume", "ổ đĩa gốc chứa hệ điều hành"],
       ["Instance store", "ổ đĩa tạm gắn trực tiếp máy vật lý"],
       ["Security group", "nhóm bảo mật, tường lửa ảo cấp instance"],
@@ -369,6 +404,14 @@
 <li><b>AWS Fargate</b>: chế độ chạy container <b>serverless</b>. Bình thường ECS/EKS cần một nhóm máy EC2 để chạy container, bạn phải tự quản lý chúng. Với Fargate, bạn chỉ nói "container cần bao nhiêu CPU, RAM", AWS lo phần máy chủ. Fargate dùng được với cả ECS và EKS.</li>
 </ul>
 <div class="flow"><span>Đóng gói app thành image</span><span>Lưu image ở ECR</span><span>ECS hoặc EKS điều phối</span><span>Chạy trên EC2 hoặc Fargate</span></div>
+<h4>ECS trên EC2 hay trên Fargate?</h4>
+<p>Container phải chạy trên "máy" nào đó. Với ECS, bạn chọn một trong hai <b>launch type</b> (kiểu chạy) dưới đây; EKS cũng có hai lựa chọn tương tự (node EC2 hoặc Fargate):</p>
+<table>
+<tr><th></th><th>EC2 launch type</th><th>Fargate launch type</th></tr>
+<tr><td>Máy chạy container</td><td>Các EC2 instance <b>của bạn</b>, bạn nhìn thấy và đăng nhập được</td><td>AWS lo, bạn không thấy máy chủ</td></tr>
+<tr><td>Bạn phải lo</td><td>Chọn instance type, vá hệ điều hành, co giãn số máy trong cụm</td><td>Chỉ khai báo CPU, RAM cho container</td></tr>
+<tr><td>Chọn khi</td><td>Cần chọn chính xác instance type (vd GPU), cài <b>agent giám sát/bảo mật trên từng máy chủ</b>, kiểm soát sâu</td><td>Muốn ít việc vận hành nhất (least operational overhead)</td></tr>
+</table>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
 <p>ECR <b>không chạy</b> container, nó chỉ <b>lưu image</b>. "Kubernetes" trong đề → luôn là <b>EKS</b>. "Run containers without managing servers / EC2 instances" → <b>Fargate</b>, không phải ECS hay EKS đơn thuần.</p>
@@ -383,6 +426,7 @@
 <li><b>Giới hạn quan trọng</b>: mỗi lần chạy tối đa <b>15 phút</b>. Việc dài hơn thì không hợp Lambda.</li>
 <li><b>Trách nhiệm của bạn</b>: bảo mật code và cấp quyền IAM cho hàm. AWS lo hạ tầng, hệ điều hành, runtime.</li>
 </ul>
+<p>Lambda không phải dịch vụ serverless duy nhất. Những dịch vụ khác cũng "không phải quản lý máy chủ, tự co giãn": <b>AWS Fargate</b>, <b>Amazon DynamoDB</b> (cơ sở dữ liệu NoSQL), <b>Amazon S3</b>, <b>Amazon SQS</b>, <b>Amazon SNS</b>, <b>Amazon API Gateway</b>, <b>Amazon Aurora Serverless</b>. Ngược lại, <b>Amazon EC2</b> và <b>Amazon RDS</b> bản thường (bạn chọn instance) <b>không</b> phải serverless.</p>
 
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b>
 <p>Khách đặt bánh sinh nhật thường tải lên ảnh để in lên mặt bánh. Ảnh gốc rất to. Minh viết một hàm Lambda: mỗi khi có ảnh mới được tải vào S3 (sự kiện), hàm tự thu nhỏ ảnh và lưu bản nhỏ. Một ngày có 30 ảnh thì chạy 30 lần, mỗi lần vài giây; chị Lan chỉ trả tiền cho đúng chừng đó, không phải nuôi một máy chủ chạy suốt ngày đêm.</p>
@@ -407,7 +451,10 @@
 <li>"store and manage Docker container images" → <b>Amazon ECR</b></li>
 <li>"Kubernetes" → <b>Amazon EKS</b>; "run and scale containers on AWS" (không nhắc Kubernetes) → thường là <b>Amazon ECS</b></li>
 <li>"hundreds of thousands of batch computing jobs" → <b>AWS Batch</b></li>
-<li>Tác vụ chạy lâu hơn 15 phút → <b>không</b> chọn Lambda</li>
+<li>Tác vụ chạy lâu hơn 15 phút (vd job 3 giờ) → <b>không</b> chọn Lambda</li>
+<li>"create a thumbnail each time a photo is uploaded to S3, long idle periods" → <b>Lambda + S3 event notification</b></li>
+<li>"containers, no instance types, no patching, no cluster scaling" → <b>ECS với Fargate launch type</b>; "agent on every host, choose exact instance types" → <b>ECS với EC2 launch type</b></li>
+<li>"which services are serverless" → Lambda, Fargate, DynamoDB, S3, SQS, SNS… (không phải EC2)</li>
 <li>Lambda: khách hàng chịu trách nhiệm về <b>code và quyền IAM</b> của function</li>
 </ul>
 </div>
@@ -415,7 +462,7 @@
     summary: [
       "Container đóng gói ứng dụng cùng thư viện, chạy giống nhau ở mọi nơi; nhẹ và khởi động nhanh hơn máy ảo.",
       "ECS = điều phối container của AWS; EKS = Kubernetes được quản lý; ECR = kho lưu container image.",
-      "Fargate = chạy container serverless, dùng được với ECS và EKS.",
+      "Fargate = chạy container serverless, dùng được với ECS và EKS; EC2 launch type khi cần tự chọn instance type hoặc cài agent trên từng máy chủ.",
       "Serverless = không phải quản lý máy chủ; Lambda chạy code theo sự kiện, tính tiền theo số request và thời gian chạy, tối đa 15 phút.",
       "AWS Batch chạy số lượng lớn job xử lý theo lô, tự cấp phát tài nguyên phù hợp.",
       "Chọn EC2 khi cần toàn quyền; container khi đã đóng gói; Lambda cho tác vụ ngắn theo sự kiện."
@@ -433,7 +480,8 @@
       ["Serverless", "phi máy chủ (không phải quản lý máy chủ)"],
       ["Function", "hàm, đoạn code chạy trên Lambda"],
       ["Event-driven", "hướng sự kiện"],
-      ["Batch job", "công việc xử lý theo lô"]
+      ["Batch job", "công việc xử lý theo lô"],
+      ["Launch type", "kiểu chạy container: trên EC2 hoặc Fargate"]
     ],
     qids: ["d3-2", "d3-20", "d3-29", "d3-30", "d3-31", "d2-35"]
   },
@@ -473,7 +521,13 @@
 <li><b>Desired</b> (mong muốn): số instance nên chạy hiện tại.</li>
 <li><b>Maximum</b> (tối đa): không bao giờ vượt quá, để kiểm soát chi phí.</li>
 </ul>
-<p>Rồi đặt quy tắc co giãn, ví dụ: "giữ CPU trung bình quanh 50%" (target tracking), hoặc "mỗi tối thứ Sáu tăng lên 6 máy" (scheduled scaling). Ngoài ra Auto Scaling còn có vai trò <b>tự chữa lành</b>: nếu một instance bị hỏng, nó tự thay bằng instance mới để giữ đủ số lượng mong muốn (desired). Instance mới thường được tạo từ một <b>launch template</b> chỉ rõ AMI, instance type, security group…</p>
+<p>Rồi đặt quy tắc co giãn:</p>
+<ul>
+<li><b>Dynamic scaling</b> (co giãn động), ví dụ <b>target tracking</b>: "giữ CPU trung bình quanh 50%". Phản ứng <b>sau khi</b> tải đã tăng.</li>
+<li><b>Scheduled scaling</b> (co giãn theo lịch): "mỗi tối thứ Sáu 19:00 tăng lên 6 máy". Hợp với đỉnh tải <b>biết trước giờ</b>. Vì instance mới cần vài phút để sẵn sàng, đặt lịch giúp có đủ máy <b>trước</b> khi khách ùa vào.</li>
+<li><b>Predictive scaling</b> (co giãn dự đoán): dùng machine learning học từ lịch sử tải để tăng máy trước các chu kỳ lặp lại.</li>
+</ul>
+<p>Ngoài ra Auto Scaling còn có vai trò <b>tự chữa lành</b>: nếu một instance bị hỏng, nó tự thay bằng instance mới để giữ đủ số lượng mong muốn (desired). Instance mới thường được tạo từ một <b>launch template</b> chỉ rõ AMI, instance type, security group…</p>
 
 <h3>Elastic Load Balancing</h3>
 <p>Khi có nhiều instance, khách truy cập vào đâu? Cần một "cửa vào" duy nhất phân phối yêu cầu cho các máy phía sau. Đó là <b>load balancer</b> (bộ cân bằng tải). Dịch vụ của AWS là <b>Elastic Load Balancing (ELB)</b>, được AWS quản lý và tự mở rộng theo lưu lượng.</p>
@@ -481,11 +535,11 @@
 <p>Các loại load balancer chính:</p>
 <table>
 <tr><th>Loại</th><th>Đặc điểm</th><th>Hợp với</th></tr>
-<tr><td><b>Application Load Balancer</b> (ALB)</td><td>Hiểu nội dung HTTP/HTTPS, có thể chia theo đường dẫn (/api, /images)</td><td>Website, ứng dụng web, microservices</td></tr>
-<tr><td><b>Network Load Balancer</b> (NLB)</td><td>Làm việc ở mức TCP/UDP, cực nhanh, độ trễ rất thấp</td><td>Game, ứng dụng cần hiệu năng mạng rất cao</td></tr>
-<tr><td><b>Gateway Load Balancer</b> (GWLB)</td><td>Chuyển lưu lượng qua các thiết bị mạng ảo của bên thứ ba</td><td>Tường lửa, hệ thống phát hiện xâm nhập</td></tr>
+<tr><td><b>Application Load Balancer</b> (ALB)</td><td>Hiểu nội dung HTTP/HTTPS, có thể chia theo <b>đường dẫn URL</b> (/api, /images) hoặc tên miền tới các nhóm máy khác nhau</td><td>Website, ứng dụng web, microservices</td></tr>
+<tr><td><b>Network Load Balancer</b> (NLB)</td><td>Làm việc ở mức TCP/UDP (kể cả giao thức tự viết), xử lý <b>hàng triệu request mỗi giây</b>, độ trễ cực thấp, có thể có <b>địa chỉ IP tĩnh</b> (static IP)</td><td>Game, giao dịch tài chính, ứng dụng cần hiệu năng mạng rất cao, đối tác cần IP cố định để mở tường lửa</td></tr>
+<tr><td><b>Gateway Load Balancer</b> (GWLB)</td><td>Đưa lưu lượng <b>trong suốt</b> (transparent) qua một đội <b>thiết bị mạng ảo của bên thứ ba</b> (thường mua trên AWS Marketplace), đồng thời giúp đội thiết bị đó co giãn và sẵn sàng cao</td><td>Tường lửa, hệ thống phát hiện/ngăn chặn xâm nhập, kiểm tra gói tin</td></tr>
 </table>
-<p>Với kỳ thi Cloud Practitioner, chỉ cần nhớ ELB "tự động chia lưu lượng tới nhiều đích (EC2, container, IP, Lambda), ở một hoặc nhiều AZ".</p>
+<p>Điều cốt lõi: ELB "tự động chia lưu lượng tới nhiều đích (EC2, container, IP, Lambda), ở một hoặc nhiều AZ". Đề thi gần đây còn hỏi chọn <b>đúng loại</b> load balancer theo từ khóa trong bảng trên, nên hãy nhớ cả ba.</p>
 
 <h3>Ghép lại: Auto Scaling + ELB + multi-AZ</h3>
 <p>Ba thứ này thường đi chung thành một kiến trúc chuẩn:</p>
@@ -503,14 +557,18 @@
 </div>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p><b>Auto Scaling</b> thay đổi <b>số lượng</b> instance. <b>ELB</b> <b>phân phối lưu lượng</b> giữa các instance. Hai dịch vụ hay bị tráo đổi trong đáp án. Ngoài ra, phân biệt <b>scalability</b> (khả năng mở rộng để đáp ứng tải lớn) với <b>elasticity</b> (tự động tăng và giảm theo nhu cầu thực tế); đề hỏi "automatically acquire and release resources" là <b>elasticity</b>.</p>
+<p><b>Auto Scaling</b> thay đổi <b>số lượng</b> instance (thêm máy, bớt máy, thay máy hỏng). <b>ELB</b> <b>phân phối lưu lượng</b> và health check, nhưng <b>tự nó không tạo ra instance mới</b>. Hai dịch vụ hay bị tráo đổi trong đáp án. Ngoài ra, phân biệt <b>scalability</b> (khả năng mở rộng để đáp ứng tải lớn) với <b>elasticity</b> (tự động tăng và giảm theo nhu cầu thực tế); đề hỏi "automatically acquire and release resources" là <b>elasticity</b>.</p>
 </div>
 
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b>
 <ul>
 <li>"automatically add EC2 instances during peak hours and remove them when traffic decreases" → <b>Amazon EC2 Auto Scaling</b></li>
 <li>"automatically distributes incoming traffic across multiple EC2 instances" → <b>Elastic Load Balancing</b></li>
-<li>"route traffic only to healthy instances" → <b>health checks</b> của ELB</li>
+<li>"route traffic only to healthy instances" → <b>health checks</b> của ELB; "replace instances that fail health checks" → <b>Auto Scaling</b></li>
+<li>"predictable peak at a fixed time, add capacity before it" → <b>scheduled scaling</b></li>
+<li>"route by URL path (/api, /images)", HTTP/HTTPS → <b>Application Load Balancer</b></li>
+<li>"custom TCP protocol, millions of requests per second, static IP" → <b>Network Load Balancer</b></li>
+<li>"third-party firewall / virtual appliances, transparent, scale" → <b>Gateway Load Balancer</b></li>
 <li>"acquire resources when demand increases and release when demand decreases" → <b>elasticity</b></li>
 <li>"overprovisioning for peaks leaves resources idle" → lợi ích <b>stop guessing capacity</b></li>
 <li>"keep running if one Availability Zone fails" → triển khai <b>multi-AZ</b> (high availability)</li>
@@ -522,7 +580,8 @@
       "EC2 Auto Scaling tự thêm/bớt instance theo tải, giữ số lượng giữa min và max, tự thay instance hỏng.",
       "Elasticity = tự tăng và giảm tài nguyên theo nhu cầu, chỉ trả cho phần dùng.",
       "Elastic Load Balancing chia lưu lượng cho nhiều đích, dùng health check để chỉ gửi tới instance khỏe.",
-      "Các loại chính: Application (HTTP/HTTPS), Network (TCP/UDP, hiệu năng cao), Gateway (thiết bị bên thứ ba).",
+      "Co giãn theo target tracking (động), scheduled (đỉnh tải biết trước giờ) hoặc predictive (dự đoán bằng ML).",
+      "Các loại chính: Application (HTTP/HTTPS, chia theo URL path), Network (TCP/UDP, hàng triệu request/giây, IP tĩnh), Gateway (thiết bị bảo mật bên thứ ba).",
       "ELB + Auto Scaling + multi-AZ = kiến trúc vừa co giãn vừa sẵn sàng cao."
     ],
     terms: [
@@ -538,7 +597,9 @@
       ["Health check", "kiểm tra sức khỏe"],
       ["Application Load Balancer", "bộ cân bằng tải cho HTTP/HTTPS"],
       ["Network Load Balancer", "bộ cân bằng tải cho TCP/UDP"],
-      ["Target tracking", "quy tắc giữ một chỉ số ở mức mục tiêu"]
+      ["Target tracking", "quy tắc giữ một chỉ số ở mức mục tiêu"],
+      ["Scheduled scaling", "co giãn theo lịch hẹn trước"],
+      ["Gateway Load Balancer", "đưa lưu lượng qua thiết bị mạng ảo bên thứ ba"]
     ],
     qids: ["d3-6", "d3-12", "d1-4", "d1-11", "d1-16", "d1-2"]
   },
@@ -588,24 +649,36 @@
 <table>
 <tr><th>Storage class</th><th>Đặc điểm</th><th>Dùng khi</th></tr>
 <tr><td><b>S3 Standard</b></td><td>Mặc định, truy cập nhanh, lưu ở nhiều AZ</td><td>Dữ liệu dùng thường xuyên: ảnh sản phẩm, website</td></tr>
-<tr><td><b>S3 Intelligent-Tiering</b></td><td>Tự chuyển object giữa các tầng theo mức truy cập thực tế</td><td>Không biết trước hoặc tần suất truy cập thay đổi</td></tr>
+<tr><td><b>S3 Intelligent-Tiering</b></td><td>Tự chuyển từng object giữa các tầng theo mức truy cập thực tế; có phí giám sát nhỏ theo số object, <b>không</b> có phí lấy dữ liệu, không cần ai vận hành</td><td>Không biết trước hoặc tần suất truy cập thay đổi, chỗ thì hay đọc chỗ thì hiếm</td></tr>
 <tr><td><b>S3 Standard-IA</b> (Infrequent Access)</td><td>Rẻ hơn Standard, có phí lấy dữ liệu, lưu ở nhiều AZ</td><td>Ít dùng nhưng cần lấy ngay khi cần: bản sao lưu gần đây</td></tr>
 <tr><td><b>S3 One Zone-IA</b></td><td>Như Standard-IA nhưng chỉ lưu ở <b>1 AZ</b>, rẻ hơn</td><td>Ít dùng, dễ tạo lại nếu mất: bản sao phụ, ảnh thu nhỏ</td></tr>
-<tr><td><b>S3 Glacier Instant Retrieval</b></td><td>Lưu trữ lâu dài, lấy ra trong mili-giây</td><td>Rất ít truy cập (vài lần mỗi năm) nhưng cần lấy ngay: ảnh hồ sơ cũ</td></tr>
-<tr><td><b>S3 Glacier Flexible Retrieval</b></td><td>Lấy ra mất từ vài phút đến vài giờ</td><td>Lưu trữ, sao lưu không cần lấy gấp</td></tr>
+<tr><td><b>S3 Glacier Instant Retrieval</b></td><td>Lưu trữ lâu dài, lấy ra trong <b>mili-giây</b>, rẻ hơn Standard-IA khi rất ít đọc</td><td>Rất ít truy cập (khoảng một lần mỗi quý) nhưng cần lấy ngay: ảnh y tế, ảnh hồ sơ cũ</td></tr>
+<tr><td><b>S3 Glacier Flexible Retrieval</b></td><td>Lấy ra từ <b>vài phút</b> (kiểu expedited, tốn phí hơn) đến <b>vài giờ</b> (standard, bulk)</td><td>Lưu trữ, sao lưu đọc 1-2 lần/năm, thường chờ được vài giờ, thỉnh thoảng cần gấp trong vài phút</td></tr>
 <tr><td><b>S3 Glacier Deep Archive</b></td><td><b>Rẻ nhất</b>, thường mất tới khoảng 12 giờ để lấy ra</td><td>Lưu nhiều năm để tuân thủ quy định, gần như không bao giờ mở</td></tr>
 </table>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p>"Unknown or changing access patterns" → <b>Intelligent-Tiering</b>. "Lowest cost archive, retrieval within 12 hours is acceptable" → <b>Glacier Deep Archive</b>. "Infrequently accessed, can be recreated, lowest cost" → <b>One Zone-IA</b>. Nhớ rằng One Zone-IA chỉ ở 1 AZ, nếu AZ đó gặp thảm họa thì dữ liệu có thể mất, nên không dùng cho dữ liệu quan trọng duy nhất.</p>
+<p>"Unknown or changing access patterns" → <b>Intelligent-Tiering</b>. "Lowest cost archive, retrieval within 12 hours is acceptable" → <b>Glacier Deep Archive</b>. "Infrequently accessed, can be recreated, lowest cost" → <b>One Zone-IA</b>. "Rarely accessed (once a quarter) but needs milliseconds" → <b>Glacier Instant Retrieval</b>. "Read once or twice a year, minutes for rare urgent cases, hours otherwise" → <b>Glacier Flexible Retrieval</b>. Nhớ rằng One Zone-IA chỉ ở 1 AZ, nếu AZ đó gặp thảm họa thì dữ liệu có thể mất, nên không dùng cho dữ liệu quan trọng duy nhất.</p>
 </div>
 
 <h3>Lifecycle policy và versioning</h3>
 <h4>Lifecycle policy: tự động "chuyển kho"</h4>
-<p><b>S3 Lifecycle configuration</b> (chính sách vòng đời) là các quy tắc tự động: sau X ngày thì chuyển object sang storage class rẻ hơn, sau Y ngày thì xóa. Bạn đặt một lần, S3 tự làm mãi, tiết kiệm chi phí mà không cần ai nhớ.</p>
+<p><b>S3 Lifecycle configuration</b> (chính sách vòng đời) là các quy tắc tự động gồm hai loại hành động: <b>transition</b> (sau X ngày thì chuyển object sang storage class rẻ hơn) và <b>expiration</b> (sau Y ngày thì xóa object). Bạn đặt một lần, S3 tự làm mãi, tiết kiệm chi phí mà không cần ai nhớ.</p>
 <div class="flow"><span>Ngày 0: S3 Standard</span><span>Sau 30 ngày: Standard-IA</span><span>Sau 90 ngày: Glacier</span><span>Sau 5 năm: xóa</span></div>
 <h4>Versioning: giữ lại các phiên bản</h4>
 <p>Khi bật <b>versioning</b> (lập phiên bản) cho bucket, mỗi lần ghi đè một object, S3 giữ lại phiên bản cũ. Khi xóa, S3 chỉ đặt một "dấu xóa", có thể khôi phục. Rất hữu ích để chống xóa nhầm, ghi đè nhầm. Versioning cũng là điều kiện để dùng tính năng <b>replication</b> (sao chép tự động sang bucket khác, kể cả ở Region khác).</p>
+
+<h3>Bảo vệ dữ liệu và các tính năng S3 hay gặp trong đề</h3>
+<table>
+<tr><th>Tính năng</th><th>Làm gì</th><th>Dùng khi</th></tr>
+<tr><td><b>S3 Versioning</b></td><td>Giữ mọi phiên bản cũ của object</td><td>Chống xóa nhầm, ghi đè nhầm</td></tr>
+<tr><td><b>MFA Delete</b></td><td>Bắt buộc nhập mã <b>MFA</b> (xác thực nhiều lớp) mới được xóa hẳn một phiên bản hoặc tắt versioning. Cần bật versioning trước</td><td>Thêm một lớp khóa chống xóa nhầm/xóa ác ý</td></tr>
+<tr><td><b>S3 Object Lock</b></td><td>Khóa object theo mô hình <b>WORM</b> (write once, read many: ghi một lần, chỉ đọc) trong một thời gian lưu giữ. Cần versioning</td><td>Hồ sơ phải giữ nguyên vẹn theo luật (tài chính, pháp lý)</td></tr>
+<tr><td><b>Cross-Region Replication (CRR)</b> / <b>Same-Region Replication (SRR)</b></td><td>Tự động sao chép object mới sang bucket ở <b>Region khác</b> (CRR) hoặc cùng Region (SRR)</td><td>Tuân thủ, phòng thảm họa, giảm độ trễ cho người dùng ở Region khác</td></tr>
+<tr><td><b>S3 Transfer Acceleration</b></td><td>Tải lên nhanh hơn qua đường dài bằng cách đi vào <b>edge location</b> gần nhất rồi chạy trên mạng riêng của AWS</td><td>Người dùng ở xa Region của bucket tải file lớn lên</td></tr>
+<tr><td><b>Block Public Access</b> và mã hóa mặc định</td><td>Chặn công khai bucket ngoài ý muốn; object mới được mã hóa sẵn (SSE-S3)</td><td>Bảo mật cơ bản, bật mặc định cho bucket mới</td></tr>
+</table>
+<p>Object Lock có hai chế độ: <b>governance mode</b> (người có quyền đặc biệt vẫn gỡ khóa được) và <b>compliance mode</b> (<b>không ai</b> xóa hay sửa được trước hạn, kể cả root user của tài khoản). Đề nói "no one, including the root user" → <b>compliance mode</b>.</p>
 
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b>
 <p>Minh dùng S3 cho nhiều việc. Ảnh sản phẩm trên website để ở <b>S3 Standard</b> vì khách xem liên tục. Bản sao lưu cơ sở dữ liệu hằng ngày cho vào S3, kèm lifecycle: sau 30 ngày chuyển sang <b>Standard-IA</b>, sau 90 ngày sang <b>Glacier Flexible Retrieval</b>. Hóa đơn, chứng từ kế toán phải giữ nhiều năm theo luật thì đưa vào <b>Glacier Deep Archive</b>, rẻ nhất, vì gần như không bao giờ mở.</p>
@@ -629,7 +702,12 @@
 <li>"rarely accessed archive, retrieval up to 12 hours acceptable, lowest cost" → <b>S3 Glacier Deep Archive</b></li>
 <li>"unknown or changing access patterns" → <b>S3 Intelligent-Tiering</b></li>
 <li>"move objects to Glacier after 90 days and delete after 5 years" → <b>S3 Lifecycle configuration</b></li>
-<li>"protect against accidental deletion or overwrite" → <b>S3 Versioning</b></li>
+<li>"protect against accidental deletion or overwrite" → <b>S3 Versioning</b> (+ <b>MFA Delete</b>)</li>
+<li>"write-once-read-many (WORM)", "retention period" → <b>S3 Object Lock</b>; "no one, including root, can delete" → <b>compliance mode</b></li>
+<li>"automatically copy every new object to a bucket in another Region" → <b>S3 Cross-Region Replication</b></li>
+<li>"faster uploads from distant users over long distances" → <b>S3 Transfer Acceleration</b></li>
+<li>"rarely accessed, millisecond retrieval, lowest cost" → <b>S3 Glacier Instant Retrieval</b></li>
+<li>Lifecycle làm được gì? → <b>transition</b> sang lớp rẻ hơn và <b>expire</b> (xóa) sau số ngày đặt trước</li>
 <li>"factors that affect S3 cost" → <b>amount of data stored</b>, <b>requests</b>, <b>data transfer out</b> (data in là miễn phí)</li>
 </ul>
 </div>
@@ -639,7 +717,8 @@
       "S3 lưu object trong bucket; tên bucket duy nhất toàn cầu, bucket nằm trong một Region; độ bền 11 số 9.",
       "S3 dùng cho website tĩnh, sao lưu, data lake, lưu ảnh/video cho ứng dụng.",
       "Storage class: Standard, Intelligent-Tiering, Standard-IA, One Zone-IA, Glacier Instant/Flexible Retrieval, Glacier Deep Archive (rẻ nhất).",
-      "Lifecycle policy tự chuyển object sang lớp rẻ hơn hoặc xóa theo thời gian; versioning giữ phiên bản cũ, chống xóa nhầm.",
+      "Lifecycle policy tự chuyển object sang lớp rẻ hơn (transition) hoặc xóa (expiration) theo thời gian; versioning giữ phiên bản cũ, chống xóa nhầm.",
+      "Bảo vệ dữ liệu: MFA Delete, Object Lock (WORM; compliance mode thì kể cả root cũng không xóa được), Cross-Region Replication; Transfer Acceleration tăng tốc tải lên từ xa.",
       "Chi phí S3: dung lượng lưu, request, data transfer out; data transfer in miễn phí."
     ],
     terms: [
@@ -657,7 +736,12 @@
       ["Lifecycle configuration", "chính sách vòng đời"],
       ["Versioning", "lập phiên bản"],
       ["Data lake", "hồ dữ liệu"],
-      ["Data transfer out", "dữ liệu truyền ra ngoài"]
+      ["Data transfer out", "dữ liệu truyền ra ngoài"],
+      ["WORM (Write Once, Read Many)", "ghi một lần, chỉ đọc, không sửa/xóa được"],
+      ["S3 Object Lock", "khóa object theo WORM trong thời gian lưu giữ"],
+      ["MFA Delete", "yêu cầu mã MFA khi xóa hẳn phiên bản object"],
+      ["Cross-Region Replication (CRR)", "sao chép object tự động sang Region khác"],
+      ["S3 Transfer Acceleration", "tăng tốc tải lên S3 qua edge location"]
     ],
     qids: ["d3-3", "d3-34", "d4-6", "d3-52", "d3-8"]
   },
@@ -685,6 +769,7 @@
 </ul>
 <h4>EBS snapshot</h4>
 <p><b>Snapshot</b> (ảnh chụp nhanh) là bản sao lưu của một EBS volume tại một thời điểm, được AWS lưu bền vững (trên S3, do AWS quản lý). Snapshot là <b>incremental</b> (tăng dần): lần sau chỉ lưu phần thay đổi, tiết kiệm chi phí. Từ snapshot, bạn tạo lại volume mới, kể cả ở AZ khác, và có thể <b>sao chép snapshot sang Region khác</b> để phòng thảm họa.</p>
+<p>Vì volume không gắn được sang AZ khác, muốn đưa dữ liệu từ AZ A sang instance ở AZ B thì: <b>tạo snapshot → tạo volume mới từ snapshot ở AZ B → gắn vào instance</b>.</p>
 
 <div class="box idea"><b>🧠 Hiểu đơn giản</b>
 <p>EBS volume giống một chiếc ổ cứng gắn ngoài: rút ra cắm sang máy khác được, tắt máy dữ liệu vẫn còn. Snapshot giống việc chụp ảnh toàn bộ ổ cứng đó và cất vào két sắt. <b>Instance store</b> thì giống bảng trắng trong phòng họp: viết nhanh, xóa nhanh, hết buổi họp (stop instance) là bị lau sạch.</p>
@@ -697,24 +782,31 @@
 <p>Có lúc nhiều máy chủ cần đọc ghi <b>cùng một thư mục</b> cùng lúc, ví dụ nhiều web server dùng chung kho ảnh. EBS thường chỉ gắn với một máy, nên cần <b>file storage</b> dùng chung.</p>
 <ul>
 <li><b>Amazon EFS</b> (Elastic File System): hệ thống file dùng chung cho máy <b>Linux</b>, dùng giao thức <b>NFS</b>. Hàng nghìn instance (ở nhiều AZ) có thể truy cập cùng lúc. Dung lượng <b>tự tăng giảm</b> theo lượng file, không cần đặt trước, trả theo dung lượng thực dùng.</li>
-<li><b>Amazon FSx</b>: họ dịch vụ hệ thống file được quản lý, dựa trên các hệ thống file phổ biến:
-  <ul>
-  <li><b>FSx for Windows File Server</b>: thư mục chia sẻ cho ứng dụng <b>Windows</b>, dùng giao thức <b>SMB</b>, tích hợp Active Directory.</li>
-  <li><b>FSx for Lustre</b>: hệ thống file tốc độ cực cao cho tính toán hiệu năng cao (HPC), machine learning.</li>
-  <li>Ngoài ra còn <b>FSx for NetApp ONTAP</b> và <b>FSx for OpenZFS</b> cho những công ty đang dùng các hệ thống này.</li>
-  </ul>
-</li>
+<li><b>Amazon FSx</b>: họ dịch vụ hệ thống file được quản lý hoàn toàn, dựa trên các hệ thống file phổ biến mà doanh nghiệp đang dùng (xem bảng).</li>
 </ul>
+<table>
+<tr><th>Biến thể FSx</th><th>Giao thức / đặc điểm</th><th>Chọn khi</th></tr>
+<tr><td><b>FSx for Windows File Server</b></td><td><b>SMB</b>, tích hợp Active Directory</td><td>Ứng dụng <b>Windows</b> cần thư mục chia sẻ</td></tr>
+<tr><td><b>FSx for Lustre</b></td><td>Độ trễ dưới mili-giây, thông lượng hàng trăm GB/giây, <b>liên kết trực tiếp với dữ liệu trong S3</b></td><td><b>HPC</b>, mô phỏng, huấn luyện machine learning</td></tr>
+<tr><td><b>FSx for NetApp ONTAP</b></td><td>Đa giao thức: <b>NFS và SMB</b> (cả iSCSI) trên cùng dữ liệu; snapshot, chống trùng lặp (deduplication), nén</td><td>Thay thế thiết bị lưu trữ <b>NetApp</b> tại chỗ; máy Linux và Windows dùng chung dữ liệu</td></tr>
+<tr><td><b>FSx for OpenZFS</b></td><td>NFS, hệ thống file ZFS</td><td>Chuyển hệ thống đang dùng ZFS/Linux lên AWS</td></tr>
+</table>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p>"Linux", "NFS", "shared file system for many EC2 instances" → <b>EFS</b>. "Windows", "SMB", "Active Directory" → <b>FSx for Windows File Server</b>. "High performance computing" → <b>FSx for Lustre</b>. "Block storage for one EC2 instance" → <b>EBS</b>. "Temporary storage physically attached to host" → <b>instance store</b>.</p>
+<p>"Linux", "NFS", "shared file system for many EC2 instances" → <b>EFS</b>. "Windows", "SMB", "Active Directory" → <b>FSx for Windows File Server</b>. "High performance computing", "data in S3" → <b>FSx for Lustre</b>. "NetApp", "NFS and SMB on the same data" → <b>FSx for NetApp ONTAP</b>. "Block storage for one EC2 instance" → <b>EBS</b>. "Temporary storage physically attached to host" → <b>instance store</b>.</p>
 </div>
 
 <h3>Hybrid và sao lưu tập trung: Storage Gateway, AWS Backup</h3>
 <h4>AWS Storage Gateway</h4>
-<p>Nhiều công ty vẫn còn máy chủ tại chỗ nhưng muốn dùng dung lượng gần như vô hạn của AWS. <b>AWS Storage Gateway</b> là dịch vụ <b>hybrid cloud storage</b>: đặt một "cổng" (phần mềm hoặc thiết bị) ở văn phòng/data center, ứng dụng tại chỗ vẫn thấy ổ đĩa hoặc thư mục quen thuộc, nhưng dữ liệu thực tế được lưu lên AWS (như S3). Có các kiểu như File Gateway (thư mục file), Volume Gateway (ổ đĩa khối), Tape Gateway (thay thế băng từ sao lưu truyền thống).</p>
+<p>Nhiều công ty vẫn còn máy chủ tại chỗ nhưng muốn dùng dung lượng gần như vô hạn của AWS. <b>AWS Storage Gateway</b> là dịch vụ <b>hybrid cloud storage</b>: đặt một "cổng" (phần mềm hoặc thiết bị) ở văn phòng/data center, ứng dụng tại chỗ vẫn thấy ổ đĩa hoặc thư mục quen thuộc, nhưng dữ liệu thực tế được lưu lên AWS (như S3). Gateway giữ một <b>bộ đệm cục bộ</b> (local cache) để file hay dùng vẫn mở nhanh tại văn phòng.</p>
+<table>
+<tr><th>Kiểu gateway</th><th>Ứng dụng tại chỗ thấy gì</th><th>Dữ liệu lưu ở AWS dưới dạng</th><th>Dùng khi</th></tr>
+<tr><td><b>S3 File Gateway</b></td><td>Thư mục chia sẻ qua <b>NFS / SMB</b></td><td>Object trong <b>Amazon S3</b></td><td>Lưu file văn phòng lên S3, vẫn có cache cục bộ</td></tr>
+<tr><td><b>Volume Gateway</b></td><td>Ổ đĩa khối (iSCSI)</td><td>Dữ liệu trên S3, có thể tạo EBS snapshot</td><td>Sao lưu ổ đĩa máy chủ tại chỗ lên cloud</td></tr>
+<tr><td><b>Tape Gateway</b></td><td><b>Thư viện băng từ ảo</b> (virtual tape library)</td><td>Băng ảo trong S3, lưu trữ lâu dài ở S3 Glacier</td><td>Bỏ băng từ vật lý nhưng <b>giữ nguyên phần mềm sao lưu</b> đang dùng</td></tr>
+</table>
 <h4>AWS Backup</h4>
-<p>Mỗi dịch vụ có cách sao lưu riêng thì quản lý rất mệt. <b>AWS Backup</b> giúp <b>quản lý và tự động hóa sao lưu tập trung</b> cho nhiều dịch vụ: EBS, EC2, RDS, Aurora, DynamoDB, EFS, FSx, S3, Storage Gateway… Bạn tạo <b>backup plan</b> (kế hoạch sao lưu): sao lưu lúc nào, giữ bao lâu, có sao chép sang Region khác hay tài khoản khác không. Rất hữu ích cho việc tuân thủ quy định.</p>
+<p>Mỗi dịch vụ có cách sao lưu riêng thì quản lý rất mệt. <b>AWS Backup</b> giúp <b>quản lý và tự động hóa sao lưu tập trung</b> cho nhiều dịch vụ: EBS, EC2, RDS, Aurora, DynamoDB, EFS, FSx, S3, Storage Gateway… Bạn tạo <b>backup plan</b> (kế hoạch sao lưu): sao lưu lúc nào, giữ bao lâu, có <b>sao chép sang Region khác</b> (cross-Region copy) hay tài khoản khác không. Kết hợp AWS Organizations, bạn áp dụng chính sách sao lưu cho <b>nhiều tài khoản</b>, và dùng <b>AWS Backup Audit Manager</b> để <b>báo cáo việc tuân thủ</b> sao lưu từ một nơi.</p>
 
 <h3>Khôi phục sau thảm họa: AWS Elastic Disaster Recovery</h3>
 <p><b>Disaster recovery</b> (DR, khôi phục sau thảm họa) là kế hoạch đưa hệ thống trở lại hoạt động khi có sự cố lớn. Hai chỉ số cần biết:</p>
@@ -749,7 +841,10 @@
 <li>"multiple Linux EC2 instances need shared, concurrent access" → <b>Amazon EFS</b></li>
 <li>"shared file storage for Windows applications, SMB" → <b>Amazon FSx for Windows File Server</b></li>
 <li>"on-premises applications access virtually unlimited cloud storage" → <b>AWS Storage Gateway</b></li>
-<li>"centrally manage and automate backups across AWS services" → <b>AWS Backup</b></li>
+<li>"NFS/SMB file shares on premises, store as objects in S3, local cache" → <b>S3 File Gateway</b>; "replace physical tapes, keep backup software" → <b>Tape Gateway</b></li>
+<li>"HPC shared file system, sub-millisecond, data in S3" → <b>FSx for Lustre</b>; "replace NetApp, NFS + SMB, snapshots, deduplication" → <b>FSx for NetApp ONTAP</b></li>
+<li>"copy an EBS volume to another AZ" → <b>snapshot rồi tạo volume mới ở AZ đó</b>; snapshot lưu ở đâu? → <b>trong S3, do AWS quản lý</b></li>
+<li>"centrally manage and automate backups across AWS services", "multiple accounts, cross-Region copy, compliance reporting" → <b>AWS Backup</b></li>
 <li>"continuously replicate servers to AWS to minimize downtime and data loss" → <b>AWS Elastic Disaster Recovery</b></li>
 </ul>
 </div>
@@ -757,9 +852,9 @@
     summary: [
       "EBS = ổ đĩa block bền cho EC2, nằm trong một AZ; snapshot là bản sao lưu tăng dần, sao chép được sang Region khác.",
       "Instance store = ổ gắn trực tiếp máy vật lý, rất nhanh, dữ liệu mất khi stop/terminate.",
-      "EFS = file dùng chung cho Linux (NFS), tự co giãn; FSx = Windows File Server (SMB), Lustre (HPC), ONTAP, OpenZFS.",
-      "Storage Gateway = lưu trữ hybrid, giúp hệ thống tại chỗ dùng lưu trữ AWS.",
-      "AWS Backup = sao lưu tập trung theo kế hoạch cho nhiều dịch vụ.",
+      "EFS = file dùng chung cho Linux (NFS), tự co giãn; FSx = Windows File Server (SMB), Lustre (HPC, liên kết S3), NetApp ONTAP (NFS + SMB, snapshot, dedup), OpenZFS.",
+      "Storage Gateway = lưu trữ hybrid: S3 File Gateway (NFS/SMB → S3, có cache), Volume Gateway (ổ khối), Tape Gateway (băng từ ảo).",
+      "AWS Backup = sao lưu tập trung theo kế hoạch cho nhiều dịch vụ, nhiều tài khoản, sao chép sang Region khác, báo cáo tuân thủ.",
       "Elastic Disaster Recovery sao chép liên tục máy chủ sang AWS để khôi phục nhanh; RPO = lượng dữ liệu chấp nhận mất, RTO = thời gian khôi phục."
     ],
     terms: [
@@ -771,6 +866,8 @@
       ["SMB (Server Message Block)", "giao thức chia sẻ file phổ biến trên Windows"],
       ["Shared file system", "hệ thống file dùng chung"],
       ["Hybrid cloud storage", "lưu trữ đám mây lai"],
+      ["Tape Gateway", "thư viện băng từ ảo lưu dữ liệu sao lưu lên AWS"],
+      ["Local cache", "bộ đệm cục bộ tại văn phòng"],
       ["Backup plan", "kế hoạch sao lưu"],
       ["Disaster recovery (DR)", "khôi phục sau thảm họa"],
       ["RPO (Recovery Point Objective)", "mục tiêu điểm khôi phục, lượng dữ liệu chấp nhận mất"],

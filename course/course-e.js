@@ -40,18 +40,30 @@
 <li><b>Partial Upfront</b> (trả trước một phần): trả một phần, phần còn lại trả dần hàng tháng.</li>
 <li><b>No Upfront</b> (không trả trước): không đưa tiền trước, trả dần hàng tháng, giảm ít nhất trong ba mức. Bạn vẫn phải trả hết theo cam kết.</li>
 </ul>
-<p>Hai điểm hay được hỏi:</p>
+<p>Khi mua RI, bạn chọn <b>phạm vi</b> (scope) là cả Region hay một AZ:</p>
+<table>
+<tr><th></th><th>Regional RI (RI theo Region)</th><th>Zonal RI (RI gắn một AZ)</th></tr>
+<tr><td>Giảm giá áp cho</td><td>Máy khớp loại ở <b>bất kỳ AZ nào</b> trong Region</td><td>Chỉ máy khớp loại ở <b>đúng AZ</b> đã chọn</td></tr>
+<tr><td>Linh hoạt kích cỡ (<b>size flexibility</b>)</td><td>Có (với nhiều trường hợp, ví dụ Linux): giảm giá tự áp cho các kích cỡ khác nhau trong cùng họ máy</td><td>Không</td></tr>
+<tr><td>Giữ chỗ (<b>capacity reservation</b>)</td><td>Không</td><td><b>Có</b>, giữ chỗ máy ở AZ đó</td></tr>
+</table>
+<p>Thêm ba điểm hay được hỏi:</p>
 <ul>
-<li><b>Regional RI</b> (RI theo Region) có tính linh hoạt kích cỡ (<b>size flexibility</b>): với nhiều trường hợp (ví dụ Linux), giảm giá tự áp cho các kích cỡ khác nhau trong cùng họ máy, ở bất kỳ AZ nào trong Region đó. Còn RI gắn với một AZ cụ thể (zonal RI) thì giữ chỗ (capacity) ở đúng AZ đó.</li>
-<li>Khi dùng <b>AWS Organizations</b> (quản lý nhiều tài khoản AWS chung), giảm giá RI <b>mặc định được chia sẻ</b> cho các tài khoản khác trong tổ chức nếu họ dùng máy phù hợp. Có thể tắt chia sẻ nếu muốn.</li>
+<li>Khi dùng <b>AWS Organizations</b> (quản lý nhiều tài khoản AWS chung, học kỹ ở bài sau), giảm giá RI và Savings Plans <b>mặc định được chia sẻ</b> cho các tài khoản khác trong tổ chức nếu họ chạy máy khớp loại. Ví dụ: tài khoản A mua Regional RI nhưng tắt máy, tài khoản B chạy máy cùng loại ở AZ khác cùng Region → B tự được giảm giá.</li>
+<li>Muốn giảm giá chỉ dùng cho tài khoản đã mua (ví dụ để tính chi phí nội bộ cho đúng từng công ty con)? <b>Management account</b> (tài khoản quản lý của tổ chức) có thể <b>tắt chia sẻ RI/Savings Plans</b> (turn off discount sharing) cho từng tài khoản trong phần cài đặt Billing.</li>
+<li><b>Reserved Instance Marketplace</b> (chợ bán lại RI): nếu không cần RI nữa, bạn có thể <b>bán phần thời hạn còn lại</b> cho khách hàng AWS khác. Chỉ <b>Standard RI</b> bán được ở đây; <b>Convertible RI không bán được</b> (bù lại nó đổi được sang cấu hình khác).</li>
 </ul>
 
 <h4>Savings Plans</h4>
 <p><b>Savings Plans</b> (gói tiết kiệm) cũng là cam kết 1 hoặc 3 năm, nhưng bạn cam kết theo <b>số tiền mỗi giờ</b> (ví dụ "tôi sẽ dùng ít nhất 10 USD/giờ tiền máy chủ"), chứ không cam kết một loại máy cụ thể. Phần dùng trong mức cam kết được tính giá rẻ; phần vượt quá tính giá On-Demand.</p>
-<ul>
-<li><b>Compute Savings Plans</b>: linh hoạt nhất. Áp dụng cho <b>EC2, AWS Fargate và AWS Lambda</b>, bất kể họ máy, kích cỡ, AZ hay Region.</li>
-<li><b>EC2 Instance Savings Plans</b>: cam kết một họ máy trong một Region. Kém linh hoạt hơn nhưng giảm nhiều hơn (tới khoảng 72%).</li>
-</ul>
+<table>
+<tr><th></th><th>Compute Savings Plans</th><th>EC2 Instance Savings Plans</th></tr>
+<tr><td>Áp cho dịch vụ</td><td><b>EC2, AWS Fargate, AWS Lambda</b></td><td>Chỉ <b>EC2</b></td></tr>
+<tr><td>Cam kết gắn với</td><td>Không gắn họ máy hay Region nào</td><td><b>Một họ máy trong một Region</b> (ví dụ họ M ở Singapore)</td></tr>
+<tr><td>Tự áp khi bạn đổi</td><td>Họ máy, kích cỡ, hệ điều hành, AZ, <b>Region</b>, chuyển sang Fargate/Lambda</td><td>Kích cỡ, hệ điều hành, tenancy, AZ (trong cùng họ máy và Region)</td></tr>
+<tr><td>Mức giảm</td><td>Thấp hơn một chút (đổi lấy linh hoạt nhất)</td><td><b>Cao hơn</b>, tới khoảng 72%</td></tr>
+</table>
+<p>Bạn không cần tự đoán mức cam kết: <b>AWS Cost Explorer</b> có <b>Savings Plans recommendations</b> (gợi ý Savings Plans) dựa trên mức dùng thực tế trước đây, cho biết nên cam kết bao nhiêu USD/giờ và tiết kiệm được khoảng bao nhiêu.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Website BánhNgon chạy 24/7 suốt cả năm, Minh biết chắc 3 năm tới vẫn cần ít nhất 2 máy chủ. Thay vì trả On-Demand, Minh mua <b>Compute Savings Plans</b> 3 năm. Năm sau Minh chuyển một phần sang Lambda để xử lý đơn hàng, giảm giá vẫn tự áp vì Compute Savings Plans bao cả Lambda. Nếu Minh mua Standard RI cho đúng một họ máy thì đổi kiến trúc sẽ khó tận dụng được giảm giá hơn.</p></div>
 
 <h3>Spot Instances: rẻ nhất nhưng có thể bị lấy lại</h3>
@@ -86,6 +98,10 @@
 <li>"can be interrupted", "fault-tolerant", "batch", "most cost-effective" → Spot Instances</li>
 <li>"commit to $/hour", "EC2, Fargate and Lambda" → Compute Savings Plans</li>
 <li>"change instance families during the term" → Convertible Reserved Instances</li>
+<li>"one instance family in one Region, resize often, change OS, largest Savings Plans discount" → EC2 Instance Savings Plans</li>
+<li>"sell the remaining term to another customer" → Standard RI trên Reserved Instance Marketplace</li>
+<li>"discount should apply only to the account that bought it" → management account tắt RI/Savings Plans discount sharing</li>
+<li>"zonal RI" → giữ chỗ ở một AZ; "regional RI" → áp mọi AZ trong Region, có size flexibility</li>
 <li>"per-socket / per-core licenses", "BYOL" → Dedicated Hosts</li>
 <li>"reserve capacity in a specific AZ for any duration" → On-Demand Capacity Reservations</li>
 <li>"short-term, unpredictable, no upfront commitment" → On-Demand</li>
@@ -98,7 +114,8 @@
       "Spot: giảm tới ~90%, có thể bị dừng với cảnh báo 2 phút, chỉ dùng cho việc chịu được gián đoạn.",
       "Dedicated Hosts thấy socket/core và hỗ trợ BYOL; Dedicated Instances chỉ đảm bảo phần cứng riêng.",
       "On-Demand Capacity Reservations giữ chỗ máy ở một AZ trong thời hạn tùy ý, không phải là giảm giá.",
-      "Trong AWS Organizations, giảm giá RI và Savings Plans mặc định được chia sẻ giữa các tài khoản."
+      "Trong AWS Organizations, giảm giá RI và Savings Plans mặc định được chia sẻ giữa các tài khoản; management account có thể tắt chia sẻ cho từng tài khoản.",
+      "EC2 Instance Savings Plans: một họ máy trong một Region, giảm sâu hơn; Compute Savings Plans linh hoạt hơn. Zonal RI giữ chỗ ở một AZ, Regional RI thì không. Chỉ Standard RI bán lại được trên RI Marketplace."
     ],
     terms: [
       ["Purchasing options", "các tùy chọn mua"],
@@ -114,7 +131,10 @@
       ["Dedicated Hosts", "thuê nguyên máy chủ vật lý riêng"],
       ["BYOL (Bring Your Own License)", "mang license sẵn có của bạn"],
       ["On-Demand Capacity Reservations", "đặt giữ chỗ công suất ở một AZ"],
-      ["Size flexibility", "linh hoạt kích cỡ máy"]
+      ["Size flexibility", "linh hoạt kích cỡ máy"],
+      ["Regional / Zonal RI", "RI áp cho cả Region / RI gắn một AZ (có giữ chỗ)"],
+      ["EC2 Instance Savings Plans", "Savings Plans cho một họ máy EC2 trong một Region"],
+      ["Reserved Instance Marketplace", "chợ bán lại phần thời hạn còn lại của Standard RI"]
     ],
     qids: ["d4-1", "d4-2", "d4-8", "d4-12", "d4-14", "d4-15", "d4-16", "d4-17"]
   },
@@ -148,11 +168,27 @@
 <li><b>Data transfer out</b>: dữ liệu tải từ S3 ra Internet bị tính tiền.</li>
 </ul>
 <p>Còn <b>dữ liệu tải vào S3 từ Internet thì miễn phí</b>. Số người dùng IAM hay số AZ trong Region không ảnh hưởng tới tiền S3.</p>
+<p>Quy luật về giá giữa các storage class: <b>giá lưu mỗi GB càng rẻ thì càng tốn khi lấy ra</b> (phí retrieval, thời gian chờ, thời gian lưu tối thiểu). Bảng dưới chỉ để so sánh chiều hướng, không phải con số:</p>
+<table>
+<tr><th>Storage class</th><th>Giá lưu</th><th>Khi lấy dữ liệu ra</th><th>Hợp với</th></tr>
+<tr><td>S3 Standard</td><td>Cao nhất</td><td>Tức thì, không phí retrieval</td><td>Dữ liệu dùng thường xuyên</td></tr>
+<tr><td>S3 Intelligent-Tiering</td><td>Tự giảm khi ít dùng (+ phí giám sát nhỏ theo object)</td><td>Tức thì, <b>không phí retrieval</b></td><td>Không đoán được mức truy cập, không muốn tự viết lifecycle rule</td></tr>
+<tr><td>S3 Standard-IA / One Zone-IA</td><td>Rẻ hơn (One Zone-IA rẻ hơn nữa nhưng chỉ lưu ở 1 AZ)</td><td>Tức thì (mili giây), có phí retrieval</td><td>Ít dùng (khoảng hàng tháng) nhưng cần nhanh</td></tr>
+<tr><td>S3 Glacier Instant Retrieval</td><td>Rẻ hơn nữa</td><td>Vẫn mili giây, phí retrieval cao hơn</td><td>Lưu lâu, mở khoảng mỗi quý một lần nhưng phải mở ngay</td></tr>
+<tr><td>S3 Glacier Flexible Retrieval</td><td>Rất rẻ</td><td>Chờ vài phút đến vài giờ</td><td>Lưu trữ, sao lưu ít khi cần</td></tr>
+<tr><td>S3 Glacier Deep Archive</td><td><b>Rẻ nhất</b></td><td>Chờ tới khoảng 12-48 giờ</td><td>Lưu nhiều năm để tuân thủ quy định</td></tr>
+</table>
 <p>Mẹo tiết kiệm: dữ liệu càng ít được mở ra xem thì càng nên chuyển sang lớp lưu trữ rẻ hơn. S3 có <b>lifecycle rules</b> (quy tắc vòng đời) để tự động chuyển file cũ sang lớp rẻ hơn, hoặc tự xóa file sau một thời gian. Như vậy bạn không phải ngồi chuyển tay từng file, mà hóa đơn vẫn giảm dần theo thời gian.</p>
 
 <h3>Giá Amazon EBS</h3>
 <p><b>Amazon EBS</b> (Elastic Block Store) là "ổ cứng" gắn vào máy chủ EC2. Điểm quan trọng: EBS tính tiền theo <b>dung lượng bạn cấp phát</b> (provisioned), <b>không phải dung lượng thật sự dùng</b>.</p>
-<p>Bạn tạo ổ 500 GB nhưng chỉ chứa 50 GB dữ liệu? Bạn vẫn trả cho 500 GB. Một số loại ổ còn tính thêm theo hiệu năng bạn đặt (như số IOPS). Ảnh chụp sao lưu (<b>snapshot</b>) cũng tính tiền lưu trữ riêng.</p>
+<p>Bạn tạo ổ 500 GB nhưng chỉ chứa 50 GB dữ liệu? Bạn vẫn trả cho 500 GB. Tiền EBS gồm:</p>
+<ul>
+<li><b>Dung lượng cấp phát</b>, tính theo GB-tháng.</li>
+<li><b>Hiệu năng cấp phát</b> ở một số loại ổ. Ví dụ ổ <b>gp3</b> (loại SSD phổ biến) đã có sẵn một mức hiệu năng cơ bản (baseline) trong giá; nếu bạn đặt thêm <b>IOPS</b> (số thao tác đọc/ghi mỗi giây) hoặc <b>throughput</b> (lượng dữ liệu đọc/ghi mỗi giây) vượt baseline thì trả thêm.</li>
+<li><b>Snapshot</b> (ảnh chụp sao lưu ổ đĩa): tính tiền theo lượng dữ liệu snapshot đang lưu.</li>
+</ul>
+<p>Những thứ <b>không</b> làm thay đổi tiền ổ EBS: máy EC2 đang chạy hay đã stop, lượng dữ liệu thật sự ghi trong ổ.</p>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Tắt (stop) máy EC2 thì ngừng tính tiền giờ chạy máy, nhưng ổ EBS gắn kèm <b>vẫn tính tiền</b> vì nó vẫn đang giữ dữ liệu cho bạn. Muốn hết tốn tiền thì phải xóa ổ (sau khi đã sao lưu nếu cần).</p></div>
 
 <h3>Quy tắc tính tiền truyền dữ liệu</h3>
@@ -164,8 +200,10 @@
 <tr><td>Giữa hai <b>Region</b> khác nhau</td><td>Có tính phí</td></tr>
 <tr><td>Giữa hai <b>AZ</b> khác nhau trong cùng Region</td><td>Có tính phí</td></tr>
 <tr><td>Trong <b>cùng một AZ</b>, dùng địa chỉ IP nội bộ (private IP)</td><td>Miễn phí</td></tr>
+<tr><td>Giữa EC2 và S3 trong <b>cùng một Region</b></td><td>Miễn phí</td></tr>
 </table>
 <p><b>Private IP</b> (địa chỉ IP nội bộ) là "số nhà" chỉ dùng bên trong mạng riêng của bạn trên AWS, khác với địa chỉ công khai ra Internet.</p>
+<p>Hệ quả: nếu hai tầng ứng dụng trao đổi rất nhiều dữ liệu với nhau qua hai AZ khác nhau, đặt chúng <b>vào cùng một AZ</b> sẽ giảm tiền truyền dữ liệu. Đổi lại bạn mất khả năng chịu lỗi khi AZ đó gặp sự cố, nên chỉ làm vậy với workload không quan trọng. Đây là sự đánh đổi giữa chi phí và độ sẵn sàng.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Khách ở Hà Nội tải ảnh đánh giá bánh lên website: phần dữ liệu đi <b>vào</b> S3 này miễn phí. Mỗi khi khách khác mở trang và xem ảnh, dữ liệu đi <b>ra</b> Internet và bị tính tiền. Khi BánhNgon mở rộng sang Nhật và Minh sao chép toàn bộ ảnh từ Region Singapore sang Region Tokyo, phần sao chép giữa hai Region cũng mất tiền. Minh ghi chú lại để tính vào ngân sách.</p></div>
 
 <h3>CloudFront giúp giảm tiền truyền dữ liệu thế nào?</h3>
@@ -184,14 +222,17 @@
 <li>"factors that affect S3 cost" → amount of data stored, storage class, requests, data transfer out (không phải data transfer in)</li>
 <li>"which data transfer incurs a charge" → between Regions, to the internet, between AZs</li>
 <li>"which data transfer is free" → inbound from the internet; same AZ using private IP</li>
-<li>"EBS charged for" → provisioned storage (dung lượng cấp phát), không phải dung lượng đã dùng</li>
+<li>"EBS charged for" → provisioned storage (dung lượng cấp phát), không phải dung lượng đã dùng; với gp3 thêm IOPS/throughput vượt baseline; snapshot tính riêng</li>
+<li>"unpredictable access, automatic, no retrieval fees" → S3 Intelligent-Tiering; "rarely accessed but milliseconds" → S3 Glacier Instant Retrieval; "cheapest long-term archive" → S3 Glacier Deep Archive</li>
+<li>"reduce cross-AZ data transfer charges" → đặt các tầng trao đổi nhiều dữ liệu vào cùng AZ (đánh đổi độ sẵn sàng)</li>
 <li>"reduce data transfer cost and latency for global users" → Amazon CloudFront</li>
 </ul></div>
 `,
     summary: [
       "Ba nhóm chi phí chính trên AWS: compute, storage và data transfer out.",
       "Tiền S3 phụ thuộc lượng dữ liệu, storage class, số requests và dữ liệu truyền ra; dữ liệu vào S3 miễn phí.",
-      "EBS tính tiền theo dung lượng cấp phát, kể cả khi chưa dùng hết hay máy EC2 đang tắt.",
+      "S3 storage class: giá lưu càng rẻ thì phí/thời gian lấy dữ liệu ra càng cao; Intelligent-Tiering tự chuyển tầng, không phí retrieval.",
+      "EBS tính tiền theo dung lượng cấp phát (kể cả khi chưa dùng hết hay máy EC2 đang tắt), cộng IOPS/throughput vượt baseline (gp3) và snapshot.",
       "Vào từ Internet: miễn phí. Ra Internet, giữa Region, giữa AZ: tính phí. Cùng AZ qua private IP: miễn phí.",
       "CloudFront cache nội dung ở edge location, giảm tải cho máy gốc và giúp tối ưu chi phí truyền dữ liệu.",
       "Free Tier có tồn tại nhưng điều kiện có thể thay đổi, luôn kiểm tra trang chính thức."
@@ -205,6 +246,8 @@
       ["Requests", "lượt yêu cầu đọc/ghi"],
       ["Retrieval fee", "phí lấy dữ liệu ra (lớp lưu trữ lâu dài)"],
       ["Provisioned storage", "dung lượng được cấp phát"],
+      ["IOPS / Throughput", "số thao tác đọc/ghi mỗi giây / lượng dữ liệu đọc/ghi mỗi giây"],
+      ["S3 Intelligent-Tiering", "lớp S3 tự chuyển tầng theo mức truy cập"],
       ["Snapshot", "bản sao lưu ổ đĩa"],
       ["Private IP address", "địa chỉ IP nội bộ"],
       ["CDN (Content Delivery Network)", "mạng phân phối nội dung"],
@@ -232,13 +275,21 @@
 
 <h3>Trước khi dùng: AWS Pricing Calculator</h3>
 <p><b>AWS Pricing Calculator</b> (máy tính giá AWS) là công cụ web miễn phí để <b>ước tính</b> chi phí trước khi xây dựng. Bạn chọn dịch vụ, nhập cấu hình (bao nhiêu máy, loại gì, lưu bao nhiêu GB, ở Region nào…), công cụ cho ra con số dự kiến theo tháng.</p>
-<p>Bạn có thể lưu và chia sẻ bản ước tính cho sếp hoặc kế toán. Rất hữu ích khi so sánh chi phí trước khi chuyển từ hệ thống tại chỗ (on-premises) lên AWS.</p>
+<p>Bạn có thể lưu và chia sẻ bản ước tính cho sếp hoặc kế toán (qua đường link, hoặc xuất file). Rất hữu ích khi so sánh chi phí trước khi chuyển từ hệ thống tại chỗ (on-premises) lên AWS. Nhưng Pricing Calculator chỉ <b>ước tính</b>: nó <b>không</b> cho xem chi phí thực tế đã phát sinh, không gửi cảnh báo.</p>
 
 <h3>Đang dùng và sau khi dùng: Budgets, Cost Explorer, CUR</h3>
 <h4>AWS Budgets: đặt ngưỡng và nhận cảnh báo</h4>
-<p><b>AWS Budgets</b> (ngân sách) cho bạn đặt một ngưỡng cho chi phí hoặc mức dùng, rồi <b>gửi cảnh báo</b> (qua email hoặc Amazon SNS) khi chi phí thực tế, hoặc chi phí <b>dự báo</b>, vượt ngưỡng. Nó cũng theo dõi được mức sử dụng RI và Savings Plans. Bạn còn có thể cấu hình hành động tự động khi vượt ngưỡng.</p>
+<p><b>AWS Budgets</b> (ngân sách) cho bạn đặt một ngưỡng rồi <b>gửi cảnh báo</b> (qua email hoặc Amazon SNS) khi con số thực tế, hoặc con số <b>dự báo</b>, vượt ngưỡng. Có các loại budget:</p>
+<ul>
+<li><b>Cost budget</b>: theo dõi số tiền (ví dụ 200 USD/tháng).</li>
+<li><b>Usage budget</b>: theo dõi mức dùng (ví dụ số GB, số giờ máy chạy).</li>
+<li><b>Reservation budget</b> (RI/Savings Plans): báo khi <b>utilization</b> (tỷ lệ phần đã mua thực sự được dùng) hoặc <b>coverage</b> (tỷ lệ mức dùng được giảm giá che phủ) <b>tụt dưới</b> ngưỡng, nghĩa là bạn đang trả tiền cho phần đặt trước không dùng tới.</li>
+</ul>
+<p><b>Budgets actions</b> (hành động của Budgets): khi vượt ngưỡng, Budgets có thể <b>tự động</b> (hoặc chờ bạn duyệt) gắn một <b>IAM policy</b> hay <b>SCP</b> hạn chế (ví dụ chặn tạo tài nguyên mới), hoặc dừng máy EC2/RDS. Bạn không phải tự viết code.</p>
+<h4>AWS Cost Anomaly Detection: phát hiện chi tiêu bất thường</h4>
+<p>Đôi khi khó đặt một ngưỡng cố định vì chi phí lên xuống thất thường. <b>AWS Cost Anomaly Detection</b> (phát hiện chi phí bất thường) dùng <b>machine learning</b> (học máy) để học mức chi tiêu bình thường của bạn, rồi báo khi một dịch vụ hay tài khoản tiêu tiền bất thường, kèm <b>root cause analysis</b> (phân tích nguyên nhân gốc). Khác với Budgets: Budgets dựa trên ngưỡng <b>bạn đặt</b>, còn Anomaly Detection <b>tự học</b> thế nào là bất thường.</p>
 <h4>AWS Cost Explorer: phân tích quá khứ và dự báo</h4>
-<p><b>AWS Cost Explorer</b> hiển thị biểu đồ chi phí theo thời gian. Bạn lọc và nhóm theo dịch vụ, tài khoản, Region, tag… để xem tiền đi đâu. Nó còn <b>dự báo</b> chi phí trong tương lai dựa trên mức dùng trước đó, và gợi ý mua RI/Savings Plans.</p>
+<p><b>AWS Cost Explorer</b> hiển thị biểu đồ chi phí theo thời gian. Bạn lọc và nhóm theo dịch vụ, tài khoản thành viên (linked account), Region, tag… để xem tiền đi đâu. Nó còn <b>dự báo</b> chi phí trong tương lai dựa trên mức dùng trước đó. Cost Explorer cũng có báo cáo utilization/coverage của RI và Savings Plans (để xem), và <b>Savings Plans recommendations</b>: dựa vào lịch sử dùng thật của bạn để gợi ý nên cam kết bao nhiêu USD/giờ và tiết kiệm được bao nhiêu.</p>
 <h4>AWS Cost and Usage Report (CUR)</h4>
 <p><b>AWS Cost and Usage Report</b> (báo cáo chi phí và mức dùng) là nguồn dữ liệu <b>chi tiết nhất</b>: từng dòng mức dùng, từng tài nguyên, theo giờ hoặc theo ngày. Báo cáo được gửi vào một <b>S3 bucket</b> của bạn. Từ đó có thể phân tích bằng các công cụ như Amazon Athena hay Amazon Quick (trước đây là Amazon QuickSight). Hiện nay CUR được cấu hình qua tính năng Data Exports trong bảng điều khiển Billing.</p>
 <h4>Billing dashboard</h4>
@@ -246,7 +297,8 @@
 <table>
 <tr><th>Công cụ</th><th>Thời điểm</th><th>Dùng để</th></tr>
 <tr><td>AWS Pricing Calculator</td><td>Trước khi dùng</td><td>Ước tính chi phí kiến trúc dự định</td></tr>
-<tr><td>AWS Budgets</td><td>Đang dùng</td><td>Đặt ngưỡng, nhận cảnh báo khi vượt (thực tế hoặc dự báo)</td></tr>
+<tr><td>AWS Budgets</td><td>Đang dùng</td><td>Đặt ngưỡng (chi phí, mức dùng, RI/Savings Plans), cảnh báo khi vượt (thực tế hoặc dự báo), có thể tự hành động</td></tr>
+<tr><td>AWS Cost Anomaly Detection</td><td>Đang dùng</td><td>ML tự phát hiện chi tiêu bất thường, kèm nguyên nhân gốc, không cần đặt ngưỡng</td></tr>
 <tr><td>AWS Cost Explorer</td><td>Sau khi dùng</td><td>Biểu đồ, phân tích chi phí đã qua, dự báo tương lai</td></tr>
 <tr><td>Cost and Usage Report</td><td>Sau khi dùng</td><td>Dữ liệu chi tiết nhất, gửi vào S3</td></tr>
 </table>
@@ -255,10 +307,10 @@
 <h3>Cost allocation tags: biết tiền thuộc về ai</h3>
 <p><b>Tag</b> (thẻ) là một nhãn dạng "khóa = giá trị" bạn gắn lên tài nguyên AWS, ví dụ <code>Project = Website</code> hoặc <code>Department = Marketing</code>. Khi dùng tag cho mục đích chia chi phí, ta gọi là <b>cost allocation tags</b> (thẻ phân bổ chi phí).</p>
 <ul>
-<li><b>AWS-generated tags</b>: AWS tự tạo, ví dụ tag ghi lại ai đã tạo tài nguyên.</li>
-<li><b>User-defined tags</b>: do bạn tự đặt tên và giá trị.</li>
+<li><b>AWS-generated tags</b>: AWS tự gắn, bạn không phải làm gì. Ví dụ tag <b>createdBy</b> ghi lại IAM user hoặc role nào đã tạo tài nguyên. Rất hữu ích khi kỹ sư hay quên tự gắn tag.</li>
+<li><b>User-defined tags</b>: do bạn tự đặt tên và giá trị (ví dụ Project, Department). Phụ thuộc vào việc mọi người gắn tag đều đặn.</li>
 </ul>
-<p>Điểm quan trọng: tag phải được <b>kích hoạt (activate)</b> trong trang Billing thì mới xuất hiện trong Cost Explorer và báo cáo chi phí.</p>
+<p>Điểm quan trọng: <b>cả hai loại</b> đều phải được <b>kích hoạt (activate)</b> làm cost allocation tag trong trang Billing (do management account làm nếu dùng Organizations) thì mới xuất hiện trong Cost Explorer và báo cáo chi phí.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Trước khi lên AWS, Minh dùng <b>Pricing Calculator</b> ước tính chi phí và gửi cho chị Lan duyệt. Khi chạy thật, Minh đặt <b>AWS Budgets</b> 200 USD/tháng, vượt 80% thì gửi email cho cả hai chị em. Minh gắn tag <code>Project</code> cho tài nguyên của website, app đặt hàng và chatbot, rồi kích hoạt tag trong Billing. Cuối tháng, chị Lan mở <b>Cost Explorer</b> và thấy ngay chatbot tốn bao nhiêu so với website.</p></div>
 
 <h3>AWS Organizations và consolidated billing</h3>
@@ -266,16 +318,21 @@
 <p><b>AWS Organizations</b> giúp gom các tài khoản đó vào một tổ chức, quản lý tập trung từ một <b>management account</b> (tài khoản quản lý). Các tài khoản còn lại gọi là <b>member accounts</b> (tài khoản thành viên), có thể xếp vào các nhóm gọi là OU (Organizational Unit).</p>
 <p>Tính năng <b>consolidated billing</b> (thanh toán hợp nhất) của Organizations mang lại:</p>
 <ul>
-<li><b>Một hóa đơn duy nhất</b> cho tất cả tài khoản, nhưng vẫn xem được chi tiết từng tài khoản.</li>
+<li><b>Một hóa đơn duy nhất</b> cho tất cả tài khoản, do <b>management account</b> thanh toán, nhưng vẫn xem được chi tiết từng tài khoản.</li>
 <li><b>Giảm giá theo khối lượng</b> (volume discounts): mức dùng của các tài khoản được cộng dồn. Ví dụ S3 càng dùng nhiều thì đơn giá càng giảm, gộp lại sẽ đạt bậc giá rẻ hơn sớm hơn.</li>
-<li>Giảm giá RI và Savings Plans được chia sẻ giữa các tài khoản (mặc định).</li>
+<li>Giảm giá RI và Savings Plans được chia sẻ giữa các tài khoản (mặc định). Management account có thể tắt chia sẻ cho từng tài khoản.</li>
 <li><b>Không tốn thêm phí</b> để dùng consolidated billing.</li>
 </ul>
 <p>Thêm một ý: Organizations có <b>SCPs</b> (Service Control Policies, chính sách kiểm soát dịch vụ) để đặt giới hạn tối đa những gì tài khoản thành viên được phép làm.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Khi mở chi nhánh Nhật, BánhNgon có ba tài khoản: Việt Nam, Nhật Bản và thử nghiệm. Minh gom cả ba vào AWS Organizations. Chị Lan chỉ nhận một hóa đơn mỗi tháng, mức dùng S3 cộng chung nên đơn giá tốt hơn, và Savings Plans mua ở tài khoản Việt Nam cũng giúp giảm tiền cho tài khoản Nhật.</p></div>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"estimate cost before migrating / before building" → AWS Pricing Calculator</li>
-<li>"alert when costs exceed a threshold" → AWS Budgets</li>
+<li>"alert when costs exceed a threshold" / "forecasted cost exceeds budget" → AWS Budgets</li>
+<li>"RI / Savings Plans utilization or coverage falls below X%" → AWS Budgets (reservation budget)</li>
+<li>"automatically apply an IAM policy / SCP when budget is exceeded, no code" → AWS Budgets actions</li>
+<li>"machine learning", "unusual spend", "root cause", không có ngưỡng cố định → AWS Cost Anomaly Detection</li>
+<li>"recommend hourly commitment based on past usage" → Savings Plans recommendations trong Cost Explorer</li>
+<li>"which IAM user/role created each resource" mà không phụ thuộc người gắn tag → kích hoạt AWS-generated tag createdBy</li>
 <li>"visualize, analyze past costs, forecast" → AWS Cost Explorer</li>
 <li>"most detailed / comprehensive cost and usage data, delivered to S3" → AWS Cost and Usage Report</li>
 <li>"track costs by project or department" → cost allocation tags</li>
@@ -285,9 +342,10 @@
 `,
     summary: [
       "Trước khi dùng: AWS Pricing Calculator để ước tính chi phí.",
-      "Đang dùng: AWS Budgets đặt ngưỡng và gửi cảnh báo khi chi phí thực tế hoặc dự báo vượt ngưỡng.",
-      "Sau khi dùng: Cost Explorer để phân tích và dự báo; Cost and Usage Report là dữ liệu chi tiết nhất, gửi vào S3.",
-      "Cost allocation tags gồm AWS-generated và user-defined, phải được kích hoạt mới hiện trong báo cáo.",
+      "Đang dùng: AWS Budgets đặt ngưỡng (cost, usage, RI/Savings Plans) và cảnh báo khi thực tế hoặc dự báo vượt ngưỡng; Budgets actions tự gắn IAM policy/SCP hạn chế.",
+      "AWS Cost Anomaly Detection dùng ML tự phát hiện chi tiêu bất thường kèm nguyên nhân gốc, không cần ngưỡng cố định.",
+      "Sau khi dùng: Cost Explorer để phân tích, dự báo và gợi ý Savings Plans; Cost and Usage Report là dữ liệu chi tiết nhất, gửi vào S3.",
+      "Cost allocation tags gồm AWS-generated (ví dụ createdBy, AWS tự gắn) và user-defined; cả hai phải được kích hoạt trong Billing mới hiện trong báo cáo.",
       "AWS Organizations gom nhiều tài khoản; consolidated billing cho một hóa đơn, giảm giá theo khối lượng, miễn phí.",
       "SCPs trong Organizations giới hạn những gì tài khoản thành viên được làm."
     ],
@@ -296,6 +354,9 @@
       ["AWS Budgets", "đặt ngân sách và cảnh báo chi phí"],
       ["AWS Cost Explorer", "công cụ phân tích và dự báo chi phí"],
       ["Forecast", "dự báo"],
+      ["Reservation budget (utilization / coverage)", "ngân sách theo dõi tỷ lệ dùng / độ che phủ của RI, Savings Plans"],
+      ["Budgets actions", "hành động tự động khi vượt ngân sách"],
+      ["AWS Cost Anomaly Detection", "phát hiện chi tiêu bất thường bằng ML"],
       ["AWS Cost and Usage Report (CUR)", "báo cáo chi phí và mức dùng chi tiết nhất"],
       ["Billing and Cost Management console", "trang quản lý hóa đơn và chi phí"],
       ["Tag", "thẻ gắn nhãn tài nguyên"],
@@ -324,12 +385,30 @@
 <h3>Các gói AWS Support</h3>
 <p>Khi dùng AWS, sẽ có lúc bạn gặp vấn đề: máy chủ lỗi, không hiểu hóa đơn, cần tư vấn kiến trúc. <b>AWS Support</b> (hỗ trợ của AWS) là các gói dịch vụ hỗ trợ khách hàng. Theo Exam Guide CLF-C02 hiện tại có các gói:</p>
 <ul>
-<li><b>Basic Support</b>: <b>miễn phí</b>, có sẵn cho <b>mọi tài khoản AWS</b>. Gồm hỗ trợ về tài khoản và hóa đơn, tài liệu, whitepaper, diễn đàn re:Post, AWS Health Dashboard và một số kiểm tra cơ bản của Trusted Advisor.</li>
-<li><b>AWS Business Support+</b></li>
-<li><b>AWS Enterprise Support</b></li>
-<li><b>AWS Unified Operations</b></li>
+<li><b>Basic Support</b>: <b>miễn phí</b>, có sẵn cho <b>mọi khách hàng AWS</b>. Có <b>customer service 24/7</b> cho câu hỏi về tài khoản và hóa đơn, tài liệu, whitepaper, <b>AWS re:Post</b>, trang <b>AWS Health</b> cá nhân hóa và các <b>core checks</b> của <b>Trusted Advisor</b>. Điểm quan trọng nhất: gói Basic <b>không mở được technical support case</b> (case kỹ thuật); chỉ mở được case về tài khoản/hóa đơn (customer service) và <b>service limit increase</b> (tăng hạn mức).</li>
+<li><b>AWS Business Support+</b>: gói trả phí thấp nhất, AWS khuyến nghị là <b>mức tối thiểu cho workload production</b>. Mở <b>technical support case</b> không giới hạn qua <b>phone, web, chat, email</b> 24/7 (có cả <b>AWS Support App in Slack</b> và <b>AWS Support API</b>). Có <b>full set</b> kiểm tra <b>Trusted Advisor</b>, <b>AWS Health API</b>, hỗ trợ bằng AI và review kiến trúc (Well-Architected). Hệ thống quan trọng bị sập: phản hồi <b>&lt; 30 phút</b>.</li>
+<li><b>AWS Enterprise Support</b>: cho workload <b>business-critical</b> trên toàn tổ chức. Thêm <b>designated Technical Account Manager (TAM)</b> (người tư vấn kỹ thuật chuyên trách cho riêng bạn), <b>Trusted Advisor Priority</b>, hỗ trợ sự kiện lớn/ra mắt sản phẩm (planned events) và dịch vụ chủ động. Hệ thống quan trọng bị sập: phản hồi <b>&lt; 15 phút</b>.</li>
+<li><b>AWS Unified Operations</b>: gói cao nhất, cho workload <b>mission-critical</b> cần độ bền vững (resilience) cao. Ngoài TAM còn có <b>Domain Specialist Engineers</b> và <b>Incident Management Engineers</b>, <b>giám sát workload 24/7</b>. Sự cố nghiêm trọng: <b>Incident Management Engineer</b> phản hồi <b>&lt; 5 phút</b>.</li>
 </ul>
-<p>Nói chung, gói càng cao thì phản hồi càng nhanh và bạn có chuyên gia hỗ trợ sát sao, chuyên trách hơn. Giá và thời gian phản hồi cụ thể của từng gói có thể thay đổi, hãy xem trang <b>AWS Support Plans</b> chính thức thay vì học thuộc con số cũ trên mạng.</p>
+<p>Với cả 3 gói trả phí, các mức thấp hơn giống nhau: <b>production system down</b> &lt; 1 giờ, <b>production system impaired</b> &lt; 4 giờ, <b>system impaired</b> &lt; 12 giờ, <b>general guidance</b> &lt; 24 giờ. Đây là <b>mục tiêu phản hồi</b> AWS cố gắng đạt, không phải cam kết thời gian khắc phục. Giá từng gói xem trên trang <b>AWS Support Plans</b> và có thể thay đổi, đừng học thuộc con số giá cũ trên mạng.</p>
+<table>
+<tr><th>Tiêu chí</th><th>Basic Support</th><th>AWS Business Support+</th><th>AWS Enterprise Support</th><th>AWS Unified Operations</th></tr>
+<tr><td>Chi phí</td><td>Miễn phí, mọi khách hàng</td><td>Trả phí</td><td>Trả phí</td><td>Trả phí</td></tr>
+<tr><td>Khuyến nghị cho</td><td>Có sẵn cho mọi khách hàng</td><td>Workload production (mức tối thiểu)</td><td>Workload business-critical</td><td>Workload mission-critical</td></tr>
+<tr><td>Technical support case</td><td>Không (chỉ account/billing và service limit increase)</td><td>Có, không giới hạn; phone, web, chat, email 24/7</td><td>Có, như Business Support+</td><td>Có, như Business Support+</td></tr>
+<tr><td>Phản hồi sự cố hệ thống quan trọng (critical)</td><td>Không có</td><td>&lt; 30 phút</td><td>&lt; 15 phút</td><td>&lt; 5 phút (Incident Management Engineer)</td></tr>
+<tr><td>Production system down</td><td>Không có</td><td>&lt; 1 giờ</td><td>&lt; 1 giờ</td><td>&lt; 1 giờ</td></tr>
+<tr><td>Trusted Advisor</td><td>Core checks</td><td>Full set of checks</td><td>Full set + Trusted Advisor Priority</td><td>Full set + Trusted Advisor Priority</td></tr>
+<tr><td>AWS Health</td><td>Health Dashboard cá nhân hóa, cảnh báo</td><td>Health Dashboard + <b>Health API</b></td><td>Health Dashboard + Health API</td><td>Health Dashboard + Health API + giám sát workload 24/7</td></tr>
+<tr><td>Người chuyên trách</td><td>Không</td><td>Không (designated TAM bắt đầu từ Enterprise)</td><td><b>Designated TAM</b></td><td>Designated TAM + Domain Specialist Engineers + Incident Management Engineers</td></tr>
+</table>
+<div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
+<li>"included for all customers at no cost" → Basic Support</li>
+<li>"cannot open technical support cases" / "only account and billing questions" → Basic Support</li>
+<li>"minimum recommended plan for production workloads", "lowest-cost plan with 24/7 technical support", "full set of Trusted Advisor checks", "AWS Health API" (gói rẻ nhất có) → AWS Business Support+</li>
+<li>"designated Technical Account Manager (TAM)", "Trusted Advisor Priority", "business-critical", "critical response &lt; 15 minutes" → AWS Enterprise Support</li>
+<li>"mission-critical", "Incident Management Engineers", "domain specialist engineers", "response within 5 minutes", "24/7 workload monitoring" → AWS Unified Operations</li>
+</ul></div>
 <p>Nếu tài liệu ôn cũ nhắc tới các gói <b>Developer</b>, <b>Business</b> hay <b>Enterprise On-Ramp</b>: đó là tên gói cũ mà AWS đang thay dần bằng các gói ở trên. Khi đi thi, hãy dựa vào ý chính là gói Basic miễn phí, gói trả phí phản hồi nhanh hơn và có thêm chuyên gia hỗ trợ.</p>
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống bảo hành điện thoại. Ai mua máy cũng có bảo hành cơ bản miễn phí: tra cứu hướng dẫn, hỏi tổng đài về hóa đơn. Muốn có kỹ thuật viên ưu tiên, phản hồi nhanh, thậm chí một người chuyên lo cho riêng công ty mình thì mua gói bảo hành cao cấp hơn.</p></div>
 <p>Nơi để <b>mở yêu cầu hỗ trợ</b> (support case) là <b>AWS Support Center</b> trong AWS Management Console. Với Basic Support, bạn vẫn mở được case về tài khoản và hóa đơn.</p>
@@ -347,7 +426,7 @@
 </ul>
 <p>Basic Support chỉ có một số kiểm tra cốt lõi; các gói cao hơn mở được nhiều kiểm tra hơn.</p>
 <h4>AWS Health Dashboard</h4>
-<p><b>AWS Health Dashboard</b> (bảng tình trạng sức khỏe AWS) cho biết tình trạng các dịch vụ AWS, đặc biệt là những sự cố hay lịch bảo trì <b>ảnh hưởng tới chính tài nguyên của bạn</b>. Còn <b>AWS Health API</b> cho phép phần mềm của bạn lấy những thông tin đó một cách tự động.</p>
+<p><b>AWS Health Dashboard</b> (bảng tình trạng sức khỏe AWS) cho biết tình trạng các dịch vụ AWS, đặc biệt là những sự cố hay lịch bảo trì <b>ảnh hưởng tới chính tài nguyên của bạn</b>, kèm hướng dẫn khắc phục. Khác với CloudTrail (ghi lại ai đã gọi API gì trong tài khoản của bạn). Còn <b>AWS Health API</b> cho phép phần mềm của bạn lấy những thông tin đó một cách tự động.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Một sáng website BánhNgon chậm bất thường. Minh mở <b>AWS Health Dashboard</b> và thấy AWS đang báo sự cố ở một AZ nơi máy chủ của mình chạy. Sau vụ đó, Minh xem <b>Trusted Advisor</b> và nhận được khuyến nghị: nên chạy ở nhiều AZ (fault tolerance) và xóa vài ổ EBS bỏ quên (cost optimization).</p></div>
 
 <h3>Tài nguyên tự học và tự tra cứu</h3>
@@ -357,18 +436,23 @@
 <li><b>AWS Prescriptive Guidance</b>: các chiến lược, hướng dẫn, mẫu làm (pattern) đã được kiểm chứng để chuyển đổi, hiện đại hóa hệ thống lên cloud.</li>
 <li><b>AWS Documentation</b> (tài liệu kỹ thuật), <b>whitepapers</b> (sách trắng, bài phân tích chuyên sâu) và <b>AWS blogs</b>: nguồn kiến thức chính thức, miễn phí.</li>
 </ul>
+<p>Tất cả nguồn trên đều <b>tự phục vụ (self-service) và miễn phí</b> cho mọi khách hàng, kể cả chỉ có Basic Support. Ngược lại, <b>AWS Professional Services</b>, đối tác APN hay các gói Support trả phí đều <b>tốn tiền</b>.</p>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>re:Post và Knowledge Center dễ lẫn. <b>re:Post</b> là <b>cộng đồng hỏi đáp</b> (community-driven Q&amp;A). <b>Knowledge Center</b> là <b>bài viết có sẵn</b> cho câu hỏi thường gặp. <b>Prescriptive Guidance</b> là <b>hướng dẫn chiến lược, pattern</b> cho migration. Còn <b>AWS Artifact</b> là nơi tải báo cáo tuân thủ, không phải nguồn hỏi đáp.</p></div>
 
 <h3>Con người hỗ trợ: Professional Services, Partners, Trust &amp; Safety</h3>
 <ul>
 <li><b>AWS Professional Services</b>: đội chuyên gia của chính AWS, làm việc trực tiếp với khách hàng để đạt mục tiêu lớn như di chuyển (migration) quy mô lớn.</li>
 <li><b>AWS Solutions Architects</b> (kiến trúc sư giải pháp): chuyên gia AWS tư vấn cách thiết kế hệ thống trên AWS.</li>
-<li><b>AWS Partner Network (APN)</b> (mạng lưới đối tác AWS): các công ty bên ngoài hợp tác với AWS. Có hai kiểu chính: <b>system integrators</b>/công ty tư vấn, triển khai (thuê họ làm dự án) và <b>ISVs</b> (Independent Software Vendors, hãng phần mềm độc lập, bán phần mềm chạy trên AWS). Đối tác được AWS hỗ trợ đào tạo, chứng chỉ, sự kiện, marketing…</li>
+<li><b>AWS Partner Network (APN)</b> (mạng lưới đối tác AWS): các công ty bên ngoài hợp tác với AWS. Có hai kiểu chính: <b>system integrators</b>/công ty tư vấn, triển khai (thuê họ làm dự án) và <b>ISVs</b> (Independent Software Vendors, hãng phần mềm độc lập, bán phần mềm chạy trên AWS). Lợi ích khi tham gia APN: được AWS <b>đào tạo</b> và cấp chứng chỉ, được <b>công nhận chuyên môn</b> qua các chương trình như <b>AWS Competency</b> (ví dụ chuyên về migration, bảo mật), được hỗ trợ <b>go-to-market</b> (tiếp thị, bán hàng chung, xuất hiện trong danh bạ đối tác để khách tìm thấy). Lưu ý: tham gia APN <b>không</b> có nghĩa là khách hàng của đối tác được tặng gói Support trả phí.</li>
 <li><b>AWS Trust &amp; Safety team</b>: đội xử lý <b>lạm dụng</b> (abuse). Nếu thấy tài nguyên AWS bị dùng để gửi spam, tấn công, lừa đảo… bạn báo cho đội này.</li>
 </ul>
 
 <h3>AWS Marketplace</h3>
-<p><b>AWS Marketplace</b> là "chợ phần mềm" trực tuyến: bạn tìm, mua và triển khai nhanh phần mềm của bên thứ ba (bảo mật, giám sát, database…) chạy trên AWS. Tiền mua được <b>tính chung vào hóa đơn AWS</b> của bạn, không cần làm hợp đồng thanh toán riêng với từng hãng.</p>
+<p><b>AWS Marketplace</b> là "chợ phần mềm" trực tuyến: bạn tìm, mua và triển khai nhanh phần mềm của bên thứ ba (bảo mật, giám sát, database…) chạy trên AWS. Tiền mua được <b>tính chung vào hóa đơn AWS</b> của bạn, không cần làm hợp đồng thanh toán riêng với từng hãng. Vì nằm trong hóa đơn AWS, chi phí phần mềm xem và phân tích được bằng các công cụ như Cost Explorer.</p>
+<ul>
+<li>Phía <b>người bán</b>: hãng phần mềm (ISV) muốn bán sản phẩm, kể cả SaaS, cho khách AWS thì <b>đăng sản phẩm lên AWS Marketplace</b>.</li>
+<li><b>Private Marketplace</b> (chợ riêng): công ty tạo một <b>danh mục sản phẩm đã duyệt</b>; nhân viên ở mọi tài khoản trong tổ chức chỉ thấy và chỉ đăng ký được những sản phẩm trong danh mục đó. Dùng để kiểm soát mua sắm (governance).</li>
+</ul>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Để mở rộng sang Nhật, chị Lan thuê một <b>đối tác APN</b> có kinh nghiệm migration giúp thiết kế hệ thống. Minh mua một phần mềm tường lửa trên <b>AWS Marketplace</b>, tiền nằm luôn trong hóa đơn AWS. Một hôm, Minh phát hiện có máy chủ trên AWS liên tục gửi spam tới hộp thư của tiệm, Minh báo cho <b>AWS Trust &amp; Safety</b>.</p></div>
 
 <h3>Bảng nhanh: cần gì → tìm ở đâu</h3>
@@ -395,7 +479,10 @@
 <li>"proven strategies, guides, patterns for migration" → AWS Prescriptive Guidance</li>
 <li>"global team of AWS experts for business outcomes" → AWS Professional Services</li>
 <li>"hire a partner to help migrate" → AWS Partner Network</li>
-<li>"buy third-party software, billed through AWS" → AWS Marketplace</li>
+<li>"buy third-party software, billed through AWS" → AWS Marketplace; "sell my software/SaaS to AWS customers" → đăng lên AWS Marketplace</li>
+<li>"curated list of approved products", "control which products teams can subscribe to" → Private Marketplace</li>
+<li>"training, recognized expertise, go-to-market support for a partner company" → tham gia APN (AWS Competency/specializations)</li>
+<li>"self-service, no additional cost" → re:Post, Knowledge Center, Prescriptive Guidance, documentation (không phải Professional Services)</li>
 <li>"AWS resources used for spam / abuse" → AWS Trust &amp; Safety</li>
 </ul></div>
 `,
@@ -405,7 +492,8 @@
       "Trusted Advisor kiểm tra cost optimization, performance, security, fault tolerance, service limits và operational excellence.",
       "AWS Health Dashboard và Health API báo sự cố, bảo trì ảnh hưởng tới tài nguyên của bạn.",
       "re:Post là cộng đồng hỏi đáp; Knowledge Center là bài trả lời sẵn; Prescriptive Guidance là chiến lược và pattern.",
-      "Professional Services là chuyên gia của AWS; APN gồm đối tác tư vấn/triển khai và ISV; Marketplace bán phần mềm bên thứ ba tính vào hóa đơn AWS.",
+      "Professional Services là chuyên gia của AWS (trả phí); APN gồm đối tác tư vấn/triển khai và ISV, được đào tạo, công nhận chuyên môn, hỗ trợ go-to-market.",
+      "AWS Marketplace bán phần mềm bên thứ ba tính vào hóa đơn AWS; Private Marketplace giới hạn danh mục sản phẩm đã duyệt.",
       "Báo cáo lạm dụng tài nguyên AWS cho AWS Trust & Safety."
     ],
     terms: [
@@ -423,6 +511,7 @@
       ["AWS Partner Network (APN)", "mạng lưới đối tác AWS"],
       ["ISV (Independent Software Vendor)", "hãng phần mềm độc lập"],
       ["AWS Marketplace", "chợ phần mềm bên thứ ba trên AWS"],
+      ["Private Marketplace", "danh mục sản phẩm Marketplace đã được công ty duyệt"],
       ["AWS Trust & Safety", "đội xử lý báo cáo lạm dụng"]
     ],
     qids: ["d4-10", "d4-11", "d4-13", "d4-21", "d4-22", "d4-23", "d4-24", "d4-25", "d4-26", "d3-77"]
