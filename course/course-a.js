@@ -298,7 +298,7 @@
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Đi siêu thị, bạn không cần biết mọi sản phẩm. Bạn chỉ cần biết quầy rau ở đâu, quầy thịt ở đâu. Học AWS cho kỳ thi này cũng vậy: biết dịch vụ nào giải quyết nhu cầu nào là đủ.</p></div>
 
 <h3>Thực hành an toàn: Free Tier và cảnh báo chi phí</h3>
-<p>AWS có chương trình <b>Free Tier</b> (dùng thử miễn phí) cho tài khoản mới, nhưng có giới hạn và điều kiện, và các điều kiện này đã thay đổi theo thời gian. Hãy đọc trang Free Tier chính thức trước khi thực hành, đừng giả định "cái gì cũng miễn phí".</p>
+<p>AWS có chương trình <b>Free Tier</b> (dùng thử miễn phí) cho tài khoản mới, nhưng có giới hạn và điều kiện, và các điều kiện này đã thay đổi theo thời gian. Với tài khoản tạo từ <b>15/7/2025</b>, khi đăng ký bạn chọn <b>Free plan</b> hoặc <b>Paid plan</b>; cả hai đều nhận <b>100 USD credit</b> và có thể kiếm thêm <b>tối đa 100 USD</b> nữa bằng cách làm một số hoạt động. Free plan không bao giờ tính tiền nhưng chỉ kéo dài <b>tối đa 6 tháng</b> (hoặc đến khi hết credit). Chi tiết và cách tránh bất ngờ xem ở bài thực hành <b>5-1</b>. Hãy đọc trang Free Tier chính thức trước khi thực hành, đừng giả định "cái gì cũng miễn phí".</p>
 <p>Vài nguyên tắc để không nhận hóa đơn bất ngờ:</p>
 <ul>
 <li>Đặt <b>cảnh báo chi phí</b> ngay khi tạo tài khoản, ví dụ báo email khi chi phí vượt một mức nhỏ. AWS có dịch vụ <b>AWS Budgets</b> cho việc này.</li>
@@ -423,7 +423,7 @@
 <li>Nhu cầu phổ biến (email, kế toán, quản lý khách hàng) đã có phần mềm làm sẵn: chọn <b>SaaS</b>, khỏi phải tự xây.</li>
 </ul>
 <p>Trong thực tế, một công ty thường dùng <i>cả ba</i> cùng lúc cho các nhu cầu khác nhau. Điều quan trọng là hiểu ranh giới trách nhiệm: phần nào bạn lo, phần nào nhà cung cấp lo. Ý tưởng này sẽ quay lại ở bài <b>Shared Responsibility Model</b> (mô hình trách nhiệm chia sẻ) trong Domain 2: dịch vụ càng được quản lý nhiều, AWS càng gánh nhiều phần việc.</p>
-<div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Thuê nhà cũng vậy: thuê đất trống thì tự xây nhà (IaaS), thuê căn hộ có sẵn nội thất thì chỉ mang vali đến (PaaS), ở khách sạn thì có người dọn phòng, nấu ăn (SaaS). Càng tiện thì càng ít được tự ý sửa sang.</p></div>
+<div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Thuê chỗ ở cũng vậy. Tự xây nhà trên đất của mình là on-premises. Thuê <b>căn hộ trống</b>: tường, điện nước có sẵn, bạn tự mua nội thất và tự sắp xếp (IaaS). Thuê <b>căn hộ có sẵn nội thất</b>: chỉ mang vali đến ở (PaaS). Ở <b>khách sạn</b>: có người dọn phòng, nấu ăn, bạn chỉ việc dùng (SaaS). Giống chuyện pizza ở trên: càng tiện thì càng ít được tự ý sửa sang.</p></div>
 
 <h3>Cách đề thi hỏi</h3>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
@@ -686,45 +686,46 @@
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống bộ tiêu chuẩn kiểm định một ngôi nhà: móng có chắc không, có an toàn cháy nổ không, có tốn điện không, có dễ bảo trì không. Không phải luật bắt buộc, mà là danh sách kiểm tra để bạn tự đánh giá và cải thiện.</p></div>
 
 <h3>Ba trụ cột đầu: vận hành, bảo mật, tin cậy</h3>
-<p><b>1. Operational Excellence</b> (vận hành xuất sắc): chạy và giám sát hệ thống tốt, liên tục cải tiến quy trình. Nguyên tắc tiêu biểu: <b>perform operations as code</b> (vận hành bằng code, ví dụ dựng hạ tầng bằng AWS CloudFormation), thay đổi nhỏ và thường xuyên, có thể quay lại; học từ sự cố.</p>
+<p><b>1. Operational Excellence</b> (vận hành xuất sắc): chạy và giám sát hệ thống tốt, liên tục cải tiến quy trình. Nguyên tắc tiêu biểu: <b>safely automate where possible</b> (tự động hóa an toàn, tức vận hành bằng code, ví dụ dựng hạ tầng bằng AWS CloudFormation; tài liệu cũ gọi là <i>perform operations as code</i>), <b>implement observability</b> (đo đạc, giám sát để ra quyết định), thay đổi nhỏ và thường xuyên, có thể quay lại; học từ sự cố; <b>use managed services</b> (dùng dịch vụ managed để giảm gánh nặng vận hành).</p>
 <p><i>Ví dụ BánhNgon:</i> Minh viết script tự động triển khai website thay vì làm tay, sau mỗi sự cố đều viết lại "bài học rút ra".</p>
-<p><b>2. Security</b> (bảo mật): bảo vệ dữ liệu, hệ thống và tài sản. Nguyên tắc: quyền tối thiểu (least privilege), bảo vệ mọi lớp, mã hóa dữ liệu, bật truy vết (traceability) để biết ai làm gì.</p>
+<p><b>2. Security</b> (bảo mật): bảo vệ dữ liệu, hệ thống và tài sản. Nguyên tắc: quyền tối thiểu (least privilege), bảo vệ mọi lớp, mã hóa dữ liệu, duy trì truy vết (<b>maintain traceability</b>) để biết ai làm gì.</p>
 <p><i>Ví dụ BánhNgon:</i> nhân viên bán hàng chỉ xem được đơn hàng, không xóa được database; dữ liệu khách được mã hóa.</p>
 <p><b>3. Reliability</b> (độ tin cậy): hệ thống làm đúng chức năng một cách ổn định, <b>tự phục hồi khi gặp sự cố</b> và đáp ứng được nhu cầu. Nguyên tắc: tự động phục hồi, thử nghiệm quy trình phục hồi, mở rộng theo chiều ngang, thôi đoán công suất.</p>
 <p><i>Ví dụ BánhNgon:</i> website chạy ở 2 Availability Zone, database có bản sao dự phòng, có kế hoạch khôi phục và đã diễn tập.</p>
 
 <h3>Ba trụ cột sau: hiệu năng, chi phí, bền vững</h3>
-<p><b>4. Performance Efficiency</b> (hiệu quả hiệu năng): dùng tài nguyên máy tính hiệu quả để đáp ứng yêu cầu, và giữ hiệu quả khi nhu cầu và công nghệ thay đổi. Nguyên tắc: dùng công nghệ tiên tiến dạng dịch vụ có sẵn, <b>go global in minutes</b>, dùng serverless, thử nghiệm thường xuyên.</p>
+<p><b>4. Performance Efficiency</b> (hiệu quả hiệu năng): dùng tài nguyên máy tính hiệu quả để đáp ứng yêu cầu, và giữ hiệu quả khi nhu cầu và công nghệ thay đổi. Nguyên tắc: dùng dịch vụ managed để khỏi tự vận hành công nghệ phức tạp, <b>triển khai gần khách hàng</b> (tài liệu cũ: <i>go global in minutes</i>), kiến trúc co giãn được (ví dụ serverless), thử nghiệm thường xuyên.</p>
 <p><i>Ví dụ BánhNgon:</i> chọn loại máy phù hợp với tải, dùng CloudFront để ảnh bánh tải nhanh cho khách ở Nhật.</p>
-<p><b>5. Cost Optimization</b> (tối ưu chi phí): tạo ra giá trị kinh doanh với chi phí thấp nhất, tránh chi phí không cần thiết. Nguyên tắc: trả theo mức dùng, đo lường hiệu quả, theo dõi và phân bổ chi phí, thôi chi tiền cho việc nặng nhọc không tạo khác biệt.</p>
+<p><b>5. Cost Optimization</b> (tối ưu chi phí): tạo ra giá trị kinh doanh với chi phí thấp nhất, tránh chi phí không cần thiết. Nguyên tắc: quản lý tài chính cloud, trả theo mức dùng, đo chi phí so với kết quả kinh doanh, dùng dịch vụ managed và tự động hóa, phân bổ chi phí chi tiết (ví dụ bằng tag).</p>
 <p><i>Ví dụ BánhNgon:</i> tắt máy thử nghiệm ban đêm, rightsizing, gắn tag để biết chi phí của từng chi nhánh.</p>
-<p><b>6. Sustainability</b> (bền vững): giảm tác động đến môi trường của hệ thống. Nguyên tắc: hiểu tác động của mình, <b>tối đa hóa mức sử dụng</b> tài nguyên (không để máy chạy không), dùng dịch vụ managed, giảm tài nguyên cần thiết.</p>
+<p><b>6. Sustainability</b> (bền vững): giảm tác động đến môi trường của hệ thống. Nguyên tắc: hiểu tác động của mình, đặt mục tiêu bền vững, <b>tối đa hóa mức sử dụng</b> tài nguyên (không để máy chạy không), lên đời phần cứng/phần mềm hiệu quả hơn, chỉ giữ dữ liệu thật sự cần.</p>
 <p><i>Ví dụ BánhNgon:</i> gộp các máy chạy ít thành một máy chạy đủ tải, xóa dữ liệu cũ không cần nữa.</p>
 
 <h3>Bảng so sánh và từ khóa</h3>
 <table>
 <tr><th>Pillar</th><th>Câu hỏi cốt lõi</th><th>Từ khóa trong đề</th></tr>
-<tr><td>Operational Excellence</td><td>Vận hành và cải tiến có tốt không?</td><td>operations as code, monitoring, small frequent changes, learn from failures, runbooks</td></tr>
+<tr><td>Operational Excellence</td><td>Vận hành và cải tiến có tốt không?</td><td>operations as code, automate safely, observability, small frequent changes, learn from failures, runbooks, use managed services</td></tr>
 <tr><td>Security</td><td>Dữ liệu và hệ thống có được bảo vệ không?</td><td>least privilege, encryption, traceability, protect data, identity</td></tr>
 <tr><td>Reliability</td><td>Có tự phục hồi và đáp ứng nhu cầu không?</td><td>recover from failures, automatically recover, Multi-AZ, test recovery</td></tr>
-<tr><td>Performance Efficiency</td><td>Có dùng đúng loại tài nguyên một cách hiệu quả không?</td><td>select right resource type, serverless, go global, experiment</td></tr>
+<tr><td>Performance Efficiency</td><td>Có dùng đúng loại tài nguyên một cách hiệu quả không?</td><td>select right resource type, serverless, deploy closer to customers, experiment</td></tr>
 <tr><td>Cost Optimization</td><td>Có tránh chi phí thừa không?</td><td>avoid unnecessary costs, pay-as-you-go, measure efficiency</td></tr>
 <tr><td>Sustainability</td><td>Có giảm tác động môi trường không?</td><td>environmental impact, maximize utilization, energy, carbon</td></tr>
 </table>
 
 <h3>Design principles: đề thi hay hỏi nguyên văn</h3>
-<p>Đề thường đưa tên một <b>design principle</b> (nguyên tắc thiết kế) bằng tiếng Anh rồi hỏi nó thuộc trụ cột nào. Bảng dưới là các nguyên tắc hay gặp (AWS thỉnh thoảng chỉnh câu chữ trong tài liệu, nhưng ý chính giữ nguyên):</p>
+<p>Đề thường đưa tên một <b>design principle</b> (nguyên tắc thiết kế) bằng tiếng Anh rồi hỏi nó thuộc trụ cột nào. Bảng dưới theo <b>tài liệu Well-Architected Framework hiện tại</b> (Operational Excellence có 7 nguyên tắc) trên docs.aws.amazon.com (đối chiếu 11/2026). AWS đã đổi câu chữ vài lần, nên cột cuối ghi <b>tên cũ</b> mà sách, khóa học và đề luyện của bên thứ ba vẫn hay dùng. Gặp tên nào thì cũng nhận ra được trụ cột.</p>
 <table>
-<tr><th>Pillar</th><th>Design principles hay gặp</th><th>Hiểu đơn giản</th></tr>
-<tr><td>Operational Excellence</td><td>Perform operations as code; Make frequent, small, reversible changes; Refine operations procedures frequently; Anticipate failure; Learn from all operational failures</td><td>Tự động hóa bằng code (kể cả runbook), đổi ít một và quay lại được, họp rút kinh nghiệm sau sự cố theo kiểu không đổ lỗi (blameless)</td></tr>
-<tr><td>Security</td><td>Implement a strong identity foundation; Enable traceability; Apply security at all layers; Automate security best practices; Protect data in transit and at rest; Keep people away from data; Prepare for security events</td><td>Quyền tối thiểu, ghi vết, nhiều lớp bảo vệ (edge, VPC, subnet, instance, code), mã hóa, dùng dashboard/công cụ thay vì để người truy cập trực tiếp dữ liệu</td></tr>
-<tr><td>Reliability</td><td>Automatically recover from failure; Test recovery procedures; Scale horizontally to increase aggregate workload availability; Stop guessing capacity; Manage change in automation</td><td>Tự phục hồi, diễn tập khôi phục, nhiều máy nhỏ thay vì một máy to</td></tr>
-<tr><td>Performance Efficiency</td><td>Democratize advanced technologies; Go global in minutes; Use serverless architectures; Experiment more often; Consider mechanical sympathy</td><td>Dùng dịch vụ có sẵn (AI, database…) thay vì tự xây, chọn công nghệ hợp với cách dữ liệu được dùng</td></tr>
-<tr><td>Cost Optimization</td><td>Implement Cloud Financial Management; Adopt a consumption model; Measure overall efficiency; Stop spending money on undifferentiated heavy lifting; Analyze and attribute expenditure</td><td>Có đội tài chính + kỹ thuật lo văn hóa chi phí, trả theo mức dùng, gắn tag để biết ai tiêu bao nhiêu</td></tr>
-<tr><td>Sustainability</td><td>Understand your impact; Establish sustainability goals; Maximize utilization; Anticipate and adopt new, more efficient hardware and software offerings; Use managed services; Reduce the downstream impact of your cloud workloads</td><td>Đo tác động, không để máy chạy không, lên đời phần cứng hiệu quả hơn, dùng chung hạ tầng qua dịch vụ managed</td></tr>
+<tr><th>Pillar</th><th>Design principles hiện tại</th><th>Tên cũ hay gặp trong tài liệu ôn</th><th>Hiểu đơn giản</th></tr>
+<tr><td>Operational Excellence</td><td>Implement observability for actionable insights; Safely automate where possible; Make frequent, small, reversible changes; Refine operations frequently; Anticipate failure; Learn from all operational events and metrics; <b>Use managed services</b></td><td>Perform operations as code (nay là <i>Safely automate where possible</i>); Refine operations procedures frequently; Learn from all operational failures; Organize teams around business outcomes (có trong whitepaper Operational Excellence Pillar, trang framework hiện tại không còn liệt kê)</td><td>Tổ chức đội theo mục tiêu kinh doanh, đo đạc để ra quyết định, tự động hóa bằng code (kể cả runbook) có rào chắn an toàn, đổi ít một và quay lại được, rút kinh nghiệm sau sự cố theo kiểu không đổ lỗi (blameless), dùng dịch vụ managed để giảm việc vận hành</td></tr>
+<tr><td>Security</td><td>Implement a strong identity foundation; <b>Maintain traceability</b>; Apply security at all layers; Automate security best practices; Protect data in transit and at rest; Keep people away from data; Prepare for security events</td><td>Enable traceability (nay là <i>Maintain traceability</i>)</td><td>Quyền tối thiểu, ghi vết, nhiều lớp bảo vệ (edge, VPC, subnet, instance, code), mã hóa, dùng dashboard/công cụ thay vì để người truy cập trực tiếp dữ liệu</td></tr>
+<tr><td>Reliability</td><td>Automatically recover from failure; Test recovery procedures; Scale horizontally to increase aggregate workload availability; Stop guessing capacity; Manage change through automation</td><td>Manage change in automation</td><td>Tự phục hồi, diễn tập khôi phục, nhiều máy nhỏ thay vì một máy to</td></tr>
+<tr><td>Performance Efficiency</td><td>Use managed services to reduce operational complexity; Deploy workloads closer to your customers; Build scalable architectures; Experiment more often; Consider mechanical sympathy; Design for change and variable demand</td><td>Democratize advanced technologies; Go global in minutes; Use serverless architectures</td><td>Dùng dịch vụ có sẵn (AI, NoSQL…) thay vì tự xây chuyên môn sâu, đặt hệ thống gần khách hàng, chọn công nghệ hợp với cách dữ liệu được dùng</td></tr>
+<tr><td>Cost Optimization</td><td>Implement Cloud Financial Management; Adopt a consumption model; Measure business outcomes relative to costs; Use managed services and automation; Implement granular cost allocation</td><td>Measure overall efficiency; Stop spending money on undifferentiated heavy lifting; Analyze and attribute expenditure</td><td>Có đội tài chính + kỹ thuật lo văn hóa chi phí, trả theo mức dùng, đo chi phí so với giá trị tạo ra, gắn tag để biết ai tiêu bao nhiêu</td></tr>
+<tr><td>Sustainability</td><td>Understand your impact; Establish sustainability goals; Maximize utilization; Anticipate and adopt new, more efficient hardware and software offerings; Align computational approach to problem complexity; Minimize the footprint of data and its processing</td><td>Use managed services; Reduce the downstream impact of your cloud workloads</td><td>Đo tác động, không để máy chạy không, lên đời phần cứng hiệu quả hơn, không dùng "dao mổ trâu giết gà", chỉ giữ dữ liệu có mục đích rõ ràng</td></tr>
 </table>
+<p><b>"Use managed services"</b> giờ xuất hiện ở nhiều trụ cột: đứng một mình là nguyên tắc của <b>Operational Excellence</b> (giảm gánh nặng vận hành); dạng "…to reduce operational complexity" thuộc <b>Performance Efficiency</b>; dạng "…and automation" thuộc <b>Cost Optimization</b>. Tài liệu cũ còn xếp nó vào Sustainability. Khi đề hỏi, hãy đọc kỹ cả cụm từ và mục đích được nêu (giảm vận hành, dùng công nghệ khó, hay tiết kiệm chi phí).</p>
 <p><b>Cloud Financial Management</b> (quản lý tài chính cloud) là xây dựng năng lực và văn hóa quản lý chi phí: một nhóm gồm người tài chính và kỹ thuật đào tạo kỹ sư về ý thức chi phí, đặt mục tiêu chi tiêu, cùng các đội sản phẩm xem lại mức dùng. Việc này thuộc <b>Cost Optimization</b>.</p>
-<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Stop guessing capacity" vừa là một trong 6 lợi ích của cloud, vừa là nguyên tắc của <b>Reliability</b> (không phải Cost Optimization). "Democratize advanced technologies" (dùng dịch vụ AI managed thay vì tự huấn luyện mô hình) thuộc <b>Performance Efficiency</b>. "Keep people away from data" thuộc <b>Security</b>.</p></div>
+<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Stop guessing capacity" vừa là một trong 6 lợi ích của cloud, vừa là nguyên tắc của <b>Reliability</b> (không phải Cost Optimization). "Democratize advanced technologies" (tên cũ; nay là "Use managed services to reduce operational complexity": dùng dịch vụ AI managed thay vì tự huấn luyện mô hình) thuộc <b>Performance Efficiency</b>. "Keep people away from data" thuộc <b>Security</b>.</p></div>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Sau một năm trên AWS, Minh dùng <b>AWS Well-Architected Tool</b> trong Console để tự trả lời các câu hỏi về hệ thống BánhNgon. Công cụ chỉ ra: chưa diễn tập khôi phục dữ liệu (Reliability), có vài máy chạy không suốt đêm (Cost Optimization và Sustainability), và một tài khoản có quyền quá rộng (Security). Minh lên kế hoạch sửa từng mục.</p></div>
 <p><b>AWS Well-Architected Tool</b> là dịch vụ miễn phí trong Console giúp bạn review workload theo các best practice của framework. Bạn trả lời bộ câu hỏi theo từng trụ cột, công cụ đánh dấu các <b>high-risk issues</b> (vấn đề rủi ro cao), cho bạn lưu <b>milestone</b> (ảnh chụp trạng thái tại một thời điểm để so sánh về sau) và tạo <b>improvement plan</b> (kế hoạch cải tiến).</p>
 <p><b>Well-Architected Lenses</b> (lăng kính) là bộ câu hỏi và hướng dẫn <i>bổ sung</i> cho một ngành hoặc một loại công nghệ cụ thể, dùng thêm sau khi đã review theo 6 trụ cột chung. Ví dụ: lens cho Financial Services Industry, Serverless, SaaS, Machine Learning, Data Analytics. Trong Well-Architected Tool có thể áp dụng lens từ thư viện có sẵn, hoặc tự tạo custom lens.</p>
@@ -735,7 +736,7 @@
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống chọn xe giao bánh: xe to chở nhiều nhưng tốn xăng, xe máy rẻ nhưng chở ít. Không có xe "tốt nhất", chỉ có xe hợp với nhu cầu và túi tiền của tiệm lúc đó.</p></div>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"recover from failures and meet demand" → <b>Reliability</b>.</li>
-<li>"perform operations as code" → <b>Operational Excellence</b>.</li>
+<li>"perform operations as code", "safely automate where possible", "implement observability", "use managed services to reduce operational burden" → <b>Operational Excellence</b>.</li>
 <li>"minimize environmental impact", "maximize utilization" → <b>Sustainability</b>.</li>
 <li>"use computing resources efficiently", "select the right instance type" → <b>Performance Efficiency</b>.</li>
 <li>"avoid unnecessary costs" → <b>Cost Optimization</b>.</li>
@@ -745,16 +746,16 @@
 <li>"strong identity foundation", "traceability", "apply security at all layers", "keep people away from data" → <b>Security</b>.</li>
 <li>"test recovery procedures", "scale horizontally", "stop guessing capacity" → <b>Reliability</b>.</li>
 <li>"frequent, small, reversible changes", "blameless post-incident review", "runbooks as code" → <b>Operational Excellence</b>.</li>
-<li>"democratize advanced technologies", "use serverless architectures", "experiment more often" → <b>Performance Efficiency</b>.</li>
-<li>"Cloud Financial Management", "consumption model", "undifferentiated heavy lifting", "tag and attribute costs per team" → <b>Cost Optimization</b>.</li>
-<li>"adopt new, more efficient hardware", "use managed services to share infrastructure" → <b>Sustainability</b>.</li>
+<li>"democratize advanced technologies", "use serverless architectures", "go global in minutes" / "deploy closer to customers", "experiment more often" → <b>Performance Efficiency</b>.</li>
+<li>"Cloud Financial Management", "consumption model", "granular cost allocation", "tag and attribute costs per team" → <b>Cost Optimization</b>. "Stop spending money on undifferentiated heavy lifting" là <b>tên cũ</b> của một nguyên tắc Cost Optimization (cụm "undifferentiated heavy lifting" cũng hay xuất hiện khi nói về lợi ích cloud): nếu đề hỏi trụ cột và nhắc tới <b>chi phí</b>, chọn <b>Cost Optimization</b>.</li>
+<li>"adopt new, more efficient hardware", "establish sustainability goals", "minimize the footprint of data" → <b>Sustainability</b> (tài liệu cũ: "use managed services to share infrastructure" cũng thuộc Sustainability).</li>
 </ul></div>
-<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Maximize utilization" có thể khiến bạn nghĩ đến Performance hay Cost, nhưng khi đề nhắc đến <i>môi trường</i> (environmental impact, energy) thì đáp án là <b>Sustainability</b>. Còn "go global in minutes" vừa là một trong 6 lợi ích của cloud, vừa là nguyên tắc của Performance Efficiency: đọc kỹ đề đang hỏi về lợi ích hay về trụ cột.</p></div>
+<div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>"Maximize utilization" có thể khiến bạn nghĩ đến Performance hay Cost, nhưng khi đề nhắc đến <i>môi trường</i> (environmental impact, energy) thì đáp án là <b>Sustainability</b>. Còn "go global in minutes" vừa là một trong 6 lợi ích của cloud, vừa là tên cũ của một nguyên tắc Performance Efficiency (nay là "Deploy workloads closer to your customers"): đọc kỹ đề đang hỏi về lợi ích hay về trụ cột.</p></div>
 `,
     summary: [
       "Well-Architected Framework là bộ best practice giúp đánh giá và cải tiến hệ thống trên AWS.",
       "6 trụ cột: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability.",
-      "Operations as code → Operational Excellence; recover from failures → Reliability.",
+      "Operations as code / safely automate, observability, use managed services → Operational Excellence; recover from failures → Reliability.",
       "Chọn đúng loại tài nguyên, serverless, democratize → Performance Efficiency; tránh chi phí thừa → Cost Optimization; identity, traceability, all layers → Security.",
       "Giảm tác động môi trường, tối đa hóa mức sử dụng → Sustainability.",
       "AWS Well-Architected Tool giúp review workload theo framework (milestone, improvement plan, high-risk issues); lens bổ sung câu hỏi cho từng ngành/công nghệ.",
@@ -869,7 +870,8 @@
 <tr><td><b>AWS DMS</b> (Database Migration Service)</td><td>Di chuyển database; database nguồn vẫn hoạt động bình thường trong lúc chuyển; hỗ trợ cùng loại engine (MySQL → MySQL) và khác loại (Oracle → PostgreSQL); sao chép thay đổi liên tục để downtime tối thiểu</td><td>Di chuyển database</td></tr>
 <tr><td><b>AWS SCT</b> (Schema Conversion Tool)</td><td>Chuyển đổi cấu trúc (schema) database khi đổi sang loại database khác, ví dụ Oracle sang PostgreSQL</td><td>Di chuyển database</td></tr>
 <tr><td><b>AWS Migration Hub</b></td><td>Một nơi duy nhất để theo dõi tiến độ migration qua nhiều công cụ (lưu ý: từ 7/11/2025 dịch vụ ngừng nhận khách hàng mới, AWS khuyên dùng AWS Transform; nhưng đề thi vẫn có thể hỏi theo mô tả này)</td><td>Theo dõi</td></tr>
-<tr><td><b>AWS DataSync</b></td><td>Chuyển lượng lớn <i>file</i> qua mạng (internet hoặc Direct Connect) từ file server on-prem (NFS, SMB…) lên S3, EFS, FSx; tự động lên lịch, mã hóa khi truyền, kiểm tra toàn vẹn dữ liệu</td><td>Di chuyển dữ liệu file</td></tr>
+<tr><td><b>AWS DataSync</b></td><td>Chuyển lượng lớn <i>file</i> qua mạng (internet hoặc Direct Connect) từ file server on-prem (NFS, SMB…) lên S3, EFS, FSx; tự động lên lịch, mã hóa khi truyền, kiểm tra toàn vẹn dữ liệu (lưu ý: DataSync không có trong danh sách in-scope hiện tại của CLF-C02, nhưng vẫn hay gặp trong đề luyện)</td><td>Di chuyển dữ liệu file</td></tr>
+<tr><td><b>AWS Snowball</b> (họ AWS Snow Family)</td><td>Thiết bị <b>vật lý</b> AWS gửi tới tận nơi: chép dữ liệu vào rồi gửi trả, AWS đưa lên S3. Dùng khi phải chuyển hàng <b>TB tới PB</b> mà đường mạng quá chậm hoặc quá đắt (lưu ý: từ 7/11/2025 Snowball Edge ngừng nhận khách hàng mới, AWS khuyên dùng DataSync hoặc AWS Data Transfer Terminal; Snow Family cũng không còn trong danh sách in-scope hiện tại của CLF-C02, nhưng đề luyện rất hay hỏi "petabytes, limited bandwidth, offline transfer" → Snowball)</td><td>Di chuyển dữ liệu offline</td></tr>
 </table>
 <p>Ngoài công cụ, AWS còn có chương trình <b>AWS Migration Acceleration Program (MAP)</b>: dành cho doanh nghiệp muốn chuyển nhiều workload nhưng thiếu kinh nghiệm. MAP cung cấp phương pháp có cấu trúc, công cụ, chuyên gia từ đối tác (AWS Partners) và đầu tư từ AWS (ví dụ credit) để bù một phần chi phí migration.</p>
 <div class="flow"><span>Migration Evaluator</span><span>Application Discovery Service</span><span>Application Migration Service / DMS</span><span>Migration Hub theo dõi</span></div>
@@ -883,6 +885,7 @@
 <li>"one-time online transfer of many TB of files from NFS/SMB to Amazon S3" → <b>AWS DataSync</b>; "Oracle → Aurora PostgreSQL" → <b>SCT</b> (schema) + <b>DMS</b> (dữ liệu).</li>
 <li>"program with methodology, partners, AWS credits for large migrations" → <b>AWS Migration Acceleration Program (MAP)</b>.</li>
 <li>"migrate database with minimal downtime, continuous replication" → <b>AWS DMS</b>.</li>
+<li>"move petabytes of data, limited or no network bandwidth, physical device" → <b>AWS Snowball</b> (thiết bị vật lý; nay ngừng nhận khách mới nhưng vẫn gặp trong đề luyện).</li>
 <li>"collect information about on-premises servers, dependencies" → <b>AWS Application Discovery Service</b>; "lift and shift many servers" → <b>AWS Application Migration Service</b>; "track progress of migrations" → <b>AWS Migration Hub</b>.</li>
 </ul></div>
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p><b>Security</b> vừa là một perspective của CAF, vừa là một pillar của Well-Architected: đọc kỹ đề hỏi framework nào. Và nhớ: Rehost không sửa gì; Replatform sửa nhẹ (thường là dùng dịch vụ managed) nhưng giữ kiến trúc; Refactor mới là viết lại. DMS di chuyển dữ liệu, còn SCT chuyển đổi schema khi đổi loại database.</p></div>

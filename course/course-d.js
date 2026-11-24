@@ -364,7 +364,7 @@
     goals: [
       "Hiểu decoupling (tách rời các thành phần) là gì và vì sao quan trọng",
       "Phân biệt SQS, SNS, EventBridge và Step Functions",
-      "Biết các dịch vụ cho doanh nghiệp (Connect, SES), lập trình viên (CodeBuild, CodePipeline, X-Ray, CLI) và máy tính người dùng cuối (WorkSpaces, WorkSpaces Applications (trước đây là AppStream 2.0), WorkSpaces Secure Browser)",
+      "Biết các dịch vụ cho doanh nghiệp (Connect, SES), lập trình viên (CodeBuild, CodePipeline, X-Ray, CLI) và máy tính người dùng cuối (WorkSpaces, AppStream 2.0 (nay là WorkSpaces Applications), WorkSpaces Secure Browser)",
       "Biết Amplify và IoT Core dùng khi nào"
     ],
     html: `
@@ -415,12 +415,13 @@
 <li><b>AWS X-Ray</b>: <b>tracing</b> (lần theo dấu) một yêu cầu đi qua nhiều thành phần (API Gateway → các Lambda → DynamoDB, hay nhiều microservice), để tìm xem chậm hoặc lỗi ở đâu. Đừng nhầm: CloudTrail ghi <b>ai gọi API nào</b> trong tài khoản, X-Ray theo dõi <b>đường đi của yêu cầu</b> trong ứng dụng.</li>
 <li><b>AWS CLI</b> (Command Line Interface): điều khiển AWS bằng <b>lệnh gõ</b> trong cửa sổ dòng lệnh, tiện tự động hóa bằng script. (Còn viết code bằng Python, Java... để gọi AWS thì dùng <b>AWS SDK</b>.)</li>
 </ul>
+<p class="small"><i>Lưu ý về phạm vi đề: danh sách In-Scope AWS Services hiện tại của CLF-C02 (đối chiếu 11/2026) chỉ còn CLI, CodeBuild, CodePipeline và X-Ray ở nhóm Developer Tools. Các dịch vụ như <b>AWS CodeCommit, CodeDeploy, CodeArtifact, Cloud9, CodeStar</b>, cũng như <b>AWS Snow Family, AWS Transfer Family</b> và <b>AWS DataSync</b> ở nhóm migration, không còn trong danh sách này. Đề luyện của bên thứ ba (đặc biệt bộ cũ) vẫn có thể nhắc tới chúng: biết sơ qua để không bối rối, nhưng không cần học sâu.</i></p>
 
 <h3>4. Máy tính cho người dùng cuối, Amplify và IoT Core</h3>
 <h4>End-user computing (máy tính cho người dùng cuối)</h4>
 <ul>
 <li><b>Amazon WorkSpaces</b>: cung cấp <b>máy tính để bàn ảo</b> (virtual desktop) Windows hoặc Linux. Nhân viên đăng nhập từ bất kỳ thiết bị nào và thấy cả một "máy tính" đầy đủ.</li>
-<li><b>Amazon WorkSpaces Applications</b> (trước đây là <b>Amazon AppStream 2.0</b>, đổi tên từ 11/2025; đề thi có thể vẫn dùng tên cũ): <b>stream một ứng dụng</b> cụ thể tới trình duyệt người dùng, không cấp cả máy tính.</li>
+<li><b>Amazon AppStream 2.0</b> (nay là <b>Amazon WorkSpaces Applications</b>, đổi tên từ 11/2025; <b>Exam Guide và đề thi dùng tên cũ AppStream 2.0</b>): <b>stream một ứng dụng</b> cụ thể tới trình duyệt người dùng, không cấp cả máy tính.</li>
 <li><b>Amazon WorkSpaces Secure Browser</b> (trước đây là WorkSpaces Web): cho nhân viên một <b>trình duyệt an toàn</b> để vào các trang web nội bộ, dữ liệu không nằm lại trên máy cá nhân.</li>
 </ul>
 <h4>AWS Amplify</h4>
@@ -435,7 +436,7 @@
 <li>"coordinate Lambda functions in a visual workflow" → <b>Step Functions</b></li>
 <li>"cloud contact center" → <b>Connect</b>; "send marketing and transactional emails" → <b>SES</b></li>
 <li>"compile code, run tests" → <b>CodeBuild</b>; "automate build, test, deploy (CI/CD)" → <b>CodePipeline</b>; "trace requests, find bottlenecks" → <b>X-Ray</b></li>
-<li>"virtual desktops" → <b>WorkSpaces</b>; "stream a desktop application to browser" → <b>WorkSpaces Applications</b> (trước đây AppStream 2.0)</li>
+<li>"virtual desktops" → <b>WorkSpaces</b>; "stream a desktop application to browser" → <b>AppStream 2.0</b> (nay là WorkSpaces Applications; đề dùng tên cũ)</li>
 <li>"frontend/mobile developers build and host full-stack apps" → <b>Amplify</b>; "connect IoT devices" → <b>IoT Core</b></li>
 </ul></div>
 `,
@@ -445,7 +446,7 @@
       "SQS Standard: thông lượng gần như vô hạn, at-least-once; SQS FIFO: đúng thứ tự, exactly-once.",
       "EventBridge = event bus định tuyến sự kiện theo rule; EventBridge Scheduler = chạy việc theo lịch. Step Functions = workflow trực quan có retry.",
       "CodeBuild = build và test; CodePipeline = dây chuyền CI/CD; X-Ray = lần theo yêu cầu; CLI = điều khiển AWS bằng lệnh.",
-      "WorkSpaces = máy tính ảo đầy đủ; WorkSpaces Applications (trước đây AppStream 2.0) = stream một ứng dụng; WorkSpaces Secure Browser = trình duyệt an toàn.",
+      "WorkSpaces = máy tính ảo đầy đủ; AppStream 2.0 (nay là WorkSpaces Applications, đề dùng tên cũ) = stream một ứng dụng; WorkSpaces Secure Browser = trình duyệt an toàn.",
       "Connect = tổng đài đám mây; SES = gửi email hàng loạt; Amplify = xây và host app web/mobile full-stack; IoT Core = kết nối thiết bị IoT."
     ],
     terms: [
@@ -505,6 +506,7 @@
 <ul>
 <li><b>Amazon Q Business</b>: kết nối tới nguồn dữ liệu của công ty (wiki, chính sách, kho tài liệu, ứng dụng SaaS) để nhân viên <b>hỏi đáp bằng ngôn ngữ tự nhiên</b>, tóm tắt, tạo nội dung.</li>
 <li><b>Amazon Q Developer</b>: hỗ trợ <b>lập trình viên</b>: gợi ý và viết code, giải thích code, xử lý lỗi, trả lời câu hỏi về AWS.</li>
+<li><i>Tình trạng hiện tại (không ảnh hưởng nội dung thi): Amazon Q Business hiện không còn nhận khách hàng mới (AWS gợi ý chuyển sang Amazon Quick); các plugin IDE của Amazon Q Developer hết hỗ trợ ngày 30/4/2027, được thay bằng <b>Kiro</b>. Đề thi vẫn hỏi theo mô tả ở trên.</i></li>
 </ul></li>
 </ul>
 <p>Các dịch vụ này hay được <b>ghép thành chuỗi</b>. Ví dụ đơn bảo hiểm scan bằng tiếng Tây Ban Nha: Textract (lấy chữ) → Translate (dịch sang tiếng Anh) → Comprehend (cảm xúc, cụm từ khóa). Hay tổng đài: Transcribe (giọng nói → chữ) → Translate → Polly (đọc câu trả lời thành tiếng). Đề thi kiểu "Choose THREE" rất thích dạng này: hãy tách bài toán thành từng bước "đầu vào → đầu ra".</p>
@@ -609,7 +611,7 @@
 <h4>Amazon Redshift</h4>
 <p><b>Redshift</b> là <b>data warehouse</b> (đã gặp ở bài database): dữ liệu được nạp và sắp xếp sẵn để chạy truy vấn phân tích phức tạp, thường xuyên, trên khối dữ liệu rất lớn, phục vụ báo cáo kinh doanh.</p>
 <h4>Amazon Quick</h4>
-<p><b>Amazon Quick</b> (trước đây là Amazon QuickSight) là công cụ <b>BI</b> (Business Intelligence, phân tích kinh doanh) giúp người dùng không chuyên kỹ thuật tạo <b>dashboard</b> (bảng điều khiển) và biểu đồ tương tác từ dữ liệu.</p>
+<p><b>Amazon Quick</b> (tên dùng trong danh sách dịch vụ của Exam Guide; trước đây là Amazon QuickSight, đề luyện cũ hay dùng tên này) là công cụ <b>BI</b> (Business Intelligence, phân tích kinh doanh) giúp người dùng không chuyên kỹ thuật tạo <b>dashboard</b> (bảng điều khiển) và biểu đồ tương tác từ dữ liệu.</p>
 <h4>Amazon OpenSearch Service</h4>
 <p><b>OpenSearch Service</b> dùng để <b>tìm kiếm toàn văn</b> (full-text search, ví dụ ô tìm kiếm sản phẩm trên website) và <b>phân tích log gần thời gian thực</b>, có dashboard tương tác (OpenSearch Dashboards) để phát hiện lỗi tăng vọt. Trước đây dịch vụ này tên là Amazon Elasticsearch Service.</p>
 <h4>Vài dịch vụ phân tích khác (ngoài danh sách của Exam Guide, chỉ cần biết tên để không nhầm)</h4>
@@ -706,7 +708,7 @@
 
 <h3>3. Công cụ đưa khuyến nghị và theo dõi</h3>
 <ul>
-<li><b>AWS Trusted Advisor</b>: kiểm tra tài khoản của bạn và đưa <b>khuyến nghị theo best practice</b> ở 6 nhóm: <b>cost optimization</b> (chi phí), <b>performance</b> (hiệu năng), <b>security</b> (bảo mật), <b>fault tolerance</b> (chịu lỗi), <b>service limits</b> (giới hạn dịch vụ), <b>operational excellence</b> (vận hành). Ví dụ: chỉ ra máy EC2 để không hoặc dùng rất ít, ổ EBS không gắn vào đâu, S3 bucket mở công khai, security group mở cổng cho mọi địa chỉ, root user chưa bật MFA, sắp chạm giới hạn dịch vụ. Gói <b>Basic</b> (miễn phí) vẫn có một số kiểm tra cốt lõi (core checks) về bảo mật và giới hạn dịch vụ; bộ kiểm tra đầy đủ cần gói Support cao hơn.</li>
+<li><b>AWS Trusted Advisor</b>: kiểm tra tài khoản của bạn và đưa <b>khuyến nghị theo best practice</b> ở 6 nhóm: <b>cost optimization</b> (chi phí), <b>performance</b> (hiệu năng), <b>security</b> (bảo mật), <b>fault tolerance</b> (chịu lỗi), <b>service limits</b> (giới hạn dịch vụ), <b>operational excellence</b> (vận hành). Ví dụ: chỉ ra máy EC2 để không hoặc dùng rất ít, ổ EBS không gắn vào đâu, S3 bucket mở công khai, security group mở cổng cho mọi địa chỉ, root user chưa bật MFA, sắp chạm giới hạn dịch vụ. Gói <b>Basic</b> (miễn phí) có <b>toàn bộ kiểm tra service limits</b>, các <b>kiểm tra bảo mật cốt lõi</b> (core security checks, ví dụ MFA cho root, security group mở cổng, S3 bucket permissions, snapshot EBS/RDS công khai) và <b>một kiểm tra fault tolerance</b>; bộ kiểm tra đầy đủ cần gói Business Support+ trở lên.</li>
 <li><b>AWS Compute Optimizer</b>: dùng <b>machine learning</b> phân tích mức sử dụng thực tế để gợi ý <b>loại và kích thước</b> tài nguyên phù hợp (EC2, Auto Scaling group, EBS, Lambda...), tức là hỗ trợ <b>rightsizing</b>.</li>
 <li><b>AWS Health Dashboard</b>: xem <b>sự cố của dịch vụ AWS</b> và <b>lịch bảo trì</b> có thể ảnh hưởng tới tài nguyên của bạn. Có hai phần: <b>Service health</b> (tình trạng chung của mọi dịch vụ AWS, ai cũng xem được) và <b>Your account health</b> (sự kiện riêng ảnh hưởng tài nguyên của bạn, ví dụ "máy EC2 này sẽ được bảo trì ngày X"). Muốn lấy dữ liệu này bằng chương trình thì dùng <b>AWS Health API</b>, hoặc nhận sự kiện qua EventBridge để tự động cảnh báo.</li>
 <li><b>AWS Well-Architected Tool</b>: công cụ hỏi đáp giúp bạn <b>tự đánh giá workload</b> theo các trụ cột của <b>AWS Well-Architected Framework</b> và chỉ ra rủi ro cần cải thiện.</li>
@@ -755,7 +757,7 @@
       "Control Tower dựng landing zone nhiều tài khoản theo best practice, dùng Organizations bên dưới.",
       "Service Catalog = danh mục sản phẩm đã duyệt; Service Quotas = xem và xin tăng giới hạn.",
       "Systems Manager = vận hành hàng loạt máy chủ (vá, chạy lệnh, Session Manager); CloudFormation = hạ tầng bằng template.",
-      "Trusted Advisor = khuyến nghị best practice ở 6 nhóm (Basic có core checks); Compute Optimizer = rightsizing bằng ML; Well-Architected Tool = tự đánh giá workload.",
+      "Trusted Advisor = khuyến nghị best practice ở 6 nhóm (Basic có mọi service limits checks + core security checks + 1 fault tolerance check); Compute Optimizer = rightsizing bằng ML; Well-Architected Tool = tự đánh giá workload.",
       "Health Dashboard = sự cố và bảo trì của AWS; License Manager = quản lý license; RAM = chia sẻ tài nguyên giữa tài khoản."
     ],
     terms: [

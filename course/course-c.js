@@ -91,7 +91,7 @@
 <li>"an entire Region becomes unavailable", "disaster recovery", "data must stay in a country" → <b>multiple Regions</b></li>
 <li>"factors when choosing a Region" → <b>compliance / data sovereignty, proximity (latency), service availability, pricing</b></li>
 <li>"cache content closer to users" → <b>edge locations</b> + <b>Amazon CloudFront</b></li>
-<li>"run AWS infrastructure in its own data center", "same AWS APIs and tools on premises" → <b>AWS Outposts</b>; "low latency in a metropolitan area with no Region, no hardware to manage" → <b>AWS Local Zones</b>; "5G", "mobile edge" → <b>AWS Wavelength</b></li>
+<li>"run AWS infrastructure in its own data center", "same AWS APIs and tools on premises" → <b>AWS Outposts</b>; "low latency in a metropolitan area with no Region, no hardware to manage" → <b>AWS Local Zones</b>; "5G", "mobile edge" → AWS Wavelength (<i>Wavelength nằm trong danh sách ngoài phạm vi đề CLF-C02, chỉ cần nhận ra để loại nhiễu</i>)</li>
 <li>"which services use edge locations" → <b>Amazon CloudFront</b>, <b>Amazon Route 53</b> (và Global Accelerator)</li>
 <li>"data must stay in a country" → chọn <b>Region đặt tại nước đó</b>; AWS không tự chuyển dữ liệu ra khỏi Region bạn chọn</li>
 <li>"remain available if an AZ fails" → EC2 ở <b>ít nhất 2 AZ</b> + <b>Elastic Load Balancer</b> chia tải (bài 3-5)</li>
@@ -154,7 +154,7 @@
 <p>Ngoài bản web còn có <b>AWS Console Mobile Application</b> (ứng dụng di động trên iOS/Android). Khi không có laptop bên cạnh, người trực sự cố có thể dùng điện thoại để xem <b>CloudWatch alarm</b> (cảnh báo), sự kiện <b>AWS Health</b>, tình trạng tài nguyên, chi phí, và thực hiện một số thao tác nhẹ. Nó không thay thế được bản web cho việc cấu hình phức tạp.</p>
 <h4>2. AWS CLI</h4>
 <p><b>AWS CLI</b> (Command Line Interface, giao diện dòng lệnh) là công cụ cài trên máy tính, cho phép gõ lệnh dạng chữ để điều khiển AWS. Ví dụ một dòng lệnh để liệt kê các "thùng" lưu trữ S3: <code>aws s3 ls</code>.</p>
-<p>Ưu điểm: có thể ghép nhiều lệnh thành <b>script</b> (kịch bản, ví dụ shell script trên Linux) để chạy tự động, lặp lại nhiều lần, hẹn giờ chạy mỗi tối, mà <b>không cần biết lập trình</b> bằng một ngôn ngữ như Python hay Java. Ngoài ra có <b>AWS CloudShell</b>: một cửa sổ dòng lệnh mở ngay trong trình duyệt, có sẵn CLI, không cần cài đặt.</p>
+<p>Ưu điểm: có thể ghép nhiều lệnh thành <b>script</b> (kịch bản, ví dụ shell script trên Linux) để chạy tự động, lặp lại nhiều lần, hẹn giờ chạy mỗi tối, mà <b>không cần biết lập trình</b> bằng một ngôn ngữ như Python hay Java. Ngoài ra có <b>AWS CloudShell</b>: một cửa sổ dòng lệnh mở ngay trong trình duyệt, có sẵn CLI, không cần cài đặt (<i>CloudShell nằm trong danh sách ngoài phạm vi đề CLF-C02, biết để dùng khi thực hành</i>).</p>
 <h4>3. AWS SDK</h4>
 <p><b>AWS SDK</b> (Software Development Kit, bộ công cụ phát triển phần mềm) là thư viện cho các ngôn ngữ lập trình như Python, Java, JavaScript, .NET, Go… Lập trình viên dùng SDK để <b>trong chính code của ứng dụng</b> gọi tới AWS. Ví dụ: app đặt bánh, khi khách tải ảnh lên, code dùng SDK để lưu ảnh vào S3.</p>
 <p>Vì sao không tự gửi lời gọi API qua HTTPS cho nhanh? Vì mỗi lời gọi API phải được <b>ký</b> (request signing) bằng thông tin xác thực, phải xử lý lỗi và <b>tự thử lại</b> (retry) khi mạng chập chờn. SDK làm sẵn những việc đó, lập trình viên chỉ cần gọi hàm.</p>
@@ -528,6 +528,8 @@
 <li><b>Predictive scaling</b> (co giãn dự đoán): dùng machine learning học từ lịch sử tải để tăng máy trước các chu kỳ lặp lại.</li>
 </ul>
 <p>Ngoài ra Auto Scaling còn có vai trò <b>tự chữa lành</b>: nếu một instance bị hỏng, nó tự thay bằng instance mới để giữ đủ số lượng mong muốn (desired). Instance mới thường được tạo từ một <b>launch template</b> chỉ rõ AMI, instance type, security group…</p>
+<p>Lưu ý kỹ thuật: <b>mặc định</b> Auto Scaling chỉ dùng <b>EC2 status checks</b> (máy có đang chạy, phần cứng có lỗi không). Muốn Auto Scaling thay cả instance mà load balancer báo là không khỏe (ví dụ ứng dụng bị treo nhưng máy vẫn chạy), bạn phải <b>bật ELB health checks</b> cho Auto Scaling group.</p>
+<p>Tự phục hồi khi lỗi và tự điều chỉnh công suất theo nhu cầu chính là nguyên tắc của trụ cột <b>Reliability</b> trong Well-Architected Framework (bài 1-4): "automatically recover from failure", "stop guessing capacity", "scale horizontally". ELB + Auto Scaling trải nhiều AZ là cách hiện thực các nguyên tắc đó.</p>
 
 <h3>Elastic Load Balancing</h3>
 <p>Khi có nhiều instance, khách truy cập vào đâu? Cần một "cửa vào" duy nhất phân phối yêu cầu cho các máy phía sau. Đó là <b>load balancer</b> (bộ cân bằng tải). Dịch vụ của AWS là <b>Elastic Load Balancing (ELB)</b>, được AWS quản lý và tự mở rộng theo lưu lượng.</p>
@@ -632,8 +634,8 @@
 <h3>Amazon S3: bucket và object</h3>
 <p><b>Amazon S3</b> (Simple Storage Service) là dịch vụ lưu trữ object của AWS. Hai khái niệm cơ bản:</p>
 <ul>
-<li><b>Bucket</b> (thùng chứa): nơi chứa object. Tên bucket phải <b>duy nhất trên toàn thế giới</b> (không ai được trùng), và bucket được tạo trong một Region bạn chọn.</li>
-<li><b>Object</b>: từng file bạn lưu (ảnh, video, file sao lưu, tài liệu…). Mỗi object tối đa 5 TB, số lượng object trong bucket không giới hạn.</li>
+<li><b>Bucket</b> (thùng chứa): nơi chứa object. Tên bucket <b>mặc định</b> phải <b>duy nhất trên toàn thế giới</b> (không ai được trùng), và bucket được tạo trong một Region bạn chọn. (Từ 3/2026 S3 có thêm tùy chọn <i>account regional namespace</i>: tên bucket gắn kèm mã tài khoản và Region để không bị người khác chiếm tên. Với đề thi, đáp án vẫn là "globally unique".)</li>
+<li><b>Object</b>: từng file bạn lưu (ảnh, video, file sao lưu, tài liệu…). Mỗi object tối đa 50 TB (trước 12/2025 là 5 TB — tài liệu cũ có thể ghi số này), số lượng object trong bucket không giới hạn. Một lệnh tải lên đơn lẻ (single PUT) chỉ được tối đa <b>5 GB</b>; file lớn hơn phải dùng <b>multipart upload</b> (chia thành nhiều phần tải song song).</li>
 </ul>
 <p>S3 nổi tiếng với độ bền <b>99.999999999%</b> (<b>11 số 9</b>, durability). Hiểu nôm na: dữ liệu bạn lưu gần như không bao giờ bị mất, vì S3 tự sao chép nó ra nhiều nơi. Lưu ý <b>durability</b> (độ bền, dữ liệu không mất) khác <b>availability</b> (độ sẵn sàng, lúc cần thì truy cập được ngay).</p>
 <p>Các ứng dụng điển hình:</p>
@@ -654,17 +656,17 @@
 <tr><td><b>S3 One Zone-IA</b></td><td>Như Standard-IA nhưng chỉ lưu ở <b>1 AZ</b>, rẻ hơn</td><td>Ít dùng, dễ tạo lại nếu mất: bản sao phụ, ảnh thu nhỏ</td></tr>
 <tr><td><b>S3 Glacier Instant Retrieval</b></td><td>Lưu trữ lâu dài, lấy ra trong <b>mili-giây</b>, rẻ hơn Standard-IA khi rất ít đọc</td><td>Rất ít truy cập (khoảng một lần mỗi quý) nhưng cần lấy ngay: ảnh y tế, ảnh hồ sơ cũ</td></tr>
 <tr><td><b>S3 Glacier Flexible Retrieval</b></td><td>Lấy ra từ <b>vài phút</b> (kiểu expedited, tốn phí hơn) đến <b>vài giờ</b> (standard, bulk)</td><td>Lưu trữ, sao lưu đọc 1-2 lần/năm, thường chờ được vài giờ, thỉnh thoảng cần gấp trong vài phút</td></tr>
-<tr><td><b>S3 Glacier Deep Archive</b></td><td><b>Rẻ nhất</b>, thường mất tới khoảng 12 giờ để lấy ra</td><td>Lưu nhiều năm để tuân thủ quy định, gần như không bao giờ mở</td></tr>
+<tr><td><b>S3 Glacier Deep Archive</b></td><td><b>Rẻ nhất</b>, lấy ra mất khoảng <b>12–48 giờ</b> (standard trong vòng 12 giờ, bulk trong vòng 48 giờ)</td><td>Lưu nhiều năm để tuân thủ quy định, gần như không bao giờ mở</td></tr>
 </table>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p>"Unknown or changing access patterns" → <b>Intelligent-Tiering</b>. "Lowest cost archive, retrieval within 12 hours is acceptable" → <b>Glacier Deep Archive</b>. "Infrequently accessed, can be recreated, lowest cost" → <b>One Zone-IA</b>. "Rarely accessed (once a quarter) but needs milliseconds" → <b>Glacier Instant Retrieval</b>. "Read once or twice a year, minutes for rare urgent cases, hours otherwise" → <b>Glacier Flexible Retrieval</b>. Nhớ rằng One Zone-IA chỉ ở 1 AZ, nếu AZ đó gặp thảm họa thì dữ liệu có thể mất, nên không dùng cho dữ liệu quan trọng duy nhất.</p>
+<p>"Unknown or changing access patterns" → <b>Intelligent-Tiering</b>. "Lowest cost archive, retrieval within 12–48 hours is acceptable" → <b>Glacier Deep Archive</b>. "Infrequently accessed, can be recreated, lowest cost" → <b>One Zone-IA</b>. "Rarely accessed (once a quarter) but needs milliseconds" → <b>Glacier Instant Retrieval</b>. "Read once or twice a year, minutes for rare urgent cases, hours otherwise" → <b>Glacier Flexible Retrieval</b>. Nhớ rằng One Zone-IA chỉ ở 1 AZ, nếu AZ đó gặp thảm họa thì dữ liệu có thể mất, nên không dùng cho dữ liệu quan trọng duy nhất.</p>
 </div>
 
 <h3>Lifecycle policy và versioning</h3>
 <h4>Lifecycle policy: tự động "chuyển kho"</h4>
 <p><b>S3 Lifecycle configuration</b> (chính sách vòng đời) là các quy tắc tự động gồm hai loại hành động: <b>transition</b> (sau X ngày thì chuyển object sang storage class rẻ hơn) và <b>expiration</b> (sau Y ngày thì xóa object). Bạn đặt một lần, S3 tự làm mãi, tiết kiệm chi phí mà không cần ai nhớ.</p>
-<div class="flow"><span>Ngày 0: S3 Standard</span><span>Sau 30 ngày: Standard-IA</span><span>Sau 90 ngày: Glacier</span><span>Sau 5 năm: xóa</span></div>
+<div class="flow"><span>Ngày 0: S3 Standard</span><span>Sau 30 ngày: Standard-IA</span><span>Sau 90 ngày: Glacier Flexible Retrieval</span><span>Sau 5 năm: xóa</span></div>
 <h4>Versioning: giữ lại các phiên bản</h4>
 <p>Khi bật <b>versioning</b> (lập phiên bản) cho bucket, mỗi lần ghi đè một object, S3 giữ lại phiên bản cũ. Khi xóa, S3 chỉ đặt một "dấu xóa", có thể khôi phục. Rất hữu ích để chống xóa nhầm, ghi đè nhầm. Versioning cũng là điều kiện để dùng tính năng <b>replication</b> (sao chép tự động sang bucket khác, kể cả ở Region khác).</p>
 
@@ -699,7 +701,7 @@
 <ul>
 <li>"object storage", "store and retrieve any amount of data", "static website" → <b>Amazon S3</b></li>
 <li>"99.999999999% durability" → <b>Amazon S3</b> (11 số 9)</li>
-<li>"rarely accessed archive, retrieval up to 12 hours acceptable, lowest cost" → <b>S3 Glacier Deep Archive</b></li>
+<li>"rarely accessed archive, retrieval within 12–48 hours acceptable, lowest cost" → <b>S3 Glacier Deep Archive</b></li>
 <li>"unknown or changing access patterns" → <b>S3 Intelligent-Tiering</b></li>
 <li>"move objects to Glacier after 90 days and delete after 5 years" → <b>S3 Lifecycle configuration</b></li>
 <li>"protect against accidental deletion or overwrite" → <b>S3 Versioning</b> (+ <b>MFA Delete</b>)</li>
@@ -787,13 +789,13 @@
 <table>
 <tr><th>Biến thể FSx</th><th>Giao thức / đặc điểm</th><th>Chọn khi</th></tr>
 <tr><td><b>FSx for Windows File Server</b></td><td><b>SMB</b>, tích hợp Active Directory</td><td>Ứng dụng <b>Windows</b> cần thư mục chia sẻ</td></tr>
-<tr><td><b>FSx for Lustre</b></td><td>Độ trễ dưới mili-giây, thông lượng hàng trăm GB/giây, <b>liên kết trực tiếp với dữ liệu trong S3</b></td><td><b>HPC</b>, mô phỏng, huấn luyện machine learning</td></tr>
+<tr><td><b>FSx for Lustre</b> (<i>ngoài phạm vi đề, chỉ để phân biệt</i>)</td><td>Độ trễ dưới mili-giây, thông lượng hàng trăm GB/giây, <b>liên kết trực tiếp với dữ liệu trong S3</b></td><td><b>HPC</b>, mô phỏng, huấn luyện machine learning</td></tr>
 <tr><td><b>FSx for NetApp ONTAP</b></td><td>Đa giao thức: <b>NFS và SMB</b> (cả iSCSI) trên cùng dữ liệu; snapshot, chống trùng lặp (deduplication), nén</td><td>Thay thế thiết bị lưu trữ <b>NetApp</b> tại chỗ; máy Linux và Windows dùng chung dữ liệu</td></tr>
 <tr><td><b>FSx for OpenZFS</b></td><td>NFS, hệ thống file ZFS</td><td>Chuyển hệ thống đang dùng ZFS/Linux lên AWS</td></tr>
 </table>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b>
-<p>"Linux", "NFS", "shared file system for many EC2 instances" → <b>EFS</b>. "Windows", "SMB", "Active Directory" → <b>FSx for Windows File Server</b>. "High performance computing", "data in S3" → <b>FSx for Lustre</b>. "NetApp", "NFS and SMB on the same data" → <b>FSx for NetApp ONTAP</b>. "Block storage for one EC2 instance" → <b>EBS</b>. "Temporary storage physically attached to host" → <b>instance store</b>.</p>
+<p>"Linux", "NFS", "shared file system for many EC2 instances" → <b>EFS</b>. "Windows", "SMB", "Active Directory" → <b>FSx for Windows File Server</b>. "High performance computing", "data in S3" → FSx for Lustre (dịch vụ này nằm trong danh sách ngoài phạm vi đề CLF-C02; Amazon FSx nói chung thì vẫn trong phạm vi). "NetApp", "NFS and SMB on the same data" → <b>FSx for NetApp ONTAP</b>. "Block storage for one EC2 instance" → <b>EBS</b>. "Temporary storage physically attached to host" → <b>instance store</b>.</p>
 </div>
 
 <h3>Hybrid và sao lưu tập trung: Storage Gateway, AWS Backup</h3>
@@ -828,7 +830,7 @@
 <tr><td>Amazon EBS</td><td>Block</td><td>Ổ đĩa bền cho EC2, nằm trong 1 AZ, có snapshot</td><td>block storage for EC2</td></tr>
 <tr><td>Instance store</td><td>Block</td><td>Gắn trực tiếp máy vật lý, rất nhanh, dữ liệu tạm</td><td>temporary, physically attached</td></tr>
 <tr><td>Amazon EFS</td><td>File</td><td>Dùng chung cho Linux, NFS, tự co giãn, nhiều AZ</td><td>shared file system, Linux</td></tr>
-<tr><td>Amazon FSx</td><td>File</td><td>Windows File Server (SMB), Lustre (HPC), ONTAP, OpenZFS</td><td>Windows, SMB, HPC</td></tr>
+<tr><td>Amazon FSx</td><td>File</td><td>Windows File Server (SMB), ONTAP, OpenZFS; Lustre (HPC, ngoài phạm vi đề)</td><td>Windows, SMB, HPC</td></tr>
 <tr><td>Amazon S3</td><td>Object</td><td>Dung lượng vô hạn, 11 số 9 độ bền</td><td>object storage</td></tr>
 <tr><td>AWS Storage Gateway</td><td>Hybrid</td><td>Ứng dụng tại chỗ dùng lưu trữ AWS</td><td>hybrid, on-premises access to cloud storage</td></tr>
 <tr><td>AWS Backup</td><td>Quản lý sao lưu</td><td>Sao lưu tập trung, theo kế hoạch, nhiều dịch vụ</td><td>centrally manage backups</td></tr>
@@ -842,7 +844,7 @@
 <li>"shared file storage for Windows applications, SMB" → <b>Amazon FSx for Windows File Server</b></li>
 <li>"on-premises applications access virtually unlimited cloud storage" → <b>AWS Storage Gateway</b></li>
 <li>"NFS/SMB file shares on premises, store as objects in S3, local cache" → <b>S3 File Gateway</b>; "replace physical tapes, keep backup software" → <b>Tape Gateway</b></li>
-<li>"HPC shared file system, sub-millisecond, data in S3" → <b>FSx for Lustre</b>; "replace NetApp, NFS + SMB, snapshots, deduplication" → <b>FSx for NetApp ONTAP</b></li>
+<li>"replace NetApp, NFS + SMB, snapshots, deduplication" → <b>FSx for NetApp ONTAP</b></li>
 <li>"copy an EBS volume to another AZ" → <b>snapshot rồi tạo volume mới ở AZ đó</b>; snapshot lưu ở đâu? → <b>trong S3, do AWS quản lý</b></li>
 <li>"centrally manage and automate backups across AWS services", "multiple accounts, cross-Region copy, compliance reporting" → <b>AWS Backup</b></li>
 <li>"continuously replicate servers to AWS to minimize downtime and data loss" → <b>AWS Elastic Disaster Recovery</b></li>
@@ -852,7 +854,7 @@
     summary: [
       "EBS = ổ đĩa block bền cho EC2, nằm trong một AZ; snapshot là bản sao lưu tăng dần, sao chép được sang Region khác.",
       "Instance store = ổ gắn trực tiếp máy vật lý, rất nhanh, dữ liệu mất khi stop/terminate.",
-      "EFS = file dùng chung cho Linux (NFS), tự co giãn; FSx = Windows File Server (SMB), Lustre (HPC, liên kết S3), NetApp ONTAP (NFS + SMB, snapshot, dedup), OpenZFS.",
+      "EFS = file dùng chung cho Linux (NFS), tự co giãn; FSx = Windows File Server (SMB), Lustre (HPC, ngoài phạm vi đề), NetApp ONTAP (NFS + SMB, snapshot, dedup), OpenZFS.",
       "Storage Gateway = lưu trữ hybrid: S3 File Gateway (NFS/SMB → S3, có cache), Volume Gateway (ổ khối), Tape Gateway (băng từ ảo).",
       "AWS Backup = sao lưu tập trung theo kế hoạch cho nhiều dịch vụ, nhiều tài khoản, sao chép sang Region khác, báo cáo tuân thủ.",
       "Elastic Disaster Recovery sao chép liên tục máy chủ sang AWS để khôi phục nhanh; RPO = lượng dữ liệu chấp nhận mất, RTO = thời gian khôi phục."

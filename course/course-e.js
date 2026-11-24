@@ -63,6 +63,11 @@
 <tr><td>Tự áp khi bạn đổi</td><td>Họ máy, kích cỡ, hệ điều hành, AZ, <b>Region</b>, chuyển sang Fargate/Lambda</td><td>Kích cỡ, hệ điều hành, tenancy, AZ (trong cùng họ máy và Region)</td></tr>
 <tr><td>Mức giảm</td><td>Thấp hơn một chút (đổi lấy linh hoạt nhất)</td><td><b>Cao hơn</b>, tới khoảng 72%</td></tr>
 </table>
+<p>Thời hạn <b>1 hoặc 3 năm</b> áp dụng cho Compute Savings Plans và EC2 Instance Savings Plans. Ngoài hai loại trên còn có:</p>
+<ul>
+<li><b>Amazon SageMaker Savings Plans</b>: cam kết USD/giờ cho mức dùng SageMaker (1 hoặc 3 năm).</li>
+<li><b>Database Savings Plans</b> (ra mắt 12/2025): cam kết USD/giờ cho nhiều dịch vụ database như Aurora, RDS, DynamoDB, ElastiCache; chỉ có kỳ hạn <b>1 năm</b>, giảm tới khoảng <b>35%</b> (mức cao nhất cho dạng serverless).</li>
+</ul>
 <p>Bạn không cần tự đoán mức cam kết: <b>AWS Cost Explorer</b> có <b>Savings Plans recommendations</b> (gợi ý Savings Plans) dựa trên mức dùng thực tế trước đây, cho biết nên cam kết bao nhiêu USD/giờ và tiết kiệm được khoảng bao nhiêu.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Website BánhNgon chạy 24/7 suốt cả năm, Minh biết chắc 3 năm tới vẫn cần ít nhất 2 máy chủ. Thay vì trả On-Demand, Minh mua <b>Compute Savings Plans</b> 3 năm. Năm sau Minh chuyển một phần sang Lambda để xử lý đơn hàng, giảm giá vẫn tự áp vì Compute Savings Plans bao cả Lambda. Nếu Minh mua Standard RI cho đúng một họ máy thì đổi kiến trúc sẽ khó tận dụng được giảm giá hơn.</p></div>
 
@@ -196,13 +201,13 @@
 <table>
 <tr><th>Hướng truyền dữ liệu</th><th>Có tính phí?</th></tr>
 <tr><td>Từ Internet <b>vào</b> AWS (vào EC2, vào S3…)</td><td>Miễn phí</td></tr>
-<tr><td>Từ AWS <b>ra</b> Internet</td><td>Có tính phí</td></tr>
+<tr><td>Từ AWS <b>ra</b> Internet</td><td>Có tính phí (nhưng <b>100 GB đầu tiên mỗi tháng miễn phí</b>, cộng gộp mọi dịch vụ và Region, trừ Region Trung Quốc và GovCloud)</td></tr>
 <tr><td>Giữa hai <b>Region</b> khác nhau</td><td>Có tính phí</td></tr>
 <tr><td>Giữa hai <b>AZ</b> khác nhau trong cùng Region</td><td>Có tính phí</td></tr>
 <tr><td>Trong <b>cùng một AZ</b>, dùng địa chỉ IP nội bộ (private IP)</td><td>Miễn phí</td></tr>
 <tr><td>Giữa EC2 và S3 trong <b>cùng một Region</b></td><td>Miễn phí</td></tr>
 </table>
-<p><b>Private IP</b> (địa chỉ IP nội bộ) là "số nhà" chỉ dùng bên trong mạng riêng của bạn trên AWS, khác với địa chỉ công khai ra Internet.</p>
+<p><b>Private IP</b> (địa chỉ IP nội bộ) là "số nhà" chỉ dùng bên trong mạng riêng của bạn trên AWS, khác với địa chỉ công khai ra Internet. Lưu ý thêm: từ <b>1/2/2024</b>, mọi <b>địa chỉ IPv4 công khai</b> (public IPv4, kể cả Elastic IP đang gắn vào máy) đều tính phí <b>0,005 USD/giờ</b> mỗi địa chỉ, nên một máy EC2 có public IP tốn thêm khoảng 3,6 USD/tháng.</p>
 <p>Hệ quả: nếu hai tầng ứng dụng trao đổi rất nhiều dữ liệu với nhau qua hai AZ khác nhau, đặt chúng <b>vào cùng một AZ</b> sẽ giảm tiền truyền dữ liệu. Đổi lại bạn mất khả năng chịu lỗi khi AZ đó gặp sự cố, nên chỉ làm vậy với workload không quan trọng. Đây là sự đánh đổi giữa chi phí và độ sẵn sàng.</p>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Khách ở Hà Nội tải ảnh đánh giá bánh lên website: phần dữ liệu đi <b>vào</b> S3 này miễn phí. Mỗi khi khách khác mở trang và xem ảnh, dữ liệu đi <b>ra</b> Internet và bị tính tiền. Khi BánhNgon mở rộng sang Nhật và Minh sao chép toàn bộ ảnh từ Region Singapore sang Region Tokyo, phần sao chép giữa hai Region cũng mất tiền. Minh ghi chú lại để tính vào ngân sách.</p></div>
 
@@ -218,6 +223,7 @@
 
 <h3>AWS Free Tier</h3>
 <p>AWS có chương trình <b>Free Tier</b> (bậc miễn phí) để người mới dùng thử một số dịch vụ ở mức giới hạn mà không mất tiền. Tuy nhiên, điều kiện của Free Tier đã từng thay đổi và có thể thay đổi tiếp. Hãy luôn kiểm tra trang AWS Free Tier chính thức trước khi dựa vào nó, và đặt cảnh báo chi phí (bài sau) để không bị bất ngờ.</p>
+<p>Tóm tắt mô hình hiện tại (tài khoản tạo từ 15/7/2025): tài khoản mới nhận <b>100 USD credit</b>, kiếm thêm được <b>tối đa 100 USD</b>, và chọn <b>Free plan</b> (không bao giờ tính tiền, tối đa 6 tháng) hoặc <b>Paid plan</b> (trả tiền phần vượt credit). Ngoài ra có hơn 30 dịch vụ có mức miễn phí hằng tháng (<i>always free</i>). Chi tiết ở bài thực hành <b>5-1</b>.</p>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>"factors that affect S3 cost" → amount of data stored, storage class, requests, data transfer out (không phải data transfer in)</li>
 <li>"which data transfer incurs a charge" → between Regions, to the internet, between AZs</li>
@@ -386,16 +392,24 @@
 <p>Khi dùng AWS, sẽ có lúc bạn gặp vấn đề: máy chủ lỗi, không hiểu hóa đơn, cần tư vấn kiến trúc. <b>AWS Support</b> (hỗ trợ của AWS) là các gói dịch vụ hỗ trợ khách hàng. Theo Exam Guide CLF-C02 hiện tại có các gói:</p>
 <ul>
 <li><b>Basic Support</b>: <b>miễn phí</b>, có sẵn cho <b>mọi khách hàng AWS</b>. Có <b>customer service 24/7</b> cho câu hỏi về tài khoản và hóa đơn, tài liệu, whitepaper, <b>AWS re:Post</b>, trang <b>AWS Health</b> cá nhân hóa và các <b>core checks</b> của <b>Trusted Advisor</b>. Điểm quan trọng nhất: gói Basic <b>không mở được technical support case</b> (case kỹ thuật); chỉ mở được case về tài khoản/hóa đơn (customer service) và <b>service limit increase</b> (tăng hạn mức).</li>
-<li><b>AWS Business Support+</b>: gói trả phí thấp nhất, AWS khuyến nghị là <b>mức tối thiểu cho workload production</b>. Mở <b>technical support case</b> không giới hạn qua <b>phone, web, chat, email</b> 24/7 (có cả <b>AWS Support App in Slack</b> và <b>AWS Support API</b>). Có <b>full set</b> kiểm tra <b>Trusted Advisor</b>, <b>AWS Health API</b>, hỗ trợ bằng AI và review kiến trúc (Well-Architected). Hệ thống quan trọng bị sập: phản hồi <b>&lt; 30 phút</b>.</li>
-<li><b>AWS Enterprise Support</b>: cho workload <b>business-critical</b> trên toàn tổ chức. Thêm <b>designated Technical Account Manager (TAM)</b> (người tư vấn kỹ thuật chuyên trách cho riêng bạn), <b>Trusted Advisor Priority</b>, hỗ trợ sự kiện lớn/ra mắt sản phẩm (planned events) và dịch vụ chủ động. Hệ thống quan trọng bị sập: phản hồi <b>&lt; 15 phút</b>.</li>
+<li><b>AWS Business Support+</b>: gói trả phí thấp nhất, AWS khuyến nghị là <b>mức tối thiểu cho workload production</b>. Mở <b>technical support case</b> không giới hạn qua <b>phone, web và chat</b> 24/7 (có cả <b>AWS Support App in Slack</b> và <b>AWS Support API</b>). Có <b>full set</b> kiểm tra <b>Trusted Advisor</b>, <b>AWS Health API</b>, hỗ trợ bằng AI và <b>tư vấn kiến trúc</b> (architectural guidance) từ chuyên gia AWS. Hệ thống quan trọng bị sập: phản hồi <b>&lt; 30 phút</b>.</li>
+<li><b>AWS Enterprise Support</b>: cho workload <b>business-critical</b> trên toàn tổ chức. Thêm <b>designated Technical Account Manager (TAM)</b> (người tư vấn kỹ thuật chuyên trách cho riêng bạn), <b>AWS Security Incident Response</b> không tính thêm phí, <b>Trusted Advisor Priority</b>, hỗ trợ sự kiện lớn/ra mắt sản phẩm (planned events) và dịch vụ chủ động. Hệ thống quan trọng bị sập: phản hồi <b>&lt; 15 phút</b>.</li>
 <li><b>AWS Unified Operations</b>: gói cao nhất, cho workload <b>mission-critical</b> cần độ bền vững (resilience) cao. Ngoài TAM còn có <b>Domain Specialist Engineers</b> và <b>Incident Management Engineers</b>, <b>giám sát workload 24/7</b>. Sự cố nghiêm trọng: <b>Incident Management Engineer</b> phản hồi <b>&lt; 5 phút</b>.</li>
 </ul>
-<p>Với cả 3 gói trả phí, các mức thấp hơn giống nhau: <b>production system down</b> &lt; 1 giờ, <b>production system impaired</b> &lt; 4 giờ, <b>system impaired</b> &lt; 12 giờ, <b>general guidance</b> &lt; 24 giờ. Đây là <b>mục tiêu phản hồi</b> AWS cố gắng đạt, không phải cam kết thời gian khắc phục. Giá từng gói xem trên trang <b>AWS Support Plans</b> và có thể thay đổi, đừng học thuộc con số giá cũ trên mạng.</p>
+<p>Theo trang <b>AWS Support Plans</b> (đối chiếu 11/2026), thời gian phản hồi ban đầu của 3 gói trả phí:</p>
+<ul>
+<li><b>Business/mission-critical system down</b>: Business Support+ &lt; 30 phút · Enterprise &lt; 15 phút · Unified Operations &lt; 5 phút.</li>
+<li><b>Production system down</b>: &lt; 1 giờ (cả 3 gói).</li>
+<li><b>Production system impaired</b>: &lt; 4 giờ (cả 3 gói).</li>
+<li><b>System impaired</b>: &lt; 12 giờ (cả 3 gói).</li>
+<li><b>General guidance</b>: &lt; 24 giờ (cả 3 gói).</li>
+</ul>
+<p> Đây là <b>mục tiêu phản hồi</b> AWS cố gắng đạt, không phải cam kết thời gian khắc phục. Giá từng gói xem trên trang <b>AWS Support Plans</b> và có thể thay đổi, đừng học thuộc con số giá cũ trên mạng.</p>
 <table>
 <tr><th>Tiêu chí</th><th>Basic Support</th><th>AWS Business Support+</th><th>AWS Enterprise Support</th><th>AWS Unified Operations</th></tr>
 <tr><td>Chi phí</td><td>Miễn phí, mọi khách hàng</td><td>Trả phí</td><td>Trả phí</td><td>Trả phí</td></tr>
 <tr><td>Khuyến nghị cho</td><td>Có sẵn cho mọi khách hàng</td><td>Workload production (mức tối thiểu)</td><td>Workload business-critical</td><td>Workload mission-critical</td></tr>
-<tr><td>Technical support case</td><td>Không (chỉ account/billing và service limit increase)</td><td>Có, không giới hạn; phone, web, chat, email 24/7</td><td>Có, như Business Support+</td><td>Có, như Business Support+</td></tr>
+<tr><td>Technical support case</td><td>Không (chỉ account/billing và service limit increase)</td><td>Có, không giới hạn; phone, web, chat 24/7</td><td>Có, như Business Support+</td><td>Có, như Business Support+</td></tr>
 <tr><td>Phản hồi sự cố hệ thống quan trọng (critical)</td><td>Không có</td><td>&lt; 30 phút</td><td>&lt; 15 phút</td><td>&lt; 5 phút (Incident Management Engineer)</td></tr>
 <tr><td>Production system down</td><td>Không có</td><td>&lt; 1 giờ</td><td>&lt; 1 giờ</td><td>&lt; 1 giờ</td></tr>
 <tr><td>Trusted Advisor</td><td>Core checks</td><td>Full set of checks</td><td>Full set + Trusted Advisor Priority</td><td>Full set + Trusted Advisor Priority</td></tr>
@@ -409,7 +423,7 @@
 <li>"designated Technical Account Manager (TAM)", "Trusted Advisor Priority", "business-critical", "critical response &lt; 15 minutes" → AWS Enterprise Support</li>
 <li>"mission-critical", "Incident Management Engineers", "domain specialist engineers", "response within 5 minutes", "24/7 workload monitoring" → AWS Unified Operations</li>
 </ul></div>
-<p>Nếu tài liệu ôn cũ nhắc tới các gói <b>Developer</b>, <b>Business</b> hay <b>Enterprise On-Ramp</b>: đó là tên gói cũ mà AWS đang thay dần bằng các gói ở trên. Khi đi thi, hãy dựa vào ý chính là gói Basic miễn phí, gói trả phí phản hồi nhanh hơn và có thêm chuyên gia hỗ trợ.</p>
+<p>Nếu tài liệu ôn cũ nhắc tới các gói <b>Developer</b>, <b>Business</b> hay <b>Enterprise On-Ramp</b>: đó là các gói cũ đang bị khai tử. Từ <b>2/12/2025</b> AWS ngừng bán mới Developer và Business Support (thay bằng <b>Business Support+</b>); trong năm 2026, khách dùng Enterprise On-Ramp được tự động nâng lên <b>Enterprise Support</b>; và từ <b>1/1/2027</b> cả ba gói cũ chính thức ngừng hỗ trợ (riêng Region AWS GovCloud (US) vẫn giữ). Vì vậy đề luyện cũ có thể hỏi "Developer Support" hay "Enterprise On-Ramp TAM pool"; hãy biết tên đó nhưng học theo gói hiện tại. Khi đi thi, hãy dựa vào ý chính là gói Basic miễn phí, gói trả phí phản hồi nhanh hơn và có thêm chuyên gia hỗ trợ.</p>
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống bảo hành điện thoại. Ai mua máy cũng có bảo hành cơ bản miễn phí: tra cứu hướng dẫn, hỏi tổng đài về hóa đơn. Muốn có kỹ thuật viên ưu tiên, phản hồi nhanh, thậm chí một người chuyên lo cho riêng công ty mình thì mua gói bảo hành cao cấp hơn.</p></div>
 <p>Nơi để <b>mở yêu cầu hỗ trợ</b> (support case) là <b>AWS Support Center</b> trong AWS Management Console. Với Basic Support, bạn vẫn mở được case về tài khoản và hóa đơn.</p>
 
@@ -442,8 +456,16 @@
 <h3>Con người hỗ trợ: Professional Services, Partners, Trust &amp; Safety</h3>
 <ul>
 <li><b>AWS Professional Services</b>: đội chuyên gia của chính AWS, làm việc trực tiếp với khách hàng để đạt mục tiêu lớn như di chuyển (migration) quy mô lớn.</li>
-<li><b>AWS Solutions Architects</b> (kiến trúc sư giải pháp): chuyên gia AWS tư vấn cách thiết kế hệ thống trên AWS.</li>
-<li><b>AWS Partner Network (APN)</b> (mạng lưới đối tác AWS): các công ty bên ngoài hợp tác với AWS. Có hai kiểu chính: <b>system integrators</b>/công ty tư vấn, triển khai (thuê họ làm dự án) và <b>ISVs</b> (Independent Software Vendors, hãng phần mềm độc lập, bán phần mềm chạy trên AWS). Lợi ích khi tham gia APN: được AWS <b>đào tạo</b> và cấp chứng chỉ, được <b>công nhận chuyên môn</b> qua các chương trình như <b>AWS Competency</b> (ví dụ chuyên về migration, bảo mật), được hỗ trợ <b>go-to-market</b> (tiếp thị, bán hàng chung, xuất hiện trong danh bạ đối tác để khách tìm thấy). Lưu ý: tham gia APN <b>không</b> có nghĩa là khách hàng của đối tác được tặng gói Support trả phí.</li>
+<li><b>AWS Solutions Architects</b> (kiến trúc sư giải pháp, SA): nhân viên kỹ thuật của AWS (thường làm cùng đội account/bán hàng) giúp khách hàng <b>thiết kế kiến trúc</b> trên AWS: chọn dịch vụ phù hợp, áp dụng best practice của Well-Architected, rà soát bản thiết kế trước khi xây. Khác với Professional Services (đội tư vấn <b>trả phí</b> cùng làm dự án) và TAM (người theo sát vận hành, đi kèm gói Enterprise Support trở lên). Từ khóa đề: "guidance on designing / architecting a solution on AWS" → Solutions Architect.</li>
+<li><b>AWS Partner Network (APN)</b> (mạng lưới đối tác AWS): các công ty bên ngoài hợp tác với AWS. Có hai kiểu chính: <b>system integrators</b>/công ty tư vấn, triển khai (thuê họ làm dự án) và <b>ISVs</b> (Independent Software Vendors, hãng phần mềm độc lập, bán phần mềm chạy trên AWS). Lợi ích khi tham gia APN (theo Exam Guide, task 4.3):
+<ul>
+<li><b>Partner training and certification</b>: đào tạo và chứng chỉ dành riêng cho nhân viên của đối tác.</li>
+<li><b>Partner events</b>: sự kiện dành cho đối tác (hội nghị, workshop, buổi cập nhật sản phẩm).</li>
+<li><b>Partner volume discounts</b>: giá ưu đãi theo khối lượng dành cho đối tác.</li>
+<li>Được <b>công nhận chuyên môn</b> qua chương trình <b>AWS Competency</b> (ví dụ chuyên về migration, bảo mật).</li>
+<li>Hỗ trợ <b>go-to-market</b>: tiếp thị, bán hàng chung, xuất hiện trong danh bạ đối tác (Partner Solutions Finder) để khách tìm thấy.</li>
+<li><b>Funding</b>: quỹ hỗ trợ từ AWS, ví dụ cho dự án migration hay thử nghiệm (proof of concept) với khách hàng.</li>
+</ul> Lưu ý: tham gia APN <b>không</b> có nghĩa là khách hàng của đối tác được tặng gói Support trả phí.</li>
 <li><b>AWS Trust &amp; Safety team</b>: đội xử lý <b>lạm dụng</b> (abuse). Nếu thấy tài nguyên AWS bị dùng để gửi spam, tấn công, lừa đảo… bạn báo cho đội này.</li>
 </ul>
 
@@ -452,6 +474,7 @@
 <ul>
 <li>Phía <b>người bán</b>: hãng phần mềm (ISV) muốn bán sản phẩm, kể cả SaaS, cho khách AWS thì <b>đăng sản phẩm lên AWS Marketplace</b>.</li>
 <li><b>Private Marketplace</b> (chợ riêng): công ty tạo một <b>danh mục sản phẩm đã duyệt</b>; nhân viên ở mọi tài khoản trong tổ chức chỉ thấy và chỉ đăng ký được những sản phẩm trong danh mục đó. Dùng để kiểm soát mua sắm (governance).</li>
+<li><b>Entitlement</b> (quyền sử dụng đã mua): mỗi lần đăng ký sản phẩm trên Marketplace, bạn nhận quyền sử dụng theo hợp đồng (số license, số người dùng, thời hạn). Các quyền này được theo dõi tập trung (ví dụ trong <b>AWS License Manager</b>) và chia sẻ được cho các tài khoản khác trong tổ chức. Exam Guide (task 4.3) nhắc Marketplace với ba vai trò: <b>quản lý chi phí</b> (tính chung hóa đơn AWS), <b>quản trị</b> (Private Marketplace) và <b>entitlement</b>.</li>
 </ul>
 <div class="box example"><b>🍰 Ví dụ: BánhNgon</b><p>Để mở rộng sang Nhật, chị Lan thuê một <b>đối tác APN</b> có kinh nghiệm migration giúp thiết kế hệ thống. Minh mua một phần mềm tường lửa trên <b>AWS Marketplace</b>, tiền nằm luôn trong hóa đơn AWS. Một hôm, Minh phát hiện có máy chủ trên AWS liên tục gửi spam tới hộp thư của tiệm, Minh báo cho <b>AWS Trust &amp; Safety</b>.</p></div>
 
@@ -466,6 +489,7 @@
 <tr><td>Bài trả lời sẵn cho câu hỏi thường gặp</td><td>AWS Knowledge Center</td></tr>
 <tr><td>Chiến lược, pattern cho migration</td><td>AWS Prescriptive Guidance</td></tr>
 <tr><td>Đội chuyên gia AWS làm dự án lớn cùng mình</td><td>AWS Professional Services</td></tr>
+<tr><td>Tư vấn thiết kế kiến trúc giải pháp trên AWS</td><td>AWS Solutions Architects</td></tr>
 <tr><td>Thuê công ty bên ngoài tư vấn, triển khai</td><td>AWS Partner Network</td></tr>
 <tr><td>Mua phần mềm bên thứ ba, trả qua hóa đơn AWS</td><td>AWS Marketplace</td></tr>
 <tr><td>Báo cáo tài nguyên AWS bị dùng để lạm dụng</td><td>AWS Trust &amp; Safety</td></tr>
@@ -481,7 +505,9 @@
 <li>"hire a partner to help migrate" → AWS Partner Network</li>
 <li>"buy third-party software, billed through AWS" → AWS Marketplace; "sell my software/SaaS to AWS customers" → đăng lên AWS Marketplace</li>
 <li>"curated list of approved products", "control which products teams can subscribe to" → Private Marketplace</li>
-<li>"training, recognized expertise, go-to-market support for a partner company" → tham gia APN (AWS Competency/specializations)</li>
+<li>"manage and share licenses/entitlements for software bought on AWS Marketplace" → AWS Marketplace (theo dõi bằng AWS License Manager)</li>
+<li>"training and certification, partner events, volume discounts, recognized expertise, go-to-market support, funding for a partner company" → tham gia APN (AWS Competency/specializations)</li>
+<li>"help designing an architecture / guidance on how to build on AWS" → AWS Solutions Architects</li>
 <li>"self-service, no additional cost" → re:Post, Knowledge Center, Prescriptive Guidance, documentation (không phải Professional Services)</li>
 <li>"AWS resources used for spam / abuse" → AWS Trust &amp; Safety</li>
 </ul></div>

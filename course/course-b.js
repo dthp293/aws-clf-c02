@@ -149,6 +149,7 @@
 <h3>Bốn khái niệm cốt lõi: user, group, role, policy</h3>
 <h4>IAM user (người dùng)</h4>
 <p>Một <b>IAM user</b> đại diện cho <b>một người</b> (hoặc một ứng dụng) cần dùng AWS lâu dài. Mỗi user có tên riêng và thông tin đăng nhập riêng: mật khẩu để vào giao diện web (AWS Management Console) và/hoặc <b>access key</b> để dùng dòng lệnh hay code. Nguyên tắc: <b>mỗi người một user</b>, không dùng chung.</p>
+<p><i>Lưu ý: hiện nay AWS khuyến nghị với <b>người dùng là con người</b> (nhân viên), nên đăng nhập qua <b>federation</b> (liên kết danh tính với hệ thống sẵn có) hoặc <b>AWS IAM Identity Center</b> để dùng thông tin đăng nhập tạm thời, thay vì tạo IAM user với mật khẩu/access key dài hạn. IAM user vẫn dùng được cho trường hợp đặc biệt. Xem thêm ở bài 2-3. Đề CLF-C02 vẫn hỏi nhiều về user/group/role nên phần dưới vẫn cần nắm.</i></p>
 <h4>IAM group (nhóm)</h4>
 <p>Một <b>IAM group</b> là tập hợp nhiều user. Bạn gắn quyền vào nhóm, mọi user trong nhóm tự động có quyền đó. Khi có nhân viên mới, chỉ cần thêm vào nhóm. Group chỉ chứa user, không chứa group khác, và group không phải là thứ để \"đăng nhập\".</p>
 <h4>IAM policy (chính sách quyền)</h4>
@@ -207,6 +208,7 @@
 <tr><td><b>SCP</b> (Service Control Policy, của AWS Organizations)</td><td>Cả tài khoản thành viên hoặc OU</td><td>Cấm mọi người trong tài khoản thành viên, <b>kể cả admin và root</b> của tài khoản đó, làm điều gì (ví dụ dùng Region ngoài châu Âu)</td></tr>
 </table>
 <p>Quyền thực tế = phần giao nhau: phải được policy Allow <b>và</b> nằm trong boundary/SCP, và không bị Deny ở đâu cả.</p>
+<p>Lưu ý: SCP chỉ tác động lên <b>tài khoản thành viên</b>. SCP <b>không giới hạn</b> user và role trong <b>management account</b> (tài khoản quản lý của tổ chức), vì vậy đừng chạy workload trong tài khoản đó.</p>
 
 <div class="box trap"><b>⚠️ Bẫy hay gặp</b><p>Thấy \"EC2 needs to access S3\" mà đáp án có \"store access keys on the instance\" hay \"embed credentials in code\" thì loại ngay. Đáp án đúng luôn là <b>IAM role</b>.</p><p>Một bẫy khác: <b>group không lồng group</b> và <b>không phải là cách cấp quyền cho dịch vụ AWS</b>. Dịch vụ AWS dùng role, không dùng group.</p></div>
 
@@ -230,7 +232,7 @@
       "Mặc định mọi thứ bị từ chối; Deny rõ ràng luôn thắng Allow.",
       "AWS managed policy do AWS viết sẵn và tự cập nhật; customer managed policy do bạn kiểm soát, có phiên bản để roll back; inline policy gắn chặt vào một danh tính.",
       "Resource-based policy (ví dụ S3 bucket policy) gắn trên tài nguyên, cấp quyền được cho tài khoản khác.",
-      "Permissions boundary và SCP chỉ đặt giới hạn tối đa, không cấp quyền; SCP áp dụng cả admin/root của tài khoản thành viên.",
+      "Permissions boundary và SCP chỉ đặt giới hạn tối đa, không cấp quyền; SCP không áp dụng cho management account, nhưng áp dụng cả admin/root của tài khoản thành viên.",
       "Least privilege: chỉ cấp đúng quyền cần thiết, rà soát định kỳ.",
       "Ứng dụng trên EC2 và truy cập giữa tài khoản: dùng IAM role, không lưu access key."
     ],
@@ -273,7 +275,7 @@
 <p>Khi bạn tạo tài khoản AWS bằng email và mật khẩu, danh tính đó là <b>root user</b> (người dùng gốc). Root user có <b>toàn quyền tuyệt đối</b> với tài khoản: tạo, xóa mọi thứ, xem hóa đơn, thậm chí đóng tài khoản. Không có policy nào giới hạn được root trong chính tài khoản đó (trừ khi dùng các cơ chế của AWS Organizations).</p>
 <p>Vì quyền lớn như vậy, nếu root bị lộ thì gần như mất tất cả. Cách bảo vệ theo khuyến nghị của AWS:</p>
 <ul>
-<li>Đặt mật khẩu mạnh và <b>bật MFA</b> cho root.</li>
+<li>Đặt mật khẩu mạnh và <b>bật MFA</b> cho root. Hiện nay AWS đã <b>bắt buộc MFA cho root user theo mặc định</b>: khi tạo tài khoản hoặc khi đăng nhập, bạn sẽ được yêu cầu đăng ký thiết bị MFA.</li>
 <li><b>Không dùng root cho công việc hằng ngày</b>. Tạo một danh tính có quyền quản trị để làm việc thường ngày.</li>
 <li><b>Không tạo access key</b> cho root (nếu đã có thì xóa).</li>
 <li>Dùng email riêng, an toàn cho root, và chỉ dùng root khi gặp việc mà chỉ root làm được.</li>
@@ -455,7 +457,7 @@
 <ul>
 <li>Chặn <b>SQL injection, XSS</b> trong nội dung yêu cầu.</li>
 <li>Chặn/cho phép theo <b>địa chỉ IP</b> hoặc theo <b>quốc gia</b> (geo match).</li>
-<li><b>Rate-based rule</b>: tự động chặn một IP khi nó gửi quá số yêu cầu cho phép trong thời gian ngắn. Hợp để chống dò mật khẩu (brute force) vào trang đăng nhập hay HTTP flood, kể cả khi kẻ tấn công liên tục đổi IP (vì rule đếm theo từng IP và tự chặn IP vượt ngưỡng).</li>
+<li><b>Rate-based rule</b>: tự động chặn một IP khi nó gửi quá số yêu cầu cho phép trong thời gian ngắn. Hợp để chống dò mật khẩu (brute force) vào trang đăng nhập hay HTTP flood từ một số nguồn gửi dồn dập (rule đếm số yêu cầu theo từng IP và tự chặn IP vượt ngưỡng).</li>
 <li><b>Managed rule groups</b> (bộ rule có sẵn): của AWS, hoặc do <b>hãng bảo mật bên thứ ba</b> xây dựng, cập nhật và bán trên <b>AWS Marketplace</b>, tính tiền vào hóa đơn AWS. Bạn không phải tự viết rule.</li>
 </ul>
 <h4>AWS Firewall Manager: quản lý tập trung</h4>
@@ -523,7 +525,7 @@
     ],
     html: `
 <h3>Vì sao cần dịch vụ \"phát hiện\"?</h3>
-<p>Ở bài trước, bạn đã dựng tường lửa, phân quyền, bật MFA. Đó là các biện pháp <b>phòng ngừa</b>. Nhưng không có hàng rào nào hoàn hảo: mật khẩu vẫn có thể bị lộ, phần mềm vẫn có lỗ hổng mới, nhân viên vẫn có thể lỡ tay đưa dữ liệu nhạy cảm lên chỗ công khai.</p>
+<p>Ở các bài 2-2 đến 2-4, bạn đã phân quyền, bật MFA, dựng tường lửa. Đó là các biện pháp <b>phòng ngừa</b>. Nhưng không có hàng rào nào hoàn hảo: mật khẩu vẫn có thể bị lộ, phần mềm vẫn có lỗ hổng mới, nhân viên vẫn có thể lỡ tay đưa dữ liệu nhạy cảm lên chỗ công khai.</p>
 <p>Vì vậy cần thêm các biện pháp <b>phát hiện</b> (detective controls): liên tục theo dõi, tìm dấu hiệu bất thường và báo cho bạn. AWS có một \"đội bảo vệ\" gồm nhiều dịch vụ, mỗi dịch vụ có một chuyên môn riêng. Kết quả mỗi dịch vụ báo ra thường gọi là <b>finding</b> (phát hiện, cảnh báo).</p>
 
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Tưởng tượng một trung tâm thương mại có đội an ninh:</p><ul>
@@ -543,6 +545,7 @@
 <h3>Amazon Inspector: tìm lỗ hổng phần mềm</h3>
 <p>Một <b>vulnerability</b> (lỗ hổng) là điểm yếu trong phần mềm mà kẻ xấu có thể lợi dụng. Các lỗ hổng được công bố công khai mỗi ngày.</p>
 <p><b>Amazon Inspector</b> <b>tự động và liên tục quét</b> các <b>EC2 instance</b>, <b>container image</b> trong Amazon ECR và <b>Lambda function</b> để tìm lỗ hổng phần mềm đã biết (CVE, kể cả trong thư viện mã nguồn mở mà code dùng) và việc vô tình mở mạng ra ngoài (unintended network exposure). Khi có lỗ hổng mới được công bố, Inspector tự quét lại, nên bạn nhanh chóng biết hàm Lambda hay image nào bị ảnh hưởng. Nó chấm mức độ nghiêm trọng để bạn biết cái nào cần vá trước.</p>
+<p><i>Cập nhật: từ 6/2025 Inspector có thêm <b>code security</b>: quét kho mã nguồn (ví dụ GitHub, GitLab) để tìm lỗi trong code tự viết (SAST), lỗ hổng trong thư viện phụ thuộc (SCA) và cấu hình sai trong mẫu hạ tầng dạng code (IaC).</i></p>
 
 <h3>Amazon Macie: tìm dữ liệu nhạy cảm</h3>
 <p><b>PII</b> (Personally Identifiable Information, thông tin định danh cá nhân) là dữ liệu có thể xác định một người: họ tên kèm địa chỉ, số điện thoại, số thẻ ngân hàng…</p>
@@ -551,12 +554,12 @@
 <h3>Amazon Detective và AWS Security Hub</h3>
 <p><b>Amazon Detective</b> giúp <b>điều tra</b>. Khi GuardDuty báo \"có chuyện\", bạn cần biết: chuyện bắt đầu từ đâu, liên quan những tài nguyên nào, kéo dài bao lâu. Detective tự gom dữ liệu nhật ký và vẽ thành biểu đồ quan hệ để bạn tìm <b>root cause</b> (nguyên nhân gốc).</p>
 <p><b>AWS Security Hub</b> là nơi <b>tập trung</b>. Nó gom cảnh báo từ GuardDuty, Inspector, Macie và nhiều dịch vụ khác (kể cả sản phẩm của đối tác), trên <b>nhiều tài khoản</b>, vào một màn hình. Nó còn tự kiểm tra cấu hình của bạn so với các bộ tiêu chuẩn bảo mật (ví dụ AWS Foundational Security Best Practices, <b>CIS AWS Foundations Benchmark</b>) và cho điểm tình trạng bảo mật.</p>
-<p><i>Cập nhật tên gọi: từ cuối 2025, phần kiểm tra cấu hình theo tiêu chuẩn được tách thành <b>AWS Security Hub CSPM</b>, còn tên AWS Security Hub dùng cho phiên bản mới gom và ưu tiên rủi ro từ GuardDuty, Inspector, Macie, Security Hub CSPM. Với đề thi, cứ nhớ: \"centralized view of findings, compliance checks across accounts\" → Security Hub.</i></p>
+<p><i>Cập nhật tên gọi: phiên bản Security Hub mới được giới thiệu dạng preview từ 6/2025 và chính thức (GA) ngày 2/12/2025. Từ đó, phần kiểm tra cấu hình theo tiêu chuẩn mang tên <b>AWS Security Hub CSPM</b>, còn tên AWS Security Hub dùng cho phiên bản mới gom và ưu tiên rủi ro từ GuardDuty, Inspector, Macie, Security Hub CSPM. Với đề thi, cứ nhớ: \"centralized view of findings, compliance checks across accounts\" → Security Hub.</i></p>
 
 <table>
 <tr><th>Dịch vụ</th><th>Câu hỏi nó trả lời</th><th>Đối tượng / nguồn</th><th>Từ khóa trong đề</th></tr>
 <tr><td>GuardDuty</td><td>Có ai đang làm gì khả nghi không?</td><td>CloudTrail, VPC Flow Logs, DNS logs</td><td>threat detection, malicious activity, ML</td></tr>
-<tr><td>Inspector</td><td>Phần mềm của tôi có lỗ hổng không?</td><td>EC2, container image (ECR), Lambda</td><td>vulnerabilities, CVE, automated scanning</td></tr>
+<tr><td>Inspector</td><td>Phần mềm của tôi có lỗ hổng không?</td><td>EC2, container image (ECR), Lambda, kho mã nguồn (code security)</td><td>vulnerabilities, CVE, automated scanning</td></tr>
 <tr><td>Macie</td><td>Dữ liệu nhạy cảm nằm ở đâu?</td><td>Amazon S3</td><td>PII, sensitive data</td></tr>
 <tr><td>Detective</td><td>Chuyện gì đã xảy ra, vì sao?</td><td>Dữ liệu nhật ký và finding</td><td>investigate, root cause</td></tr>
 <tr><td>Security Hub</td><td>Tổng thể bảo mật của tôi ra sao?</td><td>Finding từ nhiều dịch vụ, nhiều tài khoản</td><td>centralized view, security posture</td></tr>
@@ -585,11 +588,12 @@
 <li>\"Alert when S3 objects are read from malicious IPs / credentials misused to pull data\" → <b>GuardDuty S3 Protection</b>; \"which buckets contain credit card or passport numbers\" → <b>Macie</b></li>
 <li>\"Find Lambda functions and ECR images with a vulnerable library, continuously\" → <b>Amazon Inspector</b></li>
 <li>\"Compare accounts against CIS Benchmark + one place for GuardDuty/Inspector/Macie findings\" → <b>AWS Security Hub</b></li>
+<li>\"Check configuration against CIS / AWS Foundational Security Best Practices (FSBP)\" → nếu đáp án có <b>AWS Security Hub CSPM</b> thì chọn nó; nếu không thì chọn <b>AWS Security Hub</b></li>
 </ul></div>
 `,
     summary: [
       "GuardDuty: phát hiện mối đe dọa bằng ML từ CloudTrail, VPC Flow Logs, DNS logs, không cần agent; S3 Protection phát hiện truy cập S3 đáng ngờ (khác Macie là tìm dữ liệu nhạy cảm).",
-      "Inspector: tự động quét lỗ hổng phần mềm trên EC2, container image, Lambda.",
+      "Inspector: tự động quét lỗ hổng phần mềm trên EC2, container image, Lambda (và từ 2025 cả kho mã nguồn).",
       "Macie: tìm dữ liệu nhạy cảm (PII) trong S3.",
       "Detective: điều tra, tìm nguyên nhân gốc của sự cố bảo mật.",
       "Security Hub: gom cảnh báo từ nhiều dịch vụ và nhiều tài khoản, chấm điểm theo tiêu chuẩn bảo mật.",
@@ -662,7 +666,7 @@
 <li>Tích hợp với rất nhiều dịch vụ: bật mã hóa S3, EBS, RDS chỉ bằng vài lựa chọn.</li>
 <li>Bạn dùng IAM policy và <b>key policy</b> để quyết định ai được dùng khóa nào.</li>
 <li>Mọi lần dùng khóa được ghi lại trong <b>AWS CloudTrail</b>, nên kiểm toán được.</li>
-<li>Có hai kiểu khóa hay gặp: <b>AWS managed key</b> (AWS tạo và quản lý giúp cho một dịch vụ, bạn không đổi được cài đặt) và <b>customer managed key</b> (khóa do bạn tạo và kiểm soát).</li>
+<li>Có ba kiểu khóa KMS: <b>customer managed key</b> (khóa do bạn tạo và kiểm soát, có phí hằng tháng), <b>AWS managed key</b> (nằm trong tài khoản của bạn, AWS tạo và quản lý giúp cho một dịch vụ, alias dạng <code>aws/s3</code>, bạn xem được nhưng không đổi được cài đặt) và <b>AWS owned key</b> (nằm trong tài khoản của dịch vụ AWS, dùng chung cho nhiều khách hàng, bạn không thấy và không quản lý, hoàn toàn miễn phí; nhiều dịch vụ dùng loại này để mã hóa mặc định).</li>
 </ul>
 <p><b>Customer managed key</b> là đáp án khi đề đòi \"khóa do công ty kiểm soát\": bạn viết key policy, bật <b>xoay vòng khóa tự động</b> (mặc định mỗi năm một lần), <b>vô hiệu hóa (disable)</b> hoặc lên lịch xóa khóa, và dùng một khóa cho nhiều dịch vụ; mọi lần dùng đều có trong CloudTrail. KMS <b>không</b> cung cấp HSM dành riêng một khách hàng; muốn vậy phải dùng CloudHSM.</p>
 
@@ -777,7 +781,7 @@
 <li><b>VPC Flow Logs</b>: thông tin về lưu lượng IP đi vào và ra các giao diện mạng trong VPC (từ đâu đến đâu, được cho qua hay bị chặn).</li>
 <li><b>Amazon S3 server access logs</b>: ghi lại các yêu cầu truy cập vào một bucket S3.</li>
 </ul>
-<p>Các nhật ký này thường được lưu vào S3 hoặc CloudWatch Logs, và cũng là nguồn dữ liệu cho GuardDuty, Detective ở bài trước.</p>
+<p>Các nhật ký này thường được lưu vào S3 hoặc CloudWatch Logs, và cũng là nguồn dữ liệu cho GuardDuty, Detective ở bài 2-5.</p>
 <p><b>Cảnh báo tức thì</b>: nhật ký chỉ có ích nếu có người đọc. Muốn \"gửi email trong vài phút khi có ai đăng nhập console bằng root\", ghép hai dịch vụ: <b>Amazon EventBridge</b> (bắt sự kiện từ CloudTrail theo rule, ví dụ sự kiện đăng nhập của root) → <b>Amazon SNS</b> (Simple Notification Service, gửi email/SMS tới người đăng ký).</p>
 <div class="flow"><span>Root đăng nhập</span><span>CloudTrail ghi sự kiện</span><span>EventBridge rule khớp</span><span>SNS gửi email</span></div>
 
@@ -798,6 +802,7 @@
 <li><b>Artifact Agreements</b>: xem, chấp nhận và quản lý <b>thỏa thuận</b> với AWS cho tài khoản (hoặc cả tổ chức), ví dụ <b>BAA</b> (Business Associate Addendum) mà luật HIPAA yêu cầu trước khi xử lý thông tin sức khỏe (PHI) trên AWS.</li>
 </ul>
 <p><b>AWS Audit Manager</b> (biết qua là đủ) giúp bạn liên tục thu thập bằng chứng từ việc sử dụng AWS của <b>chính bạn</b> để chuẩn bị cho các cuộc kiểm toán.</p>
+<p><i>Lưu ý: Audit Manager đã chuyển sang <b>chế độ bảo trì</b>, không nhận tài khoản mới từ <b>30/4/2026</b> (khách cũ vẫn dùng được). AWS gợi ý dùng <b>conformance packs</b> của <b>AWS Config</b> thay thế. Với đề thi, vẫn nhớ: "continuously collect evidence for audits" → Audit Manager.</i></p>
 
 <h3>Data residency và nguồn thông tin bảo mật</h3>
 <p><b>Data residency</b> (nơi lưu trú dữ liệu) là yêu cầu dữ liệu phải nằm trong một quốc gia hoặc khu vực nhất định. Trên AWS, <b>bạn chọn Region</b> để lưu dữ liệu, và AWS không tự chuyển dữ liệu của bạn ra khỏi Region đó trừ khi bạn cấu hình. Vì vậy, muốn đáp ứng luật lưu trú dữ liệu, hãy lưu dữ liệu trong Region đặt tại quốc gia đó.</p>

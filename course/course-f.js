@@ -25,7 +25,7 @@
 <p><b>Chi phí:</b> bật MFA, tạo IAM user hay dùng IAM Identity Center đều không tính phí. Xem trang Billing và Cost Explorer trên giao diện web cũng không tính phí. Tạo budget và nhận cảnh báo qua email trong AWS Budgets <b>không tính phí</b>; chỉ một số tính năng nâng cao (budget có gắn hành động tự động vượt mức miễn phí, báo cáo budget định kỳ) mới tính phí. Lab này chỉ tạo <b>một</b> budget cảnh báo, nên chi phí bằng 0.</p>
 <p><b>Về Free Tier:</b> từ tháng 7/2025, AWS đã đổi điều khoản <b>AWS Free Tier</b> (ưu đãi miễn phí) cho tài khoản mới: chuyển sang mô hình dựa trên <b>credit</b> (tín dụng dùng thử), và khi đăng ký bạn chọn một trong hai gói:</p>
 <ul>
-<li><b>Free plan</b> (gói miễn phí): không phát sinh phí trong lúc dùng. Gói kết thúc sau một thời hạn (vài tháng) hoặc khi dùng hết credit; khi đó tài khoản <b>tự đóng</b> nếu bạn không nâng cấp, nên hãy để ý email của AWS. Một số dịch vụ/tính năng có thể tiêu nhiều tiền không dùng được trong gói này. Lưu ý: một số thao tác sẽ <b>tự động nâng cấp</b> tài khoản lên gói trả phí, ví dụ tham gia hoặc tạo <b>AWS Organizations</b>.</li>
+<li><b>Free plan</b> (gói miễn phí): không phát sinh phí trong lúc dùng. Gói kết thúc sau <b>6 tháng</b> hoặc khi dùng hết credit, tùy điều nào đến trước; khi đó tài khoản <b>tự đóng</b> nếu bạn không nâng cấp. AWS giữ dữ liệu <b>90 ngày</b> rồi xóa vĩnh viễn; trong 90 ngày đó bạn vẫn nâng cấp lên Paid plan để lấy lại quyền truy cập. Gói này không cho dùng các dịch vụ/tính năng có thể tiêu hết credit, ví dụ <b>không mua được Reserved Instances hay Savings Plans</b>, một số sản phẩm AWS Marketplace có tính phí. Lưu ý: các thao tác sau sẽ <b>tự động nâng cấp</b> tài khoản lên gói trả phí: tham gia <b>AWS Organizations</b>, dựng landing zone <b>AWS Control Tower</b>, tham gia <b>AWS Partner Network</b>, ký hợp đồng Professional Services, đăng ký Enterprise Agreement, mua gói AWS Skill Builder Team, hoặc đánh dấu tài khoản tuân thủ HIPAA/SEC.</li>
 <li><b>Paid plan</b> (gói trả phí): dùng được mọi dịch vụ; phần vượt credit hoặc dịch vụ không áp dụng credit sẽ <b>bị tính tiền thật</b>. Với gói này, budget cảnh báo ở Phần C là bắt buộc.</li>
 </ul>
 <p>Số credit, thời hạn và danh sách dịch vụ có thể thay đổi, nên hãy <b>đọc trang AWS Free Tier chính thức</b> trước khi làm lab. Đừng tin vào số liệu trên blog cũ (ví dụ "miễn phí 12 tháng" là điều khoản cho tài khoản tạo trước 7/2025).</p>
@@ -269,7 +269,7 @@
 <h3>Các bước thực hành</h3>
 <p><b>Giao diện có thể khác đôi chút</b>; hãy tìm theo tên chức năng.</p>
 <ol>
-<li>Mở <b>S3</b>, bấm tạo bucket. Chọn Region gần bạn (ví dụ Singapore). Đặt tên bucket <b>duy nhất trên toàn cầu</b>, chỉ chữ thường, số và dấu gạch ngang, ví dụ <code>banhngon-lab-tenban-123</code>.</li>
+<li>Mở <b>S3</b>, bấm tạo bucket. Chọn Region gần bạn (ví dụ Singapore): ở bộ chọn Region góc trên bên phải, hoặc ngay trong form tạo bucket. Đặt tên bucket <b>duy nhất trên toàn cầu</b>, chỉ chữ thường, số và dấu gạch ngang, ví dụ <code>banhngon-lab-tenban-123</code>.</li>
 <li>Để ý mục <b>Block Public Access</b> (chặn truy cập công khai): mặc định đang <b>bật</b> cho bucket mới. Tạm thời giữ nguyên và tạo bucket.</li>
 <li>Mở bucket, chọn <b>Upload</b>, tải lên file <code>index.html</code>.</li>
 <li>Vào tab <b>Properties</b> của bucket, kéo xuống phần <b>Static website hosting</b>, chọn bật (Enable), kiểu "Host a static website", nhập <code>index.html</code> làm index document. Lưu lại.</li>
@@ -356,7 +356,7 @@
 </div>
 
 <h3>Chi phí và chuẩn bị</h3>
-<p><b>Chi phí:</b> EC2 tính theo thời gian instance chạy (tùy instance type), cộng dung lượng EBS, và <b>địa chỉ IPv4 công cộng</b> (hiện AWS tính phí theo giờ cho public IPv4; Elastic IP không gắn vào máy đang chạy cũng bị tính). Một số instance type nhỏ được gắn nhãn kiểu "Free tier eligible" trong Console và có thể được ưu đãi miễn phí hoặc trừ vào credit tùy điều khoản tài khoản của bạn. Để giữ gần bằng 0: chọn instance nhỏ nhất có nhãn ưu đãi, dùng ổ đĩa mặc định, chạy trong thời gian ngắn và <b>terminate ngay khi xong</b>.</p>
+<p><b>Chi phí:</b> EC2 tính theo thời gian instance chạy (tùy instance type), cộng dung lượng EBS, và <b>địa chỉ IPv4 công cộng</b> (hiện AWS tính phí theo giờ cho public IPv4; Elastic IP không gắn vào máy đang chạy cũng bị tính). Một số instance type nhỏ được gắn nhãn kiểu "Free tier eligible" trong Console và có thể được ưu đãi miễn phí hoặc trừ vào credit tùy điều khoản tài khoản của bạn. Theo tài liệu EC2: tài khoản tạo từ <b>15/7/2025</b> được dùng <b>t3.micro, t3.small, t4g.micro, t4g.small, c7i-flex.large, m7i-flex.large</b>; tài khoản tạo trước đó dùng <b>t2.micro hoặc t3.micro</b> (tùy Region). Danh sách có thể đổi, nên <b>hãy tin nhãn "Free tier eligible" hiển thị trong Console</b> của chính bạn. Để giữ gần bằng 0: chọn instance nhỏ nhất có nhãn ưu đãi, dùng ổ đĩa mặc định, chạy trong thời gian ngắn và <b>terminate ngay khi xong</b>.</p>
 <p><b>Chuẩn bị:</b></p>
 <ul>
 <li>Đã có budget cảnh báo từ Lab 1.</li>
