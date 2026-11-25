@@ -7,14 +7,18 @@
 const VERSION = 'v7';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
-  './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
+  './', 'index.html', 'style.css', 'manifest.webmanifest',
+  // Code (thứ tự giống index.html)
+  'js/core.js', 'js/i18n.js', 'js/util.js', 'js/srs.js', 'js/keywords.js',
+  'js/session.js', 'js/home.js', 'js/review.js', 'js/practice.js', 'js/learn.js',
+  'js/settings.js', 'js/exam.js', 'js/pwa.js', 'js/main.js',
   // Nội dung (thứ tự giống index.html)
   'content/domains.js', 'content/glossary.js', 'content/services.js', 'content/quick-summary.js',
   'content/lessons/course-a.js', 'content/lessons/course-b.js', 'content/lessons/course-c.js', 'content/lessons/course-d.js',
-  'content/lessons/course-e.js', 'content/lessons/course-f.js', 'content/questions/d1.js', 'content/questions/d2.js',
-  'content/questions/d3.js', 'content/questions/d4.js', 'content/exam/d1.js', 'content/exam/d2.js',
-  'content/exam/d3.js', 'content/exam/d4.js', 'content/tags.js',
-  // Bản English / 日本語 (i18n/en, i18n/ja) KHÔNG cache sẵn: app.js chỉ nạp ngôn ngữ đang chọn và fetch bên dưới tự
+  'content/lessons/course-e.js', 'content/lessons/course-f.js', 'content/questions/d1.js',
+  'content/questions/d2.js', 'content/questions/d3.js', 'content/questions/d4.js', 'content/exam/d1.js',
+  'content/exam/d2.js', 'content/exam/d3.js', 'content/exam/d4.js', 'content/tags.js',
+  // Bản English / 日本語 (i18n/en, i18n/ja) KHÔNG cache sẵn: js/main.js chỉ nạp ngôn ngữ đang chọn và fetch bên dưới tự
   // cache các file đó. Nhờ vậy người dùng tiếng Việt không phải tải thêm ~2,4 MB, và một file dịch lỗi không làm hỏng việc cài đặt.
   'i18n/vi/ui.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'

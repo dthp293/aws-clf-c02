@@ -14,8 +14,8 @@
   <meta name="apple-mobile-web-app-title" content="CLF-C02">
   <title>CLF-C02 Study</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Bản English/日本語: ẩn chữ trên thanh điều hướng cho tới khi app.js nạp xong bộ ngôn ngữ (tránh nháy chữ tiếng Việt) -->
-  <script>try { var s = JSON.parse(localStorage.getItem('clf-c02-study-v1') || '{}'); if (s && s.settings && (s.settings.ui === 'en' || s.settings.ui === 'ja')) document.documentElement.classList.add('i18n-loading'); } catch (e) {}</script>
+  <!-- Bản English/日本語: ẩn chữ trên thanh điều hướng cho tới khi js/main.js nạp xong bộ ngôn ngữ (tránh nháy chữ tiếng Việt) -->
+  <script>(function () { try { var s = JSON.parse(localStorage.getItem('clf-c02-study-v1') || '{}'); if (s && s.settings && (s.settings.ui === 'en' || s.settings.ui === 'ja')) document.documentElement.classList.add('i18n-loading'); } catch (e) {} })();</script>
 </head>
 <body>
   <header class="top">
@@ -51,8 +51,22 @@
   <script src="content/exam/d3.js"></script>
   <script src="content/exam/d4.js"></script>
   <script src="content/tags.js"></script>
-  <!-- Chuỗi giao diện tiếng Việt (luôn tải, dùng làm dự phòng). Bản en/ja do app.js tự nạp từ i18n/<lang>/ theo Cài đặt. -->
+  <!-- Chuỗi giao diện tiếng Việt (luôn tải, dùng làm dự phòng). Bản en/ja do js/main.js tự nạp từ i18n/<lang>/ theo Cài đặt. -->
   <script src="i18n/vi/ui.js"></script>
-  <script src="app.js"></script>
+  <!-- App code: plain scripts sharing one global scope, in this order (core first, main last). See js/. -->
+  <script src="js/core.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/srs.js"></script>
+  <script src="js/keywords.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/review.js"></script>
+  <script src="js/practice.js"></script>
+  <script src="js/learn.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/exam.js"></script>
+  <script src="js/pwa.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
