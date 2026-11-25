@@ -1,6 +1,8 @@
 # Contributing conventions
 
-These rules cover commit messages, branch names, pull request titles and pull request descriptions. Write all of them in **English**, even though the site and the README are in Vietnamese.
+These rules cover commit messages, branch names, pull request titles and pull request descriptions. Write all of them in **English**, even though the site started in Vietnamese.
+
+The README exists in two languages: `README.md` (English, shown on GitHub) and `README.vi.md` (Vietnamese). When one changes, update the other in the same PR.
 
 ## 1. Commit messages
 
@@ -18,11 +20,11 @@ Format, based on [Conventional Commits](https://www.conventionalcommits.org/):
 
 | Type | Use for |
 |---|---|
-| `feat` | New behavior in the app (`app.js`, `index.html`, `style.css`) |
+| `feat` | New behavior in the app (`js/`, `index.html`, `style.css`) |
 | `fix` | Bug fix in the app |
-| `content` | Vietnamese source content: questions, lessons, glossary, services, exam pool, tags |
+| `content` | Vietnamese source content under `content/`: questions, lessons, glossary, services, exam pool, tags |
 | `i18n` | Translations under `i18n/` (UI strings or en/ja content) |
-| `docs` | README, CONTRIBUTING, `i18n/FILES.txt`, code comments only |
+| `docs` | README (`README.md` + `README.vi.md`), CONTRIBUTING, `i18n/FILES.txt`, code comments only |
 | `chore` | Service worker, manifest, icons, repo config, templates |
 | `test` | Test or validation scripts |
 | `refactor` | Code change with no behavior change |
@@ -81,7 +83,7 @@ git config commit.template .gitmessage
 
 ## 2. Branch names
 
-`<kind>/<short-kebab-description>`, where kind is one of `feature`, `fix`, `content`, `i18n`, `docs`, `chore`.
+`<kind>/<short-kebab-description>`, where kind is one of `feature`, `fix`, `content`, `i18n`, `refactor`, `docs`, `chore`.
 
 Examples: `feature/srs-scheduling`, `feature/i18n`, `content/update-support-plans`, `chore/conventions`.
 
@@ -128,7 +130,7 @@ npm install
 npm run check
 ```
 
-- `npm run lint`: ESLint (recommended rules only, no style rules) on `app.js`, `sw.js` and `tests/`. Content data files are not linted.
+- `npm run lint`: ESLint (recommended rules only, no style rules) on `js/`, `sw.js` and `tests/`. Content data files (`content/`, `i18n/`) are not linted.
 - `npm test` runs `tests/run.js`, which covers:
   - `node --check` on every JS file
   - i18n keys and placeholders identical in vi/en/ja
