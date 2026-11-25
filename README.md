@@ -16,7 +16,18 @@ A self-study website for the **AWS Certified Cloud Practitioner (CLF-C02)** exam
 
 ---
 
-## 1. Suggested study plan (about 6 weeks, 45–60 minutes a day)
+## 1. Getting started
+
+1. Open the site, or install it on your phone (see [📱 Install on your phone](#-install-on-your-phone-and-use-offline)).
+2. Go to **Settings**:
+   - **Language:** Tiếng Việt, English or 日本語.
+   - **Exam date:** enter it if you have booked the exam. The app uses it to bring every card back before the exam and to suggest a study pace.
+   - **New cards per day:** 15 by default.
+3. Go back to the **home page**. If your current new-card limit is too low to learn everything before the exam date, the home page shows the daily number you need; press **"Set N a day"** to use it.
+
+---
+
+## 2. Suggested study plan (about 6 weeks, 45–60 minutes a day)
 
 | Week | What to study |
 |---|---|
@@ -24,20 +35,30 @@ A self-study website for the **AWS Certified Cloud Practitioner (CLF-C02)** exam
 | 2 | **Domain 2: Security** (2-1 → 2-7) |
 | 3 | **Domain 3**, part 1 (3-1 → 3-7) |
 | 4 | **Domain 3**, part 2 (3-8 → 3-14) + **Domain 4** (4-1 → 4-4) |
-| 5 | Review weak tasks; practice **Advanced** and **Multiple-response** questions; try a few labs (optional) |
-| 6 | Take 2–3 **mock exams**, review weak tasks, and do the Official Practice Question Set on AWS Skill Builder |
+| 5 | Review weak tasks; practice **Questions you often miss**, **Advanced** and **Multiple-response** questions; try a few labs (optional) |
+| 6 | Take 2–3 fresh **mock exams**, check the **🎯 Readiness** card and review the tasks it points to; do the Official Practice Question Set on AWS Skill Builder |
 
 **Daily habit:**
 
-1. Open **Today** and clear all due cards (about 10–15 minutes).
+1. Open **Today** and finish the session (about 10–15 minutes).
 2. Study **one new lesson** under **Lessons**, then press **"✍️ Practice this lesson’s N questions"** at the end of it.
-3. Press **"✓ Mark as done"** so the app tracks your progress.
+3. Press **"✓ Mark as done"**. The app tracks your progress and brings that lesson's questions into your new cards sooner.
+4. If you have time left, open **Practice → Questions you often miss**, or **Free practice**.
 
-**When are you ready?** When the **"🎯 Ready for the exam"** card lights up. That means **≥ 80% on 3 fresh mock exams in a row**; only exams where at least half the questions were new to you count. You should also do well on AWS's free official question set on Skill Builder. The real pass mark is 700/1000 (scaled), so aiming for 80% leaves a safety margin.
+**When are you ready?** When the **🎯 Readiness** card on the Mock exam page turns into **"🎯 Ready for the exam"**, and you also do well on AWS's free official question set on Skill Builder. See [📝 Mock exam](#-mock-exam) for how to read the card.
 
 ---
 
-## 2. How to use it
+## 3. How to use it
+
+### 🏠 Home page
+
+- **Cards due / new cards today:** what is in today's **Today** session. Press **Start review** to begin.
+- **Cards studied**, **day streak**, and **days until the exam** (if you entered an exam date).
+- **Latest mock exam:** the score of your last exam and your **estimated readiness**. Press it to see the result.
+- **Pace advice:** only shown when you have an exam date and your new-card limit is too low. In the last 7 days before the exam it no longer suggests new cards.
+- **🎯 Tasks that need the most work:** the 3 tasks with the lowest recent accuracy, each with **Practice now**.
+- **Progress by domain:** questions studied and accuracy (from the last 3 answers to each question).
 
 ### 📚 Lessons
 
@@ -51,57 +72,96 @@ A self-study website for the **AWS Certified Cloud Practitioner (CLF-C02)** exam
 
 ### 📅 Today (SRS)
 
-Mixes questions, exam vocabulary and AWS service cards. After each card, grade yourself **Again / Hard / Good / Easy**.
+Each session mixes questions, exam vocabulary and AWS service cards: **due** cards first (the ones you forget most come first), then **new** cards up to your daily limit. When you are done, press **"Learn 10 more new cards"** or switch to **Free practice**.
 
-- **Scheduling:**
-  - A wrong answer brings the card back after **10 minutes**.
-  - A right answer spaces it further apart each time (1 → 4 → 10… days).
-  - Each session shows **due** cards first, then **new** cards up to the daily limit.
-- **Daily new-card limit:** adjustable in **Settings** (default 15).
-  - Only new cards learned in **Today** count toward the limit.
-  - New questions answered in Practice, lesson quizzes or Free practice don't use it up.
-- **A learned card never appears before it is due**, in any mode. A card graded **Again** is due in 10 minutes; if the session ends first, it waits for the next session.
-- A study day rolls over at **4 a.m.** (like Anki), so late-night reviews after midnight count for the previous day.
+**Answering a card:**
+
+- **Question:** choose your answer (keys A–F) and press **Check** (Enter).
+  - **Right:** the card is scheduled **Good** right away, so leaving now still counts. If it felt hard or too easy, press **Hard** or **Easy**; each button shows when you will see the card again. Enter = **Good** and moves on.
+  - **Wrong:** read the explanation for each option, then press **Continue** (Enter). The card comes back after **10 minutes**; if the session ends first, it waits for the next session.
+- **Vocabulary / service card:** recall the meaning, press **Flip card** (Space), then grade yourself **Again / Hard / Good / Easy** (keys 1–4).
+
+**How the schedule works** (an SM-2 variant):
+
+- **Right answers:** the gap grows each time: 1 → 4 → 10 → 26… days.
+- **Mistakes:**
+  - mistakes while a card is still new, or again in the same session, aren't penalized;
+  - a forgotten card keeps about 25% of its old interval once you relearn it;
+  - a late review that you still remember is spaced from the days you actually remembered it.
+- **New cards:**
+  - questions come before vocabulary and service cards;
+  - questions are split by the exam's domain weights (more from domain 3 than domain 4);
+  - weak tasks and questions from finished lessons come first;
+  - two questions of the same task are never next to each other.
+- **With an exam date:** every card is due again within the **last 7 days** before the exam, spread across those days rather than piled on one. Only the due date moves; the card's interval is not shortened.
+- **A learned card never appears before it is due**, in any mode.
+- **Daily new-card limit:** only new cards learned in **Today** count toward it. New questions answered in Practice, lesson quizzes or Free practice don't use it up.
+- **Study day:** it rolls over at **4 a.m.** (like Anki), so late-night reviews after midnight count for the previous day.
 
 #### 🔁 Free practice (its own schedule)
 
-When you've cleared your reviews and want more, open **Today → Free practice** (`#/review/free`) and choose **Domain 1–4** or **Mix everything**.
+When you've cleared your reviews and want more, open **Today → Free practice** and choose **Domain 1–4** or **Mix everything**.
 
-- **Separate schedule:** same Again / Hard / Good / Easy rules, but fully separate from the main schedule. It doesn't change what's due in Today, doesn't use the daily new-card limit, and doesn't change the numbers on the home page.
+- **Separate schedule:** same grading, but fully separate from the main schedule. It doesn't change what's due in Today, doesn't use the daily new-card limit, and doesn't change the numbers on the home page.
 - **When cards appear:** a card you have never practiced here is available right away, even if it isn't due in the main schedule. Once practiced here, it only comes back when it is due in the free-practice schedule.
-- **What's included:** each **Domain** has that domain's questions and AWS service cards. **Mix everything** has every question, service card and **exam vocabulary** card; vocabulary has no domain, so it only appears here. Mock-exam pool questions never appear.
-- **Counts and stats:** each tile shows **cards available now / total** and when the next card is due. Your right/wrong answers still count toward the domain and task stats.
+- **What's included:** each **Domain** has that domain's questions and service cards; **Mix everything** adds the **exam vocabulary**. Mock-exam pool questions never appear.
+- **Stats:** your right/wrong answers still count toward the domain and task stats.
 
 ### ✍️ Practice
 
-- **Shared schedule:** the Practice tab and lesson quizzes use the **same main schedule** as Today, so they only show **new** or **due** questions.
-  - Answering a due question reviews that card.
-  - Answering a new question adds it to the SRS schedule, without using the daily new-card limit.
-- **Counts:** each tile shows **questions available now / total**. When nothing is new or due, the app says when the next question is due and points you to **Free practice**.
-- **Ways to practice:** by **domain**, **mix everything**, **questions you often miss**, **🔥 advanced questions**, or **☑️ multiple-response questions** (Choose TWO/THREE).
+- **Shared schedule:** the tiles for each **domain**, **mix everything**, **🔥 advanced questions**, **☑️ multiple-response questions** (Choose TWO/THREE), and the lesson quizzes, use the **same main schedule** as Today.
+  - They only show **new** or **due** questions.
+  - Each tile shows **questions available now / total**.
+  - When nothing is left, the app says when the next question is due and points you to Free practice.
+- **🎯 Questions you often miss:**
+  - **What counts:** questions you got wrong last time, or right fewer than 2 of the last 3 times. A retry right after a mistake, while you still remember the answer, doesn't count.
+  - **Schedule:** this tile uses the **Free practice schedule**, so you can practice them right away instead of waiting until they are due.
 - **📖 Question-reading drill** (Vietnamese and English editions):
   - You see only the English question and tap the words that decide the answer (e.g. *MOST cost-effective*, *cannot be interrupted*), against a timer.
   - The app then shows the key terms and only then the options.
   - Aim for about **80 seconds per question** in the exam.
-- **Task-statement table (1.1 → 4.3):** combines practice and mock-exam results, lists the weakest tasks first, and has a practice button for each task.
+- **Task-statement table (1.1 → 4.3):** combines practice and mock-exam results using the last 3 answers to each question, lists the weakest tasks first, and has a practice button for each task.
 
 ### 📝 Mock exam
 
-- **Format:**
-  - 65 questions in 90 minutes. Turn on **ESL +30 minutes** if you requested that accommodation when booking the exam.
-  - The questions are split **16 / 19 / 22 / 8** across the 4 domains, matching the exam weighting.
-- **Question pool:**
-  - Questions come from the **separate pool**. They **never appear in practice**, so your score reflects what you know, not what you remember.
-  - The app prefers questions you haven't seen.
-  - The Mock exam page shows how many **completely fresh exams** the pool still has. Each exam uses up its new questions, so **save fresh exams for the last 1–2 weeks** to measure readiness.
-- **During the exam:**
-  - You can flag questions and move freely between them.
+**Before the exam**
+
+- **Format:** 65 questions in 90 minutes, split **16 / 19 / 22 / 8** across the 4 domains. The tasks within each domain follow the same mix too. Turn on **ESL +30 minutes** if you requested that accommodation when booking the exam.
+- **Question pool:** questions come from a **separate pool of 195** that **never appears in practice**, so your score reflects what you know, not what you remember.
+- **Fresh exams:** the pool has enough for **3 completely fresh exams**, and the Mock exam page shows how many are left. Each exam uses up its new questions, so **save fresh exams for the last 1–2 weeks** to measure readiness.
+
+**During the exam**
+
+- **Navigation:** move freely between questions and **flag** the ones you want to review.
   - **Shortcuts:** A–F to choose, ←/→ to move, **M** to flag.
   - A multiple-response question with too few choices gets a dashed border, and you are reminded when you submit.
+- **Time runs out while you are on the page:** the exam is submitted, as in the real exam.
+- **Abandoned** (closed tab, sleeping computer… when time ran out):
+  - submitted if at least half of the questions are fully answered;
+  - otherwise discarded. Questions you never opened stay new.
+- **Cancel exam:** the score is not saved, but every question you saw still counts toward readiness, and incomplete ones count as wrong. So you can't answer only the easy ones and cancel.
+
+**After the exam**
+
 - **Results:**
-  - **% correct** and a breakdown by domain.
-  - **Tasks to review** and how many questions were new to you.
-  - A question-by-question review with explanations.
+  - **% correct** and a breakdown by domain;
+  - **tasks to review**;
+  - how many questions were new to you;
+  - a question-by-question review with explanations.
+- **Practice the tasks you missed:** opens up to 20 practice questions, split by how many you missed in each task.
+
+**Reading the 🎯 Readiness card**
+
+- **"Estimated X–Y%":** the score you are likely to get on the real exam (an 80% interval). The more data, the narrower it gets.
+- **What it uses:** only your **first** answer to each pool question, so redoing questions you have seen doesn't change the estimate. Recent results weigh more than old ones, and the card shows the date of the latest data.
+- **Domain table:** the estimate and range for each domain, with how many answers it is based on.
+- **Tasks to review:** press one to practice it.
+- **Ready when:**
+  - there is enough data: about 80 recent answers, at least 8 in every domain;
+  - the lower bound is ≥ 75% overall and ≥ 65% in every domain.
+
+  This usually takes 2–3 exams. The last line of the card says what is still missing.
+- **Pass mark:** the real exam uses a scaled score (pass at 700/1000) that can't be converted directly from % correct, so aim for 80% to leave a safety margin.
 
 ### 🌐 Interface language (Tiếng Việt / English / 日本語)
 
@@ -131,10 +191,11 @@ Progress is stored **only in the browser/device you use** and does not sync betw
 - **Back up:** use **Settings → Export data (.json)**.
 - **Move to another device:** use **Import data** there to continue.
 - **Back up regularly.** On iPhone, the system may delete a site's data if the app isn't opened for a long time.
+- **Several tabs on the same device** stay in sync: when one tab saves, the others reload your progress (a session in progress in another tab starts again from the new data).
 
 ---
 
-## 3. CLF-C02 exam tips
+## 4. CLF-C02 exam tips
 
 - **65 questions:** 50 scored + 15 unscored trial questions, and you can't tell which is which. **Wrong answers aren't penalized, so never leave a question blank.**
 - **Read the last sentence first** (*Which service…? / Which is the MOST cost-effective…?*). Then look for the **constraints** (*without managing servers, cannot be interrupted, data must stay in the country…*).
@@ -150,7 +211,7 @@ Progress is stored **only in the browser/device you use** and does not sync betw
 
 ---
 
-## 4. For maintainers
+## 5. For maintainers
 
 > Commit messages, branch names, PR titles and PR descriptions are written in English and follow [CONTRIBUTING.md](CONTRIBUTING.md). The PR description template is `.github/pull_request_template.md`. To use the commit template, run `git config commit.template .gitmessage` once.
 

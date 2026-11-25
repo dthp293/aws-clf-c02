@@ -2,22 +2,24 @@
 'use strict';
 
 /* ───────── Luyện tập (lịch chính): chỉ câu mới hoặc đã đến hạn ───────── */
-const weakQs = () => D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; });
+const weakQs = () => D.questions.filter(q => isWeakStat(S.stats[q.id]));
 const readQs = () => qTranslated() ? [] : D.questions.filter(q => q.en.length >= 160);
 function practiceSet(arg) {
   if (arg === 'all') return { qs: D.questions, title: t('practice.all') };
   if (arg === 'hard') return { qs: D.questions.filter(q => q.lvl === 2), title: t('practice.hard') };
   if (arg === 'multi') return { qs: D.questions.filter(q => q.ans.length > 1), title: t('practice.multi') };
-  if (arg === 'weak') return { qs: weakQs(), title: t('practice.weak') };
+  // Câu hay sai chạy trên lịch Luyện tập tự do: câu sai ở đó hay khi thi thử vẫn luyện được ngay, không phải chờ đến
+  // hạn ở lịch chính (và không làm đổi lịch chính)
+  if (arg === 'weak') return { qs: weakQs(), title: t('practice.weak'), opt: { free: true } };
   if (arg === 'read') return { qs: readQs(), title: t('practice.read'), opt: { read: true }, max: 15 };
   if (arg.startsWith('t-')) { const k = arg.slice(2); return { qs: D.questions.filter(q => q.t === k), title: t('common.task', { t: k }) + ' · ' + (TASKS[k] ? taskName(k) : '') }; }
   return { qs: D.questions.filter(q => q.d === +arg), title: t('common.domain', { d: arg }) };
 }
 // Bắt đầu một phiên luyện câu hỏi trên lịch chính: bỏ câu đã học mà chưa đến hạn
 function startPractice(qs, title, opt = {}, back = '#/practice', max = Infinity) {
-  const av = availQs(qs);
-  if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), {}, back);
-  runSession(shuffle(av).slice(0, max).map(q => qItem(q.id)), title, opt);
+  const av = qs.filter(q => availIn(deckOf(opt), 'q:' + q.id));
+  if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), opt, back);
+  runSession(spaceOut(shuffle(av).slice(0, max).map(q => qItem(q.id))), title, opt);
 }
 
 function viewPractice(arg) {
@@ -26,7 +28,7 @@ function viewPractice(arg) {
     if (!p.qs.length) { $app.innerHTML = `<div class="card">${t('practice.empty')}</div>`; return; }
     return startPractice(p.qs, p.title, p.opt, '#/practice', p.max);
   }
-  const cnt = qs => `<b>${availQs(qs).length}/${qs.length}</b>`;
+  const cnt = (qs, opt) => `<b>${qs.filter(q => availIn(deckOf(opt), 'q:' + q.id)).length}/${qs.length}</b>`;
   const set = a => practiceSet(a).qs;
   const tile = (arg, head, sub) => `<a class="card dom" style="text-decoration:none" href="#/practice/${arg}"><h3>${head}</h3><span class="muted small">${sub}</span></a>`;
   $app.innerHTML = `<h1>${t('nav.practice')}</h1>
@@ -34,7 +36,7 @@ function viewPractice(arg) {
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
     ${D.domains.map(d => { const s = domStats(d.id); return tile(d.id, `D${d.id}. ${esc(domName(d))}`, t('practice.domLine', { total: cnt(set(String(d.id))), acc: s.acc === null ? '—' : s.acc + '%' })); }).join('')}
     ${tile('all', '🔀 ' + t('practice.mixAll'), t('practice.nQuestions', { n: cnt(set('all')) }))}
-    ${tile('weak', '🎯 ' + t('practice.weak'), t('practice.weakLine', { n: cnt(set('weak')) }))}
+    ${tile('weak', '🎯 ' + t('practice.weak'), t('practice.weakLine', { n: cnt(set('weak'), { free: true }) }))}
     ${tile('hard', '🔥 ' + t('practice.hard'), t('practice.hardLine', { n: cnt(set('hard')) }))}
     ${tile('multi', '☑️ ' + t('practice.multi'), t('practice.multiLine', { n: cnt(set('multi')) }))}
     ${qTranslated() ? '' : tile('read', '📖 ' + t('practice.read'), t('practice.readLine', { n: cnt(set('read')) }))}
@@ -44,17 +46,22 @@ function viewPractice(arg) {
     ${taskTable()}`;
 }
 
-/* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử) */
+/* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử).
+   Tỷ lệ đúng (c/a) tính theo 3 lần trả lời gần nhất của mỗi câu, để tiến bộ gần đây được phản ánh;
+   n = tổng số lượt trả lời (chỉ để hiển thị). */
 // Task yếu nhất: tỷ lệ đúng < 80%, có ít nhất minA lượt trả lời; stats = { task: { a, c } }
 const weakTasksOf = (stats, minA, limit) => Object.entries(stats).filter(([, r]) => r.a >= minA)
   .map(([k, r]) => ({ t: k, ...r, p: Math.round(r.c / r.a * 100) })).filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, limit);
 function taskStats() {
   const out = {};
-  Object.keys(TASKS).forEach(k => { out[k] = { a: 0, c: 0, total: 0 }; });
-  D.questions.forEach(q => { if (!q.t) return; out[q.t].total++; const s = S.stats[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
-  (D.examPool || []).forEach(q => { if (!q.t) return; const s = (S.examStats || {})[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
+  Object.keys(TASKS).forEach(k => { out[k] = { a: 0, c: 0, n: 0, total: 0 }; });
+  const add = (q, s) => { if (!s || !s.a) return; const r = recentOf(s); out[q.t].a += r.a; out[q.t].c += r.c; out[q.t].n += s.a; };
+  D.questions.forEach(q => { if (!q.t) return; out[q.t].total++; add(q, S.stats[q.id]); });
+  (D.examPool || []).forEach(q => { if (q.t) add(q, (S.examStats || {})[q.id]); });
   return out;
 }
+// Mức thành thạo từng task (0–1, theo các lần trả lời gần đây); null = chưa có dữ liệu
+const taskMastery = () => Object.fromEntries(Object.entries(taskStats()).map(([k, r]) => [k, r.a ? r.c / r.a : null]));
 function taskTable() {
   const ts = taskStats(), av = {};
   D.questions.forEach(q => { if (q.t && isAvail('q:' + q.id)) av[q.t] = (av[q.t] || 0) + 1; });
@@ -62,7 +69,7 @@ function taskTable() {
     .sort((x, y) => (x.acc === null) - (y.acc === null) || (x.acc ?? 0) - (y.acc ?? 0) || x.t.localeCompare(y.t));
   return `<div class="card scroll-x"><table class="tasks"><tr><th>${t('task.colTask')}</th><th>${t('task.colTopic')}</th><th>${t('task.colAcc')}</th><th style="width:30%"></th><th></th></tr>
     ${rows.map(r => `<tr><td><b>${r.t}</b></td><td>${esc(taskName(r.t))}</td>
-      <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${t('task.attempts', { n: r.a })}</div></td>
+      <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${t('task.attempts', { n: r.n })}</div></td>
       <td><div class="bar"><i style="width:${r.acc || 0}%;background:${r.acc === null ? 'var(--line)' : r.acc >= 80 ? 'var(--ok)' : r.acc >= 70 ? '#c98a00' : 'var(--bad)'}"></i></div></td>
       <td>${r.total ? `<a class="btn" href="#/practice/t-${r.t}">${t('task.practiceN', { n: (av[r.t] || 0) + '/' + r.total })}</a>` : ''}</td></tr>`).join('')}</table></div>`;
 }

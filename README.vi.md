@@ -16,7 +16,19 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 
 ---
 
-## 1. Lộ trình học gợi ý (khoảng 6 tuần, mỗi ngày 45–60 phút)
+## 1. Bắt đầu
+
+1. Mở website, hoặc cài lên điện thoại (xem [📱 Cài lên điện thoại](#-cài-lên-điện-thoại-và-dùng-offline)).
+2. Vào **Cài đặt**:
+   - **Ngôn ngữ giao diện:** Tiếng Việt, English hoặc 日本語.
+   - **Chế độ ngôn ngữ** (chỉ ở bản Tiếng Việt): bắt đầu với *Song ngữ*.
+   - **Ngày thi:** nhập nếu đã đặt lịch. App dùng ngày này để hẹn ôn lại mọi thẻ trước kỳ thi và gợi ý tốc độ học.
+   - **Số thẻ mới mỗi ngày:** mặc định 15.
+3. Về **Trang chủ**. Nếu với số thẻ mới hiện tại bạn không kịp học hết trước ngày thi, trang chủ hiện số thẻ mỗi ngày cần học; bấm **"Đặt N thẻ/ngày"** để áp dụng.
+
+---
+
+## 2. Lộ trình học gợi ý (khoảng 6 tuần, mỗi ngày 45–60 phút)
 
 | Tuần | Học gì | Chế độ ngôn ngữ (Cài đặt) |
 |---|---|---|
@@ -24,19 +36,28 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 | 2 | **Domain 2: Bảo mật** (2-1 → 2-7) | Song ngữ |
 | 3 | **Domain 3** phần 1 (3-1 → 3-7) | Ưu tiên tiếng Anh |
 | 4 | **Domain 3** phần 2 (3-8 → 3-14) + **Domain 4** (4-1 → 4-4) | Ưu tiên tiếng Anh |
-| 5 | Ôn task yếu, luyện **Câu nâng cao**, **Câu chọn nhiều đáp án**, **Luyện đọc đề**; làm thử vài bài thực hành (tùy chọn) | Chỉ tiếng Anh |
-| 6 | **Thi thử** 2–3 đề, ôn lại task yếu, làm Official Practice Question Set trên AWS Skill Builder | Chỉ tiếng Anh |
+| 5 | Ôn task yếu, luyện **Câu hay sai**, **Câu nâng cao**, **Câu chọn nhiều đáp án**, **Luyện đọc đề**; làm thử vài bài thực hành (tùy chọn) | Chỉ tiếng Anh |
+| 6 | **Thi thử** 2–3 đề mới, xem thẻ **🎯 Mức sẵn sàng**, ôn các task nó chỉ ra; làm Official Practice Question Set trên AWS Skill Builder | Chỉ tiếng Anh |
 
 **Thói quen mỗi ngày:**
-1. Mở **Ôn hôm nay** và ôn hết các thẻ đến hạn (khoảng 10–15 phút).
+1. Mở **Ôn hôm nay** và làm hết phiên ôn (khoảng 10–15 phút).
 2. Học **1 bài mới** trong mục **Bài học**, rồi bấm **"✍️ Luyện N câu của bài này"** ở cuối bài.
-3. Bấm **"✓ Đánh dấu đã học"** để app theo dõi tiến độ.
+3. Bấm **"✓ Đánh dấu đã học"**. App theo dõi tiến độ và đưa các câu của bài đã học vào phần thẻ mới sớm hơn.
+4. Còn thời gian thì vào **Luyện tập → Câu hay sai**, hoặc **Luyện tập tự do**.
 
-**Khi nào sẵn sàng đi thi?** Khi thẻ **"🎯 Sẵn sàng đi thi"** sáng lên, tức là đạt **≥ 80% ở 3 đề thi thử mới liên tiếp** (chỉ tính đề có ít nhất một nửa số câu là câu gặp lần đầu), và bạn cũng làm tốt bộ đề chính thức miễn phí của AWS trên Skill Builder. Ngưỡng đậu thật là 700/1000 (thang điểm scaled), nên nhắm 80% để có khoảng an toàn.
+**Khi nào sẵn sàng đi thi?** Khi thẻ **🎯 Mức sẵn sàng** ở trang Thi thử chuyển thành **"🎯 Sẵn sàng đi thi"**, và bạn cũng làm tốt bộ đề chính thức miễn phí của AWS trên Skill Builder. Cách đọc thẻ này xem ở mục [📝 Thi thử](#-thi-thử).
 
 ---
 
-## 2. Hướng dẫn sử dụng
+## 3. Hướng dẫn sử dụng
+
+### 🏠 Trang chủ
+- **Thẻ đến hạn ôn / thẻ mới hôm nay:** số thẻ của phiên Ôn hôm nay. Bấm **Bắt đầu ôn** để vào phiên.
+- **Thẻ đã học**, **ngày liên tiếp** (chuỗi ngày có học), **ngày đến kỳ thi** (nếu đã nhập ngày thi).
+- **Thi thử gần nhất:** % đúng của đề gần nhất và **ước tính mức sẵn sàng**. Bấm để xem kết quả.
+- **Gợi ý tốc độ học:** chỉ hiện khi có ngày thi và số thẻ mới hiện tại không kịp. Trong 7 ngày cuối trước kỳ thi, app không gợi ý thêm thẻ mới.
+- **🎯 Task cần ôn nhiều nhất:** 3 task có tỷ lệ đúng gần đây thấp nhất, kèm nút **Luyện ngay**.
+- **Tiến độ theo domain:** số câu đã học và tỷ lệ đúng (theo 3 lần trả lời gần nhất của mỗi câu).
 
 ### 📚 Bài học
 - **Khóa học:** học theo thứ tự. Mỗi bài có: mục tiêu → giải thích từ gốc, ví dụ đời thường, câu chuyện tiệm bánh *BánhNgon* xuyên suốt → khung **🎯 Đề thi hay hỏi** và **⚠️ Bẫy hay gặp** → tóm tắt và bảng thuật ngữ.
@@ -44,34 +65,58 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 - **🛠️ Thực hành (tùy chọn):** 5 bài thực hành trên tài khoản AWS thật. **Luôn làm theo phần dọn dẹp ở cuối mỗi bài** để tránh phát sinh chi phí. Đọc kỹ cảnh báo về Free Tier ở bài 5-1.
 
 ### 📅 Ôn hôm nay (SRS)
-Trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ AWS. Sau mỗi thẻ, tự chấm **Lại / Khó / Tốt / Dễ**:
-- Trả lời sai thì thẻ quay lại sau **10 phút**.
-- Trả lời đúng thì khoảng cách ôn giãn dần (1 → 4 → 10… ngày).
-- Mỗi phiên gồm các thẻ **đến hạn** trước, rồi tới thẻ **mới** (tối đa theo hạn mức mỗi ngày).
-- Số thẻ mới mỗi ngày chỉnh được trong **Cài đặt** (mặc định 15). Chỉ thẻ mới học trong **Ôn hôm nay** mới tính vào hạn mức này; câu mới làm ở tab Luyện tập, quiz cuối bài học hay Luyện tập tự do không làm giảm số thẻ mới.
-- **Thẻ đã học không bao giờ hiện lại trước giờ đến hạn**, ở mọi chế độ. Thẻ chấm **Lại** hẹn 10 phút: nếu phiên đang ôn kết thúc sớm hơn, thẻ sẽ chờ tới phiên sau.
-- Ngày học được tính sang ngày mới lúc **4 giờ sáng** (giống Anki), nên ôn khuya sau 0 giờ vẫn tính cho hôm trước.
+Mỗi phiên trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ AWS: thẻ **đến hạn** trước (thẻ hay quên lên đầu), rồi tới thẻ **mới** (tối đa theo số thẻ mới mỗi ngày). Ôn xong thì có thể bấm **"Học thêm 10 thẻ mới"** hoặc chuyển sang **Luyện tập tự do**.
+
+**Cách làm một thẻ:**
+- **Câu hỏi:** chọn đáp án (phím A–F), bấm **Kiểm tra** (Enter).
+  - **Đúng:** app tự xếp lịch **Tốt** ngay, nên rời trang lúc này vẫn được tính. Thấy câu khó hay quá dễ thì bấm **Khó** hoặc **Dễ**; mỗi nút ghi ngày sẽ ôn lại. Enter = **Tốt** và sang thẻ tiếp.
+  - **Sai:** đọc giải thích của từng đáp án rồi bấm **Tiếp tục** (Enter). Thẻ hẹn ôn lại sau **10 phút**; nếu phiên kết thúc trước đó, thẻ chờ tới phiên sau.
+- **Từ vựng / dịch vụ:** tự nhớ nghĩa, bấm **Lật thẻ** (Space), rồi tự chấm **Lại / Khó / Tốt / Dễ** (phím 1–4).
+
+**App xếp lịch thế nào** (biến thể SM-2):
+- Trả lời đúng thì khoảng cách giãn dần: 1 → 4 → 10 → 26… ngày.
+- Sai khi thẻ còn mới, hoặc sai lại trong cùng phiên, không bị "phạt". Quên một thẻ đã nhớ thì khi nhớ lại vẫn giữ khoảng 25% khoảng cách cũ. Ôn trễ mà vẫn nhớ thì khoảng cách tính theo số ngày bạn thực sự đã nhớ.
+- **Thẻ mới:** câu hỏi được ưu tiên hơn từ vựng/dịch vụ, chia theo tỷ trọng domain của đề thật (domain 3 nhiều hơn domain 4). Task đang yếu và câu của bài đã học xong được ưu tiên. Hai câu cùng task không đứng gần nhau.
+- **Có ngày thi:** mọi thẻ được hẹn ôn lại trong **7 ngày cuối** trước kỳ thi, rải đều qua các ngày (không dồn vào một ngày). Chỉ ngày ôn được dời lên; khoảng cách của thẻ không bị rút ngắn.
+- **Thẻ đã học không bao giờ hiện trước giờ đến hạn**, ở mọi chế độ.
+- Số thẻ mới mỗi ngày chỉ tính thẻ mới học trong **Ôn hôm nay**. Câu mới làm ở Luyện tập, quiz cuối bài hay Luyện tập tự do không làm giảm số này.
+- Ngày học chuyển sang ngày mới lúc **4 giờ sáng** (giống Anki), nên ôn khuya sau 0 giờ vẫn tính cho hôm trước.
 
 #### 🔁 Luyện tập tự do (lịch riêng)
-Khi đã ôn xong mà vẫn muốn luyện thêm, mở **Ôn hôm nay → Luyện tập tự do** (`#/review/free`) rồi chọn **Domain 1–4** hoặc **Trộn tất cả**.
-- Chế độ này có **lịch SRS riêng** (cùng quy tắc Lại / Khó / Tốt / Dễ), **tách hẳn** khỏi lịch chính: không làm thay đổi thẻ đến hạn của Ôn hôm nay, không tính vào số thẻ mới mỗi ngày, không đổi con số trên trang chủ.
-- Thẻ chưa từng luyện ở chế độ tự do thì luyện được ngay, kể cả khi lịch chính chưa đến hạn. Thẻ đã luyện ở đây cũng chỉ quay lại khi **đến hạn của lịch tự do**.
-- Phạm vi: mỗi **Domain** gồm câu hỏi + thẻ dịch vụ AWS của domain đó; **Trộn tất cả** gồm mọi câu hỏi, thẻ dịch vụ và **từ vựng đề thi** (từ vựng không thuộc domain nào nên chỉ có ở đây). Câu của kho thi thử không bao giờ xuất hiện.
-- Mỗi ô hiện **số thẻ luyện được ngay / tổng số** và giờ thẻ tiếp theo đến hạn. Tỷ lệ đúng/sai vẫn được cộng vào thống kê theo domain và task.
+Khi đã ôn xong mà vẫn muốn luyện thêm, mở **Ôn hôm nay → Luyện tập tự do** rồi chọn **Domain 1–4** hoặc **Trộn tất cả**.
+- Có **lịch SRS riêng** (cùng cách chấm), **tách hẳn** khỏi lịch chính: không đổi thẻ đến hạn của Ôn hôm nay, không tính vào số thẻ mới mỗi ngày, không đổi con số trên trang chủ.
+- Thẻ chưa từng luyện ở đây thì luyện được ngay, kể cả khi lịch chính chưa đến hạn. Thẻ đã luyện ở đây chỉ quay lại khi đến hạn của lịch tự do.
+- Phạm vi: mỗi **Domain** gồm câu hỏi và thẻ dịch vụ của domain đó; **Trộn tất cả** gồm thêm **từ vựng đề thi**. Câu của kho thi thử không bao giờ xuất hiện.
+- Kết quả đúng/sai vẫn được tính vào thống kê theo domain và task.
 
 ### ✍️ Luyện tập
-- Tab Luyện tập và quiz cuối bài học dùng **chung lịch chính** với Ôn hôm nay: chỉ hiện câu **mới** hoặc **đã đến hạn**. Làm câu đến hạn là ôn thẻ đó; làm câu mới thì câu đó vào lịch SRS (không tính hạn mức thẻ mới).
-- Mỗi ô hiện **số câu luyện được ngay / tổng số câu**. Khi một mục không còn câu mới hay đến hạn, app báo giờ câu tiếp theo đến hạn và dẫn sang **Luyện tập tự do**.
-- Luyện theo **domain**, **trộn tất cả**, **câu hay sai**, **🔥 câu nâng cao**, **☑️ câu chọn nhiều đáp án** (Choose TWO/THREE).
+- Các ô luyện theo **domain**, **trộn tất cả**, **🔥 câu nâng cao**, **☑️ câu chọn nhiều đáp án** (Choose TWO/THREE) và quiz cuối bài học dùng **chung lịch chính** với Ôn hôm nay: chỉ hiện câu **mới** hoặc **đã đến hạn**. Mỗi ô hiện **số câu luyện được ngay / tổng số câu**. Khi không còn câu nào, app báo giờ câu tiếp theo đến hạn và dẫn sang Luyện tập tự do.
+- **🎯 Câu hay sai:** câu sai ở lần gần nhất, hoặc đúng dưới 2 trong 3 lần gần nhất. Lần làm lại ngay sau khi sai (lúc vẫn còn nhớ đáp án) không được tính. Ô này dùng **lịch Luyện tập tự do**, nên luyện được ngay, không phải chờ đến hạn.
 - **📖 Luyện đọc đề:** chỉ hiện đề tiếng Anh, bạn chạm vào các từ khóa quyết định đáp án (ví dụ *MOST cost-effective*, *cannot be interrupted*), có đồng hồ đếm giây. Sau đó app hiện từ khóa gợi ý, bản dịch rồi mới đến các lựa chọn. Khi thi, mục tiêu là khoảng **80 giây/câu**.
-- **Bảng theo task statement (1.1 → 4.3):** gộp kết quả luyện tập và thi thử, xếp task yếu nhất lên đầu, có nút luyện riêng từng task.
+- **Bảng theo task statement (1.1 → 4.3):** gộp kết quả luyện tập và thi thử, tính theo 3 lần trả lời gần nhất của mỗi câu, xếp task yếu nhất lên đầu, có nút luyện riêng từng task.
 
 ### 📝 Thi thử
-- 65 câu / 90 phút (bật **ESL +30 phút** nếu bạn đăng ký hỗ trợ này khi đặt lịch thi), chia đúng tỷ trọng **16 / 19 / 22 / 8** câu theo 4 domain.
-- Câu hỏi lấy từ **kho đề riêng**: các câu này **không xuất hiện khi luyện tập**, nên điểm phản ánh năng lực thật chứ không phải trí nhớ. App ưu tiên câu bạn chưa gặp.
-- Trang Thi thử cho biết kho còn đủ câu chưa gặp cho **bao nhiêu đề hoàn toàn mới**. Mỗi đề làm xong sẽ dùng hết các câu mới đó, nên hãy **để dành đề mới cho 1–2 tuần cuối** để đo mức sẵn sàng.
-- Có thể đánh dấu câu, chuyển qua lại giữa các câu. Phím tắt: A–F chọn đáp án, ←/→ chuyển câu, **M** đánh dấu. Câu chọn nhiều đáp án mà chọn chưa đủ sẽ hiện viền nét đứt và được nhắc khi nộp bài.
-- Kết quả gồm: **% đúng**, phân tích theo domain, **task cần ôn thêm**, số câu mới gặp lần đầu, và xem lại từng câu kèm giải thích (bật được tiếng Việt).
+**Trước khi thi**
+- Đề gồm 65 câu / 90 phút, chia đúng tỷ trọng **16 / 19 / 22 / 8** câu theo 4 domain, và các task trong mỗi domain cũng theo đúng tỷ lệ. Bật **ESL +30 phút** nếu bạn đăng ký hỗ trợ này khi đặt lịch thi.
+- Câu hỏi lấy từ **kho đề riêng 195 câu**, **không xuất hiện khi luyện tập**, nên điểm phản ánh năng lực chứ không phải trí nhớ. Kho đủ cho **3 đề hoàn toàn mới**; trang Thi thử cho biết còn bao nhiêu.
+- Mỗi đề làm xong sẽ dùng hết các câu mới của nó, nên hãy **để dành đề mới cho 1–2 tuần cuối** để đo mức sẵn sàng.
+
+**Trong khi thi**
+- Chuyển qua lại giữa các câu, **đánh dấu** câu để xem lại. Phím tắt: A–F chọn đáp án, ←/→ chuyển câu, **M** đánh dấu. Câu chọn nhiều đáp án mà chọn chưa đủ hiện viền nét đứt và được nhắc khi nộp bài.
+- **Hết giờ** thì bài tự nộp, như thi thật.
+- **Bỏ dở** (đóng tab, máy ngủ… lúc hết giờ): nếu đã trả lời đủ ít nhất một nửa số câu thì bài được nộp, ngược lại bài bị hủy. Câu bạn chưa mở tới vẫn là câu mới.
+- **Hủy bài thi:** không lưu điểm, nhưng mọi câu đã xem vẫn được tính cho mức sẵn sàng (câu chưa trả lời đủ tính là sai). Vì vậy không thể chỉ làm câu chắc chắn rồi hủy.
+
+**Sau khi thi**
+- Kết quả gồm **% đúng**, phân tích theo domain, **task cần ôn thêm**, số câu gặp lần đầu, và xem lại từng câu kèm giải thích (bật được tiếng Việt).
+- Nút **"Luyện N câu thuộc … task có câu sai"** mở tối đa 20 câu luyện tập, chia theo số câu sai của từng task.
+
+**Đọc thẻ 🎯 Mức sẵn sàng**
+- **"Ước tính X–Y%":** khoảng % đúng có khả năng bạn đạt trên đề thật (khoảng tin cậy 80%). Càng nhiều dữ liệu thì khoảng càng hẹp.
+- App chỉ dùng kết quả **lần đầu** bạn gặp mỗi câu của kho đề; làm lại câu đã gặp không làm đổi ước tính. Kết quả gần đây được tính nặng hơn kết quả cũ. Thẻ ghi ngày của dữ liệu mới nhất.
+- **Bảng theo domain:** ước tính và khoảng của từng domain, kèm số câu đã có. **Task cần ôn:** bấm để luyện ngay.
+- **Sẵn sàng** khi: đủ dữ liệu (khoảng 80 câu gần đây, mỗi domain ít nhất 8 câu), cận dưới tổng ≥ 75% và cận dưới mỗi domain ≥ 65%. Thường cần 2–3 đề. Dòng cuối thẻ cho biết còn thiếu gì.
+- Ngưỡng đậu thật là 700/1000 trên thang điểm scaled, không quy đổi trực tiếp từ % đúng; nhắm 80% để có khoảng an toàn.
 
 ### 🌐 Ngôn ngữ giao diện (Tiếng Việt / English / 日本語)
 - Chọn ở **Cài đặt → Ngôn ngữ giao diện**. Trang sẽ tải lại; tiến độ học giữ nguyên và dùng chung cho mọi ngôn ngữ.
@@ -94,10 +139,12 @@ Khi đã ôn xong mà vẫn muốn luyện thêm, mở **Ôn hôm nay → Luyệ
 Tiến độ học **chỉ lưu trong trình duyệt/thiết bị đang dùng**, không tự đồng bộ giữa các máy.
 - **Cài đặt → Xuất dữ liệu (.json)** để sao lưu; **Nhập dữ liệu** trên máy khác để tiếp tục.
 - Nên xuất dữ liệu định kỳ. Trên iPhone, nếu lâu ngày không mở ứng dụng, hệ điều hành có thể xóa dữ liệu của trang.
+- Mở app ở **nhiều tab trên cùng máy** thì các tab tự đồng bộ: tab này lưu thì tab kia đọc lại ngay (một phiên ôn đang dở ở tab kia sẽ bắt đầu lại từ dữ liệu mới).
 
 ---
 
-## 3. Mẹo làm bài thi CLF-C02
+## 4. Mẹo làm bài thi CLF-C02
+
 
 - Đề có **65 câu** (50 câu tính điểm + 15 câu thử nghiệm không tính điểm, bạn không biết câu nào). **Không bị trừ điểm khi đoán sai, nên đừng bỏ trống câu nào.**
 - Đọc **câu hỏi cuối** trước (*Which service…? / Which is the MOST cost-effective…?*), rồi tìm **ràng buộc** trong đề (*without managing servers, cannot be interrupted, data must stay in the country…*).
@@ -107,7 +154,7 @@ Tiến độ học **chỉ lưu trong trình duyệt/thiết bị đang dùng**,
 
 ---
 
-## 4. Dành cho người duy trì nội dung
+## 5. Dành cho người duy trì nội dung
 
 > Ngôn ngữ dùng trong repo: commit, branch, PR viết bằng tiếng Anh. Quy tắc viết commit message, đặt tên branch, tên PR và mô tả PR (bằng tiếng Anh) nằm ở [CONTRIBUTING.md](CONTRIBUTING.md). Mẫu mô tả PR GitHub tự điền từ `.github/pull_request_template.md`. Để dùng mẫu commit, chạy `git config commit.template .gitmessage` một lần.
 

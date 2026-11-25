@@ -22,7 +22,8 @@ def('document', { getElementById: id => (id === 'app' || id === 'tip' || id === 
   addEventListener() {}, querySelectorAll: () => [], createElement: () => el('tmp'), body: { appendChild() {} } });
 function appHas(id) { return el('app').innerHTML.includes(`id="${id}"`); }
 def('location', { hash: '', protocol: 'file:', hostname: '' });
-def('addEventListener', () => {});
+const winListeners = {};   // window listeners of the last booted app (e.g. 'storage')
+def('addEventListener', (type, fn) => { winListeners[type] = fn; });
 def('scrollTo', () => {});
 def('matchMedia', () => ({ matches: false }));
 def('confirm', () => true);
@@ -38,7 +39,8 @@ const HOOK = `
     renderQuestion = (it, h, d) => { window.__cur = it; return rq(it, h, d); };
     renderFlash = (it, h, d) => { window.__cur = it; return rf(it, h, d); };
     renderRead = (it, h, d) => { window.__cur = it; window.__read = true; return rr(it, h, d); };
-    window.__T = { get S() { return S; }, set S(v) { S = v; }, ITEMS, DEFAULTS, normalize, load, route, nextCard, grade, POOL_IDS, COURSE, D, dueItems, newItems, newLeft, clone }; }
+    window.__T = { get S() { return S; }, set S(v) { S = v; }, ITEMS, DEFAULTS, normalize, load, route, nextCard, grade, POOL_IDS, COURSE, D, dueItems, newItems, newLeft, clone,
+      readiness, paceAdvice, isWeakStat, spaceOut, viewHome, READY_MIN_N, save, examTick, daysToExam, pickExam }; }
 `;
 function boot(saved) {
   Object.keys(store).forEach(k => delete store[k]);
@@ -108,7 +110,7 @@ test('learned-not-due: not in Ôn hôm nay', () => {
   assert.strictEqual(seen.length, 21);
   assert.strictEqual(T.S.newLog.count, 20);
 });
-test('learned-not-due: not in any practice filter (domain/all/weak/hard/multi/read/task)', () => {
+test('learned-not-due: not in any practice filter (domain/all/hard/multi/read/task; weak uses the free schedule)', () => {
   T = boot();
   const args = ['1', '2', '3', '4', 'all', 'weak', 'hard', 'multi', 'read', 't-2.3'];
   // mark half of every question as learned-not-due, and make "weak" non-empty
@@ -117,6 +119,8 @@ test('learned-not-due: not in any practice filter (domain/all/weak/hard/multi/re
   const base = snap(T.S.cards), stats = snap(T.S.stats);
   for (const a of args) {
     T.S.cards = JSON.parse(base); T.S.stats = JSON.parse(stats);
+    // "weak" runs on S.free: hide the same cards there instead
+    T.S.free = a === 'weak' ? JSON.parse(base) : {};
     go('#/practice/' + a);
     assert(inSession(), a + ': session should start');
     const seen = drain();
@@ -192,7 +196,7 @@ test('due card appears in practice; grading updates S.cards; stats counted', () 
   answer(true, 3);
   const c = T.S.cards[id];
   assert.strictEqual(c.reps, 3); assert(c.ivl > 4); assert(c.due > NOW + 4 * DAY); assert.strictEqual(c.last, NOW);
-  assert.deepStrictEqual(T.S.stats[d2[3].id], { a: 1, c: 1 });
+  assert.deepStrictEqual(T.S.stats[d2[3].id], { a: 1, c: 1, r: [1] });
   assert.deepStrictEqual(T.S.newLog, { date: '2026-11-25', count: 4 });
   assert(finished());
   assert.strictEqual(JSON.parse(store[KEY]).cards[id].reps, 3, 'persisted');
@@ -381,6 +385,361 @@ test('mock exam: runs from held-out pool, submit does not touch S.free; home bad
   click('a', 'submit');
   assert.strictEqual(T.S.exams.length, 1);
   assert.strictEqual(snap(T.S.free), free0); assert.deepStrictEqual(T.S.cards, {});
+});
+
+/* ───── 10. SM-2 rules ───── */
+test('SM-2: learning cards are not penalized; a lapse keeps 25% of the interval; Good raises low ease', () => {
+  T = boot();
+  const fresh = T.nextCard(undefined, 1, NOW, 'q:x');
+  assert.strictEqual(fresh.ef, 2.5); assert.strictEqual(fresh.lapses, 0); assert.strictEqual(fresh.due, NOW + 10 * MIN);
+  const retry = T.nextCard(fresh, 1, NOW + 10 * MIN, 'q:x');
+  assert.strictEqual(retry.ef, 2.5, 'in-session retry of a learning card keeps ease'); assert.strictEqual(retry.lapses, 0);
+  const rev = { ef: 2.5, reps: 3, ivl: 10, lapses: 0, due: NOW, last: NOW - 10 * DAY };
+  const lapse = T.nextCard(rev, 1, NOW, 'q:x');
+  assert.strictEqual(lapse.lapses, 1); assert.strictEqual(lapse.ef, 2.3); assert.strictEqual(lapse.post, 3);
+  const back = T.nextCard(lapse, 3, NOW + DAY, 'q:x');
+  assert.strictEqual(back.ivl, 3, 'relearned card resumes at 25% of 10 days'); assert(!('post' in back)); assert.strictEqual(back.ef, 2.3);
+  const low = T.nextCard({ ef: 2.0, reps: 3, ivl: 5, lapses: 1, due: NOW, last: NOW - 5 * DAY }, 3, NOW, 'q:x');
+  assert(Math.abs(low.ef - 2.05) < 1e-9, 'Good raises ease below 2.5');
+  assert.strictEqual(T.nextCard(rev, 3, NOW, 'q:x').ef, 2.5, 'Good keeps ease at 2.5');
+});
+
+test('SM-2: overdue success uses the days actually held; fuzz is stable per card and day', () => {
+  T = boot();
+  const late = { ef: 2.5, reps: 3, ivl: 4, lapses: 0, due: NOW - 36 * DAY, last: NOW - 40 * DAY };
+  const g = T.nextCard(late, 3, NOW, 'q:a');
+  assert(g.ivl >= 95 && g.ivl <= 105, 'Good after 40 days held → about 100 days, got ' + g.ivl);
+  assert.strictEqual(T.nextCard(late, 2, NOW, 'q:a').ivl, 5, 'Hard does not reward the overdue days');
+  const a = T.nextCard(late, 3, NOW, 'q:a').ivl, b = T.nextCard(late, 3, NOW, 'q:a').ivl;
+  assert.strictEqual(a, b, 'same card, same day → same interval');
+  const ivls = new Set(['q:a', 'q:b', 'q:c', 'q:d', 'q:e', 'q:f'].map(id => T.nextCard({ ef: 2.5, reps: 3, ivl: 20, lapses: 0, due: NOW, last: NOW - 20 * DAY }, 3, NOW, id).ivl));
+  assert(ivls.size > 1, 'cards graded the same day are spread over several days');
+});
+
+test('SM-2: with an exam date, intervals end before the exam', () => {
+  T = boot();
+  T.S.settings.examDate = '2026-12-05';   // 10 days after NOW
+  const c = T.nextCard({ ef: 2.5, reps: 3, ivl: 20, lapses: 0, due: NOW, last: NOW - 20 * DAY }, 4, NOW, 'q:a');
+  assert(c.due <= NOW + 9 * DAY, 'due no later than the day before the exam');
+  assert(c.ivl > 60 && c.early, 'the interval itself is kept, got ' + c.ivl);
+  const again = T.nextCard(c, 3, c.due, 'q:a');
+  assert.strictEqual(again.ivl, c.ivl, 'the early review keeps the interval (no growth, no loss)');
+  assert.strictEqual(T.nextCard(c, 2, c.due, 'q:a').ef, c.ef, 'Hard on an early review keeps ease');
+  T.S.settings.examDate = '';
+  const after = T.nextCard(again, 3, again.due + 90 * DAY, 'q:a');
+  assert(after.ivl > c.ivl && !after.early, 'after the exam the interval grows from the kept value');
+  T.S.settings.examDate = '2026-11-20';   // past: no cap
+  assert(T.nextCard({ ef: 2.5, reps: 3, ivl: 20, lapses: 0, due: NOW, last: NOW - 20 * DAY }, 3, NOW, 'q:a').ivl > 40);
+});
+
+/* ───── 11. correct answers are scheduled at Check ───── */
+test('correct answer is scheduled Good at Check; Easy re-grades from the previous state without double counting', () => {
+  T = boot();
+  go('#/review');
+  const it = window.__cur; assert.strictEqual(it.type, 'q');
+  it.ref.ans.forEach(i => click('opt', i)); click('a', 'check');
+  const c = T.S.cards[it.id];
+  assert(c && c.reps === 1 && c.ivl === 1, 'scheduled Good before any grade button');
+  assert.strictEqual(T.S.newLog.count, 1); assert.strictEqual(T.S.log.length, 1);
+  assert(/Khó<small>1 ngày<\/small>.*Tốt<small>1 ngày<\/small>.*Dễ<small>3 ngày<\/small>/s.test(app().innerHTML), 'buttons preview from the new-card state');
+  click('g', 4);
+  assert.strictEqual(T.S.cards[it.id].ivl, 3, 'Easy computed from the new-card state');
+  assert.strictEqual(T.S.newLog.count, 1, 'not counted twice'); assert.strictEqual(T.S.log.length, 1); assert.strictEqual(T.S.log[0][2], 4);
+});
+
+/* ───── 12. recent-results stats ───── */
+test('weak questions use the last 3 answers; old saved stats still work', () => {
+  T = boot();
+  assert(T.isWeakStat({ a: 10, c: 9, r: [1, 1, 0] }), 'last answer wrong');
+  assert(!T.isWeakStat({ a: 10, c: 3, r: [0, 1, 1] }), '2 of last 3 right and last right');
+  assert(T.isWeakStat({ a: 3, c: 1, r: [0, 0, 1] }), '1 of last 3 right');
+  assert(T.isWeakStat({ a: 10, c: 5 }), 'legacy stats without r: below 70%');
+  assert(!T.isWeakStat({ a: 10, c: 8 }));
+  const n = T.normalize({ stats: { a: { a: 4, c: 2, r: [1, 0, 1, 1] } } });
+  assert.deepStrictEqual(n.stats.a, { a: 4, c: 2, r: [0, 1, 1] });
+});
+
+/* ───── 13. new-card order ───── */
+test('new cards: questions first, domain-weighted, same task spaced, finished lessons first', () => {
+  T = boot();
+  const first = T.newItems(60);
+  assert.strictEqual(first.filter(i => i.type === 'q').length, 40, 'pattern q q v q q s');
+  const qs = T.newItems(400).filter(i => i.type === 'q').slice(0, 120);
+  const by = d => qs.filter(i => i.d === d).length;
+  assert(by(3) > by(4) * 2.5, `domain 3 (34%) gets more new questions than domain 4 (12%): ${by(3)} vs ${by(4)}`);
+  const near = qs.filter((i, k) => qs.slice(Math.max(0, k - 3), k).some(j => j.ref.t === i.ref.t)).length;
+  assert.strictEqual(near, 0, 'no two questions of the same task within 3 places');
+  const rank = () => { const ids = T.newItems(1000).filter(i => i.type === 'q').map(i => i.ref.id); return LQ.reduce((a, id) => a + ids.indexOf(id), 0) / LQ.length; };
+  const before = rank();
+  T.S.done[lesson.id] = NOW;
+  assert(rank() < before, 'questions of a finished lesson move forward');
+});
+
+/* ───── 14. readiness estimate ───── */
+const fillFirst = (f, ts = NOW) => { T.S.examFirst = {}; [...T.POOL_IDS].forEach((id, k) => { const v = f(id, k); if (v != null) T.S.examFirst[id] = [v, ts]; }); };
+test('readiness: estimate with interval; needs enough data, a high lower bound and every domain', () => {
+  T = boot();
+  assert.strictEqual(T.readiness().n, 0);
+  fillFirst((id, k) => (k < 3 ? 1 : null));
+  let few = T.readiness(); assert(few.hi - few.lo > 0.2 && few.lo < 0.75 && few.p < 0.95, `three right answers give a wide interval, not 100–100% (${few.lo}–${few.hi})`);
+  fillFirst(() => 1);
+  let r = T.readiness();
+  assert(r.ready && r.lo >= 0.75 && r.hi <= 1, 'all first answers right → ready');
+  fillFirst((id, k) => (k < 60 ? 1 : null));
+  r = T.readiness(); assert(r.n === 60 && !r.ready, 'too few answers');
+  const QB = new Map(T.D.examPool.map(q => [q.id, q]));
+  fillFirst(id => (QB.get(id).d === 4 ? null : 1));
+  r = T.readiness(); assert(r.n >= 100 && r.lo >= 0.75 && !r.ready, 'a domain without answers blocks readiness');
+  const QBY = new Map([...T.D.questions, ...T.D.examPool].map(q => [q.id, q]));
+  fillFirst(id => (QBY.get(id).d === 4 ? 0 : 1));
+  r = T.readiness(); assert(!r.ready, 'a weak domain blocks readiness');
+  assert(r.dom.find(x => x.d.id === 4).p < 0.5 && r.risky.length && r.risky.every(x => x.t[0] === '4'));
+  fillFirst(() => 0, NOW - 120 * DAY);
+  [...T.POOL_IDS].slice(0, 120).forEach(id => { T.S.examFirst[id] = [1, NOW]; });
+  assert(T.readiness().p > 0.8, 'old results weigh less than recent ones');
+});
+
+test('readiness: does not change with time alone; undated old results weigh like the oldest dated ones', () => {
+  T = boot();
+  fillFirst(() => 1, NOW - 30 * DAY);
+  const a = T.readiness();
+  NOW += 90 * DAY;
+  const b = T.readiness();
+  assert.strictEqual(a.lo, b.lo, 'no new data → same estimate'); assert(b.ready);
+  T.S.examFirst = {};
+  const ids = [...T.POOL_IDS];
+  ids.slice(0, 100).forEach(id => { T.S.examFirst[id] = [0, 0]; });            // undated (migrated), all wrong
+  ids.slice(100, 195).forEach(id => { T.S.examFirst[id] = [1, NOW]; });        // dated today, all right
+  const mixed = T.readiness().p;
+  ids.slice(0, 100).forEach(id => { T.S.examFirst[id] = [0, NOW]; });
+  assert(Math.abs(T.readiness().p - mixed) < 1e-9, 'undated = same date as the oldest dated result');
+});
+
+test('readiness: examFirst is rebuilt from history for old saved data', () => {
+  T = boot();
+  const pool = T.D.examPool, q0 = pool[0], q1 = pool[1];
+  const n = T.normalize({ exams: [
+    { date: NOW, n: 2, ids: [q0.id, q1.id], ans: { [q0.id]: q0.ans, [q1.id]: [] }, correct: 1 },
+    { date: NOW - DAY, n: 1, ids: [q0.id], ans: { [q0.id]: [] }, correct: 0 }
+  ], examStats: { [pool[2].id]: { a: 1, c: 1 } } });
+  assert.deepStrictEqual(n.examFirst[q0.id], [0, NOW - DAY], 'first (oldest) attempt wins');
+  assert.deepStrictEqual(n.examFirst[q1.id], [0, NOW]);
+  assert.deepStrictEqual(n.examFirst[pool[2].id], [1, 0], 'single attempt from examStats');
+});
+
+/* ───── 15. abandoned and cancelled exams ───── */
+const QB = () => new Map(T.D.examPool.map(q => [q.id, q]));
+const full = (E, ids) => ids.forEach(id => { E.ans[id] = QB().get(id).ans.slice(); });
+test('exam: reopened after time ran out with under half fully answered → discarded; seen questions count, partial = wrong', () => {
+  T = boot();
+  go('#/exam'); el('start').onclick();
+  const E = T.S.exam, qb = QB();
+  full(E, E.ids.slice(0, 5));
+  const multi = E.ids.slice(5).find(id => qb.get(id).ans.length > 1);
+  E.ans[multi] = [qb.get(multi).ans[0]];                      // incomplete
+  NOW += 3 * 60 * MIN;
+  go('#/exam');
+  assert.strictEqual(T.S.exam, null); assert.strictEqual(T.S.exams.length, 0, 'not scored');
+  const counted = new Set([...E.ids.slice(0, 5), multi]);   // first question was also viewed (index 0 is in slice)
+  assert.deepStrictEqual(Object.keys(T.S.examFirst).sort(), [...counted].sort(), 'viewed or answered questions count; unviewed stay fresh');
+  assert.strictEqual(T.S.examFirst[multi][0], 0, 'incomplete answer counts as wrong');
+  assert(E.ids.slice(0, 5).every(id => T.S.examFirst[id][0] === 1));
+  assert(/hết giờ/.test(app().innerHTML));
+});
+
+test('exam: the half rule counts fully answered questions only', () => {
+  T = boot();
+  go('#/exam'); el('start').onclick();
+  let E = T.S.exam; const qb = QB();
+  const singles = E.ids.filter(id => qb.get(id).ans.length === 1), multis = E.ids.filter(id => qb.get(id).ans.length > 1);
+  full(E, singles.slice(0, 32)); multis.slice(0, 3).forEach(id => { E.ans[id] = [qb.get(id).ans[0]]; });
+  NOW += 3 * 60 * MIN; go('#/exam');
+  assert.strictEqual(T.S.exams.length, 0, '32 full + 3 partial of 65 → discarded');
+  go('#/exam'); el('start').onclick(); E = T.S.exam;
+  full(E, E.ids.slice(0, 33));
+  NOW += 3 * 60 * MIN; go('#/exam');
+  assert.strictEqual(T.S.exams.length, 1, '33 of 65 → submitted'); assert(T.S.exams[0].auto);
+  assert(!('score' in T.S.exams[0]), 'no fake 1000-point score');
+});
+
+test('exam: live timeout submits; a timeout found long after (sleep, background tab) is handled as abandoned', () => {
+  T = boot();
+  go('#/exam'); el('start').onclick();
+  let E = T.S.exam; full(E, E.ids.slice(0, 5));
+  NOW = E.start + E.dur + 5000; T.examTick();
+  assert.strictEqual(T.S.exams.length, 1, 'on the page when time ran out → submitted like the real exam');
+  assert.strictEqual(Object.keys(T.S.examFirst).length, 65, 'blank answers count as wrong first answers');
+  go('#/exam'); el('start').onclick(); E = T.S.exam; full(E, E.ids.slice(0, 5));
+  NOW = E.start + E.dur + 2 * 60 * MIN; T.examTick();
+  assert.strictEqual(T.S.exam, null); assert.strictEqual(T.S.exams.length, 1, 'woke up 2 h after the end → discarded');
+});
+
+test('exam: cancel counts every viewed question (unanswered = wrong) so answers cannot be cherry-picked', () => {
+  T = boot();
+  go('#/exam'); el('start').onclick();
+  const E = T.S.exam;
+  full(E, [E.ids[0]]);
+  click('a', 'next'); click('a', 'next');   // views questions 2 and 3 without answering
+  click('a', 'quit');
+  assert.strictEqual(T.S.exam, null); assert.strictEqual(T.S.exams.length, 0);
+  assert.deepStrictEqual(Object.keys(T.S.examFirst).sort(), E.ids.slice(0, 3).sort());
+  assert.deepStrictEqual(E.ids.slice(0, 3).map(id => T.S.examFirst[id][0]), [1, 0, 0]);
+  assert.strictEqual(Object.keys(T.S.examSeen).length, 3, 'unviewed questions stay fresh');
+});
+
+/* ───── 16. state version, review log, pacing, home ───── */
+test('state: version, review log, unknown keys kept; home pace advice and learned count', () => {
+  T = boot();
+  const n = T.normalize({ future: { x: 1 }, log: [[NOW, 'q:a', 3], ['bad']] });
+  assert.strictEqual(n.v, 2); assert(!('future' in n), 'unknown keys dropped from data of this version (e.g. an import)');
+  assert.deepStrictEqual(n.log, [[NOW, 'q:a', 3, 0]]);
+  const newer = T.normalize(JSON.parse('{"v": 3, "future": {"x": 1}, "__proto__": {"cards": 1}}'));
+  assert.deepStrictEqual(newer.future, { x: 1 }, 'keys written by a newer version are kept'); assert.strictEqual(newer.v, 3);
+  assert.strictEqual(Object.getPrototypeOf(newer), Object.prototype, '__proto__ is never copied');
+  // the review log is stored under its own key, and rewritten only when it changes
+  T.grade(T.ITEMS[0].id, 3);
+  assert(!('log' in JSON.parse(store[KEY])), 'log not in the main state'); assert.strictEqual(JSON.parse(store[KEY + '-log']).length, 1);
+  const logJson = store[KEY + '-log'];
+  store[KEY + '-log'] = 'untouched'; T.S.settings.kw = false; T.save();
+  assert.strictEqual(store[KEY + '-log'], 'untouched', 'unchanged log is not rewritten');
+  store[KEY + '-log'] = logJson;
+  assert.strictEqual(T.load().log.length, 1, 'load() reads the log back from its own key');
+  store[KEY] = '{broken';
+  assert.strictEqual(T.load().log.length, 1, 'the log survives a missing or corrupt main state');
+  T.S.settings.examDate = '2026-12-15';   // 20 days
+  const p = T.paceAdvice();
+  assert(p && p.n === Math.ceil(T.ITEMS.length / 13), 'new cards / (20 − 7 days)');
+  T.S.cards['v:renamed term'] = card(NOW + DAY);
+  go('#/');
+  assert(app().innerHTML.includes(`<b>1/${T.ITEMS.length}</b>`), 'orphan cards are not counted as learned');
+  assert(app().innerHTML.includes('id="pace"'));
+  el('pace').onclick();
+  assert.strictEqual(T.S.settings.newPerDay, p.n);
+  assert.strictEqual(T.paceAdvice(), null);
+  T.S.settings.newPerDay = 15; T.S.settings.examDate = '2026-11-30';   // 5 days: final review week
+  assert.strictEqual(T.paceAdvice(), null, 'no new-card advice in the last 7 days');
+});
+
+/* ───── 17. review round 3 ───── */
+test('new cards: a small daily limit still follows the domain weights over many days', () => {
+  T = boot();
+  const got = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  for (let day = 0; day < 40; day++) {
+    T.newItems(3).filter(i => i.type === 'q').forEach(i => { got[i.d]++; });
+    T.newItems(3).forEach(i => { T.S.cards[i.id] = card(NOW + 99 * DAY); });
+  }
+  assert(Object.values(got).every(x => x > 0), 'every domain gets new questions: ' + JSON.stringify(got));
+  assert(got[3] > got[4] * 2, 'domain 3 (34%) gets more than domain 4 (12%): ' + JSON.stringify(got));
+});
+
+test('new cards: the order and the q/q/v/q/q/s pattern continue within the day', () => {
+  T = boot();
+  const first = T.newItems(6).map(i => i.id);
+  T.S.newLog = { date: '2026-11-25', count: 2 };
+  assert.strictEqual(T.newItems(1)[0].type, 'v', 'third new card of the day is vocabulary');
+  T.S.newLog = { date: '', count: 0 };
+  T.S.stats[T.ITEMS.find(i => i.id === first[0]).ref.id] = { a: 3, c: 0, r: [0, 0, 0] };   // mastery changes …
+  assert.deepStrictEqual(T.newItems(6).map(i => i.id), first, '… but the day\'s order stays the same');
+});
+
+test('exam date: counted in study days (04:00 rollover); final reviews spread over the last 7 days, weakest first', () => {
+  T = boot();
+  T.S.settings.examDate = '2026-11-30';
+  NOW = new Date(2026, 10, 29, 1, 0, 0).getTime();   // 01:00 still belongs to the 28th
+  assert.strictEqual(T.daysToExam(), 2);
+  NOW = new Date(2026, 10, 25, 10, 0, 0).getTime();
+  T.S.settings.examDate = '2026-12-15';   // 20 days
+  const days = new Set();
+  for (let k = 0; k < 200; k++) {
+    const c = T.nextCard({ ef: 2.5, reps: 3, ivl: 40, lapses: 0, due: NOW, last: NOW - 40 * DAY }, 3, NOW, 'q:x' + k);
+    assert(c.due <= NOW + 19 * DAY + DAY, 'before the exam'); days.add(Math.round((c.due - NOW) / DAY));
+  }
+  assert(days.size >= 6, 'spread over the final week, got ' + [...days].sort((a, b) => a - b));
+  T.S.cards = { 'q:a': card(NOW - 2 * MIN, { lapses: 0, ef: 2.5 }), 'q:b': card(NOW - MIN, { lapses: 3, ef: 1.8 }) };
+  T.S.cards[T.ITEMS[0].id] = card(NOW - 5 * MIN); T.S.cards[T.ITEMS[1].id] = card(NOW - MIN, { lapses: 2 });
+  assert.strictEqual(T.dueItems()[0].id, T.ITEMS[1].id, 'same day: the card with more lapses first');
+});
+
+test('intervals never shrink on success, even with fuzz; imported junk fields are sanitized', () => {
+  T = boot();
+  for (let k = 0; k < 50; k++) {
+    const relearn = T.nextCard({ ef: 2.0, reps: 0, ivl: 0, lapses: 1, post: 11, due: NOW, last: NOW - 10 * MIN }, 3, NOW, 'q:r' + k);
+    assert(relearn.ivl >= 11, 'relearned card keeps at least its post interval, got ' + relearn.ivl);
+    const r1 = T.nextCard({ ef: 2.5, reps: 1, ivl: 40, lapses: 0, due: NOW, last: NOW - 40 * DAY }, 3, NOW, 'q:s' + k);
+    assert(r1.ivl > 40, 'Good after 40 days is longer than 40, got ' + r1.ivl);
+  }
+  const n = T.normalize({ cards: { 'q:x': { ef: 2.5, reps: -1, ivl: 'a', post: 'x', early: 0, due: NOW } } });
+  assert.deepStrictEqual([n.cards['q:x'].reps, n.cards['q:x'].ivl, 'post' in n.cards['q:x'], 'early' in n.cards['q:x']], [0, 0, false, false]);
+  const c = T.nextCard(n.cards['q:x'], 3, NOW, 'q:x');
+  assert(Number.isFinite(c.ivl) && Number.isFinite(c.due));
+});
+
+test('a retry right after a mistake does not count as mastered', () => {
+  T = boot();
+  const q = d2[0], id = 'q:' + q.id;
+  d2.forEach(x => { T.S.cards['q:' + x.id] = card(NOW + 9 * DAY); });
+  T.S.cards[id] = { ef: 2.5, reps: 0, ivl: 0, lapses: 0, due: NOW - MIN, last: NOW - 11 * MIN };
+  T.S.stats[q.id] = { a: 1, c: 0, r: [0] };
+  go('#/practice/2'); answer(true);
+  assert.deepStrictEqual(T.S.stats[q.id], { a: 2, c: 1, r: [0] }, 'counted, but not in the recent results');
+  assert(T.isWeakStat(T.S.stats[q.id]), 'still weak');
+});
+
+test('readiness: data gates use decayed weights; old results cannot be outvoted by a handful of new ones', () => {
+  T = boot();
+  const ids = [...T.POOL_IDS];
+  ids.slice(0, 130).forEach((id, k) => { T.S.examFirst[id] = [k % 2, NOW - 150 * DAY]; });
+  ids.slice(130, 138).forEach(id => { T.S.examFirst[id] = [1, NOW]; });
+  const r = T.readiness();
+  assert(r.n === 138 && r.ne < T.READY_MIN_N && !r.ready, `not ready on 8 recent answers (ne ${r.ne.toFixed(1)})`);
+  assert(r.p < 0.75, 'old results still count (weight floor)');
+});
+
+test('exam: draws follow the task mix in every exam; an exam submitted on return records only viewed questions', () => {
+  T = boot();
+  const counts = [];
+  for (let e = 0; e < 3; e++) {
+    go('#/exam'); el('start').onclick();
+    const c = {}; T.S.exam.ids.forEach(id => { const t = T.D.examPool.find(q => q.id === id).t; c[t] = (c[t] || 0) + 1; });
+    counts.push(c); click('a', 'submit');
+  }
+  assert.strictEqual(Object.keys(T.S.examSeen).length, 195, 'three exams use the whole pool once');
+  Object.keys(counts[0]).forEach(k => assert(Math.abs((counts[2][k] || 0) - counts[0][k]) <= 1, `task ${k}: exam 3 ${counts[2][k]} vs exam 1 ${counts[0][k]}`));
+  T = boot();
+  go('#/exam'); el('start').onclick();
+  const E = T.S.exam; full(E, E.ids.slice(0, 33));
+  NOW += 3 * 60 * MIN; go('#/exam');
+  assert.strictEqual(T.S.exams.length, 1, 'submitted (33 of 65)');
+  assert.strictEqual(T.S.exams[0].n, 65, 'scored over the whole exam');
+  assert.strictEqual(Object.keys(T.S.examFirst).length, 33, 'unviewed questions stay fresh');
+  assert.strictEqual(T.S.exams[0].fresh, 65);
+});
+
+/* ───── 18. several tabs ───── */
+test('another tab saving: this tab reloads progress instead of overwriting it; a running exam finished elsewhere stops', () => {
+  T = boot();
+  assert.strictEqual(typeof winListeners.storage, 'function', 'storage listener registered');
+  go('#/review');
+  assert(inSession());
+  T.save();
+  // the other tab learns a card and changes a setting, then saves
+  const other = JSON.parse(store[KEY]);
+  other.cards['v:region'] = card(NOW + 5 * DAY); other.settings.newPerDay = 7;
+  store[KEY] = JSON.stringify(other);
+  winListeners.storage({ key: 'unrelated' });
+  assert.strictEqual(T.S.settings.newPerDay, 15, 'other keys are ignored');
+  winListeners.storage({ key: KEY });
+  assert.strictEqual(T.S.settings.newPerDay, 7, 'reloaded'); assert(T.S.cards['v:region']);
+  T.S.settings.kw = false; T.save();
+  assert(JSON.parse(store[KEY]).cards['v:region'], 'saving in this tab keeps the other tab\'s progress');
+  // exam running here, submitted in the other tab
+  go('#/exam'); el('start').onclick();
+  assert(T.S.exam);
+  const done = JSON.parse(store[KEY]); done.exam = null; done.exams = [{ date: NOW, n: 65, ids: [], ans: {}, correct: 50 }];
+  store[KEY] = JSON.stringify(done);
+  winListeners.storage({ key: KEY });
+  assert.strictEqual(T.S.exam, null); assert.strictEqual(T.S.exams.length, 1);
+  assert(!/data-a="submit"/.test(app().innerHTML), 'the exam screen is replaced');
 });
 
 Date.now = RealNow;

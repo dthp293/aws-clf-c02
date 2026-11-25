@@ -3,8 +3,11 @@
 
 /* ───────── Grade buttons ───────── */
 const GL = { 1: ['grade.again', 'g-again'], 2: ['grade.hard', ''], 3: ['grade.good', ''], 4: ['grade.easy', 'g-easy'] };
-const gradeBtns = (id, set) => `<div class="grades ${set.length === 3 ? 'g3' : ''}">${set.map(g =>
-  `<button class="btn ${GL[g][1]}" data-g="${g}">${t(GL[g][0])}<small>${fmtIvl(nextCard(deck()[id], g))}</small></button>`).join('')}</div>`;
+// base: trạng thái thẻ trước lần chấm này; không truyền thì dùng trạng thái hiện tại trong lịch.
+// (Không dùng tham số mặc định: thẻ mới có base = undefined, phải được giữ nguyên là "chưa học".)
+const gradeBtns = (id, set, ...b) => { const base = b.length ? b[0] : deck()[id];
+  return `<div class="grades ${set.length === 3 ? 'g3' : ''}">${set.map(g =>
+    `<button class="btn ${GL[g][1]}" data-g="${g}">${t(GL[g][0])}<small>${fmtIvl(nextCard(base, g, Date.now(), id))}</small></button>`).join('')}</div>`; };
 
 /* ───────── Session ───────── */
 function runSession(items, title, opt = {}) {
@@ -51,7 +54,7 @@ function runSession(items, title, opt = {}) {
 function renderQuestion(it, header, done) {
   const q = it.ref, multi = q.ans.length > 1, need = q.ans.length;
   const order = shuffle(q.opts.map((_, i) => i));
-  const lang = qLang(), isNew = !deck()[it.id];
+  const lang = qLang(), prev = deck()[it.id], isNew = !prev;
   let showVi = lang === 'bi', answered = false, ok = false;
   const sel = new Set();
   draw();
@@ -74,7 +77,7 @@ function renderQuestion(it, header, done) {
         <span class="muted small">${t('q.keys', { last: String.fromCharCode(64 + order.length) })}</span></div>`;
     } else if (ok) {
       bottom = `<div class="result ok">${t('q.correct')} ${esc(qExp(q))}</div>
-        <div class="muted small">${t('q.howWasIt')}</div>${gradeBtns(it.id, [2, 3, 4])}<div class="row" style="margin-top:10px">${viBtn}</div>`;
+        <div class="muted small">${t('q.howWasIt')}</div>${gradeBtns(it.id, [2, 3, 4], prev)}<div class="row" style="margin-top:10px">${viBtn}</div>`;
     } else {
       bottom = `<div class="result no">${t('q.wrong')} ${esc(qExp(q))}<div class="small muted" style="margin-top:4px">${t('q.again10')}</div></div>
         <div class="row"><button class="btn primary" data-a="next">${t('q.continue')}</button>${viBtn}</div>`;
@@ -95,15 +98,16 @@ function renderQuestion(it, header, done) {
     if (answered || sel.size !== need) return;
     answered = true;
     ok = q.ans.every(i => sel.has(i));
-    recordAnswer(q.id, ok);
-    if (!ok) grade(it.id, 1); else save();
+    recordAnswer(q.id, ok, S.stats, !isRelearn(prev));
+    // Đúng thì xếp lịch "Tốt" ngay (rời trang lúc này vẫn được tính); bấm Khó/Dễ sẽ chấm lại từ trạng thái trước
+    grade(it.id, ok ? 3 : 1);
     draw();
   }
   $app.onclick = e => {
     if (e.target.closest('.kw')) return;
     const li = e.target.closest('.opt'); if (li) return toggle(+li.dataset.i);
     const b = e.target.closest('[data-a],[data-g]'); if (!b) return;
-    if (b.dataset.g) { grade(it.id, +b.dataset.g); return done(+b.dataset.g, true); }
+    if (b.dataset.g) { const g = +b.dataset.g; if (g !== 3) grade(it.id, g, { prev }); return done(g, true); }
     if (b.dataset.a === 'check') check();
     if (b.dataset.a === 'next') done(1, false);
     if (b.dataset.a === 'vi') { showVi = !showVi; draw(); }
@@ -114,7 +118,7 @@ function renderQuestion(it, header, done) {
     else if (e.key === 'Enter') {
       e.preventDefault();
       if (!answered) check();
-      else if (ok) { grade(it.id, 3); done(3, true); }
+      else if (ok) done(3, true);   // đã xếp lịch "Tốt" lúc kiểm tra
       else done(1, false);
     }
   };
