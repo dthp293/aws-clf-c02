@@ -2,7 +2,7 @@
 // Usage: node tests/translation-shape.test.js [project root]
 const fs=require('fs'),path=require('path'),vm=require('vm');const R=process.argv[2]||path.resolve(__dirname,'..');
 const html=fs.readFileSync(R+'/index.html','utf8');
-const scripts=[...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).filter(s=>s!=='app.js');
+const scripts=[...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]).filter(s=>!s.startsWith('js/'));
 const w={};w.window=w;vm.createContext(w);for(const s of scripts)vm.runInContext(fs.readFileSync(R+'/'+s,'utf8'),w);
 const FILES=['ui','data','q-1','q-2','q-3','q-4','q-5','q-6','q-7','q-8','course-a','course-b','course-c','course-d','course-e','course-f'];
 for(const l of ['en','ja'])for(const f of FILES)vm.runInContext(fs.readFileSync(`${R}/i18n/${l}/${f}.js`,'utf8'),w);
