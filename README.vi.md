@@ -154,6 +154,7 @@ Mỗi câu là một object:
 
 - **Sổ kiến thức:** `tests/facts.json` ghi lại những gì đã đối chiếu với trang chính thức của AWS: mọi câu có giá trị cụ thể (con số, giới hạn, giá, ngày tháng, tên gói hoặc tính năng) và mọi đáp án bị agent giải đề mù đặt nghi vấn. Mỗi mục có URL nguồn và cho biết cách kiểm tra: `checks: 2` là đã có người kiểm tra thứ hai xác nhận kèm trích dẫn nguyên văn, `checks: 1` là một người kiểm tra theo các trang của chủ đề, `indirect` là chỉ tìm được bằng chứng gián tiếp. Các câu còn lại (khái niệm, so sánh, dịch vụ nào dùng cho việc gì) đã được 4 người đọc soát toàn bộ; chỉ những câu bị đánh dấu hoặc không chắc mới được tra web lại (mục `concept:`). `tests/facts.test.js` báo lỗi nếu một giá trị lỗi thời trong danh sách `deny` xuất hiện lại (ví dụ giới hạn 15 phút cũ của Lambda).
 - **Test nhất quán:** `tests/content-vi.test.js` kiểm tra nội dung tiếng Việt: đáp án, dấu "(Choose TWO.)", lý do cho từng lựa chọn và nhãn task.
+- **Theo dõi hằng tuần:** một GitHub Action chạy định kỳ mở lại các trang nguồn của AWS và kiểm tra câu trích dẫn còn trên trang không. Khi AWS thay đổi trang, nó mở một issue `facts-watch` liệt kê những điều cần kiểm tra lại.
 - **Cách kiểm tra lại:** xem mục "Checking content accuracy" trong CONTRIBUTING.md.
 
 ### Đa ngôn ngữ (i18n)

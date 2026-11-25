@@ -139,6 +139,9 @@ npm run check
   - SRS rules
   - Vietnamese content consistency (`content-vi.test.js`): answer keys, "(Choose TWO.)" markers, a "Đúng"/"Sai" reason per option, tags, lesson links
   - the fact register (`facts.test.js`): every fact in `tests/facts.json` cites an official AWS page, and the outdated values listed under `deny` never come back
+  - the service worker (`sw.test.js`): precaching, en/ja translation files fetched network-first (never a stale copy while online), offline fallback, cache clean-up on update
+
+`.github/workflows/facts-watch.yml` runs every Monday (and on demand from the Actions tab). It re-opens every source page in `tests/facts.json` and checks that each verbatim quote, or each term listed under `watch`, is still on the page. When a page is gone or a quote no longer matches (usually because AWS changed something), it opens or updates one issue labelled `facts-watch`; it closes that issue once everything matches again. Run it locally with `npm run facts:watch`.
 
 ### Checking content accuracy
 
