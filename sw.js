@@ -4,7 +4,7 @@
  *   ở nền để lần mở sau có nội dung cập nhật (stale-while-revalidate).
  * Thêm file mới vào website → thêm vào FILES và tăng VERSION.
  */
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
@@ -14,6 +14,9 @@ const FILES = [
   'meta/tags-a.js', 'meta/tags-b.js',
   'exam/exam-d1.js', 'exam/exam-d2.js', 'exam/exam-d3.js', 'exam/exam-d4.js', 'exam/exam-e.js',
   'course/course-a.js', 'course/course-b.js', 'course/course-c.js', 'course/course-d.js', 'course/course-e.js', 'course/course-f.js',
+  // Bản English / 日本語 (i18n/en, i18n/ja) KHÔNG cache sẵn: app.js chỉ nạp ngôn ngữ đang chọn và fetch bên dưới tự
+  // cache các file đó. Nhờ vậy người dùng tiếng Việt không phải tải thêm ~2,4 MB, và một file dịch lỗi không làm hỏng việc cài đặt.
+  'i18n/vi/ui.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'
 ];
 
@@ -21,12 +24,23 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
 });
 
+// Phiên bản mới: chép các file i18n/en, i18n/ja đã cache từ bản cũ sang (để vẫn dùng được offline ngay sau khi cập nhật;
+// fetch bên dưới sẽ làm mới chúng ở lần mở tiếp theo), rồi xóa cache cũ.
 self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k.startsWith('clf-c02-') && k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    const old = (await caches.keys()).filter(k => k.startsWith('clf-c02-') && k !== CACHE);
+    for (const k of old) {
+      const oc = await caches.open(k);
+      for (const req of await oc.keys()) {
+        if (!/\/i18n\/(en|ja)\//.test(new URL(req.url).pathname) || await cache.match(req)) continue;
+        const res = await oc.match(req);
+        if (res) await cache.put(req, res);
+      }
+      await caches.delete(k);
+    }
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('message', e => { if (e.data === 'skipWaiting') self.skipWaiting(); });

@@ -1,0 +1,27 @@
+i18n file layout (same names for every language: en, ja)
+=========================================================
+i18n/<lang>/ui.js        L.ui      (UI strings; keys = same as i18n/en/ui.js)
+i18n/<lang>/data.js      L.domains, L.glossary, L.services, L.lessons
+i18n/<lang>/q-1.js       L.q for ids from: data.js + questions-2.js            (78 ids)
+i18n/<lang>/q-2.js       L.q for ids from: content-3.js                        (86 ids)
+i18n/<lang>/q-3.js       L.q for ids from: questions-4.js + extra/extra-d2.js + extra/extra-d3.js + extra/extra-d4.js (64 ids)
+i18n/<lang>/q-4.js       L.q for ids from: extra/more-d1.js + extra/more-d2.js (75 ids)
+i18n/<lang>/q-5.js       L.q for ids from: extra/more-d3.js + extra/more-d4.js (54 ids)
+i18n/<lang>/q-6.js       L.q for ids from: exam/exam-d1.js + exam/exam-d2.js   (70 ids)
+i18n/<lang>/q-7.js       L.q for ids from: exam/exam-d3.js + exam/exam-d4.js   (60 ids)
+i18n/<lang>/q-8.js       L.q for ids from: exam/exam-e.js                      (65 ids)
+i18n/<lang>/course-a.js  L.course for lessons defined in course/course-a.js
+i18n/<lang>/course-b.js  ... course/course-b.js
+i18n/<lang>/course-c.js  ... course/course-c.js
+i18n/<lang>/course-d.js  ... course/course-d.js
+i18n/<lang>/course-e.js  ... course/course-e.js
+i18n/<lang>/course-f.js  ... course/course-f.js
+
+Total per language: 16 files. The loader in app.js loads exactly these names
+(it does not matter which q-N.js file an id lives in, as long as all 552 ids exist).
+L.q[id] fields: exp, why[] (all languages); ja also has q (question stem) and opts[] (options, same order as the source opts)
+  because CLF-C02 is offered in Japanese; en shows the original English question.
+L.course[id] fields: title, goals[], html, summary[], terms[[term, meaning]]
+  terms: same length/order as the VI lesson's terms; element [0] = the English term (unchanged),
+  [1] = meaning in <lang> (VI has e.g. ["Server","máy chủ"]).
+ui.js keys: copy from i18n/en/ui.js (written by the EN agent; keys are stable once the file exists).
