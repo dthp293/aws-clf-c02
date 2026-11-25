@@ -8,12 +8,12 @@ Object.assign(L.ui,{
   'nav.learn': 'Lessons', 'nav.glossary': 'Glossary', 'nav.settings': 'Settings',
   'boot.loading': 'Loading content…',
 
-  // Task statements (Exam Guide)
-  'task.1.1': 'Benefits of the AWS Cloud', 'task.1.2': 'Well-Architected Framework', 'task.1.3': 'Migration & AWS CAF', 'task.1.4': 'Cloud economics',
-  'task.2.1': 'Shared responsibility', 'task.2.2': 'Security, governance, compliance', 'task.2.3': 'Access management (IAM)', 'task.2.4': 'Security services & resources',
-  'task.3.1': 'Deploying & operating', 'task.3.2': 'Global infrastructure', 'task.3.3': 'Compute', 'task.3.4': 'Database', 'task.3.5': 'Network',
-  'task.3.6': 'Storage', 'task.3.7': 'AI/ML & Analytics', 'task.3.8': 'Other service categories',
-  'task.4.1': 'Pricing models', 'task.4.2': 'Billing & cost management', 'task.4.3': 'Support & resources',
+  // Task statements: verbatim titles from the official CLF-C02 exam guide (docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/)
+  'task.1.1': 'Define the benefits of the AWS Cloud', 'task.1.2': 'Identify design principles of the AWS Cloud', 'task.1.3': 'Understand the benefits of and strategies for migration to the AWS Cloud', 'task.1.4': 'Understand concepts of cloud economics',
+  'task.2.1': 'Understand the AWS shared responsibility model', 'task.2.2': 'Understand AWS Cloud security, governance, and compliance concepts', 'task.2.3': 'Identify AWS access management capabilities', 'task.2.4': 'Identify components and resources for security',
+  'task.3.1': 'Define methods of deploying and operating in the AWS Cloud', 'task.3.2': 'Define the AWS global infrastructure', 'task.3.3': 'Identify AWS compute services', 'task.3.4': 'Identify AWS database services', 'task.3.5': 'Identify AWS network services',
+  'task.3.6': 'Identify AWS storage services', 'task.3.7': 'Identify AWS artificial intelligence and machine learning (AI/ML) services and analytics services', 'task.3.8': 'Identify services from other in-scope AWS service categories',
+  'task.4.1': 'Compare AWS pricing models', 'task.4.2': 'Understand resources for billing, budget, and cost management', 'task.4.3': 'Identify AWS technical resources and AWS Support options',
   'task.colTopic': 'Topic', 'task.colAcc': 'Correct', 'task.attempts': '{n} {n?attempt:attempts}', 'task.practiceN': 'Practice {n}',
 
   // Course modules
@@ -27,7 +27,7 @@ Object.assign(L.ui,{
   'session.done': '🎉 Finished “{title}”',
   'session.summary': 'Reviewed <b>{n}</b> {n?card:cards}.',
   'session.summaryQ': 'Reviewed <b>{n}</b> {n?card:cards} · Questions: <b>{right}</b> correct / <b>{wrong}</b> wrong.',
-  'session.note': 'Cards you got wrong will come back soon. Cards you got right will be spaced further apart.',
+  'session.note': 'Cards you got wrong come back after 10 minutes (once they are due). Cards you got right are spaced further apart.',
   'btn.home': 'Back to home', 'btn.morePractice': 'Practice more',
 
   // Questions
@@ -56,7 +56,7 @@ Object.assign(L.ui,{
   'home.course': '📚 Course: <b>{done}/{total}</b> lessons', 'home.next': 'Next: {id}. {title}',
   'home.weakTasks': '🎯 Tasks that need the most work', 'home.practiceNow': 'Practice now', 'home.fullStats': 'See full statistics →',
   'home.byDomain': 'Progress by domain', 'home.howto': 'How to use this site',
-  'home.howto1': '📅 <b>Today</b> mixes questions, exam keywords and service cards using <b>spaced repetition (SRS)</b>. Cards you get wrong come back after 10 minutes. Cards you get right are spaced out to 1, 4, 10... days.',
+  'home.howto1': '📅 <b>Today</b> mixes questions, exam keywords and service cards using <b>spaced repetition (SRS)</b>. Cards you get wrong come back after 10 minutes. Cards you get right are spaced out to 1, 4, 10... days. Studied cards only come back when they are due; to practice more outside the schedule, use <a href="#/review/free">Free practice</a> (separate schedule).',
   'home.howto2': '🟨 <span class="kw" tabindex="0" data-k="most cost-effective">Highlighted</span> words in a question are important keywords. Hover over or tap one to see what it means and what it usually hints at.',
   'home.howto3': '🌐 Go to <a href="#/settings">Settings</a> to change the language (Tiếng Việt / English / 日本語). Questions and answer options are always shown in English, just like the real exam.',
   'home.howto4': 'Progress is saved only in this browser. Use Settings → Export data to back it up.',
@@ -92,13 +92,13 @@ Object.assign(L.ui,{
   'practice.all': 'All domains', 'practice.hard': 'Advanced questions', 'practice.multi': 'Multiple-response questions',
   'practice.weak': 'Questions you often miss', 'practice.read': 'Question-reading drill', 'practice.mixAll': 'Mix everything',
   'practice.empty': 'No questions in this set yet. <a href="#/practice">Go back</a>',
-  'practice.intro': 'Practice questions by domain. Results still feed your SRS schedule.',
+  'practice.intro': 'Practice questions by domain. Only <b>new</b> or <b>due</b> questions are shown; results go into your SRS schedule (they do not count toward new cards per day). The number on each tile is <b>questions available now / total questions</b>. To practice more outside the schedule: <a href="#/review/free">Free practice</a>.',
   'practice.domLine': '{total} questions · {acc} correct', 'practice.nQuestions': '{n} {n?question:questions}',
   'practice.weakLine': '{n} {n?question:questions} (accuracy below 70%)', 'practice.hardLine': '{n} questions close to real exam difficulty',
   'practice.multiLine': '{n} questions (Choose TWO/THREE)',
-  'practice.readLine': 'Find the deciding keywords before you see the options · 15 long questions',
+  'practice.readLine': 'Find the deciding keywords before you see the options · up to 15 long questions ({n} questions)',
   'practice.byTask': 'By task statement',
-  'practice.byTaskNote': 'Combines practice and mock exam results. Tasks with the lowest accuracy come first. Click to practice a single task.',
+  'practice.byTaskNote': 'Combines practice and mock exam results. Tasks with the lowest accuracy come first. Click to practice a single task (questions available now / total).',
 
   // Question-reading drill
   'read.step1': '📖 Step 1/2: read the question and tap the deciding keywords',
@@ -127,7 +127,7 @@ Object.assign(L.ui,{
   'set.export': 'Export data (.json)', 'set.import': 'Import data', 'set.reset': 'Erase all progress',
   'set.saved': 'Saved.', 'set.npdKeep': 'Kept {n} cards/day (an empty value is not valid).',
   'set.imported': '✅ Data imported.', 'set.badFile': '❌ Invalid file.',
-  'set.resetConfirm': 'Erase all study progress (SRS cards, statistics, completed lessons, mock exam history, exam in progress)? Settings are kept. This cannot be undone.',
+  'set.resetConfirm': 'Erase all study progress (SRS cards, Free practice schedule, statistics, completed lessons, mock exam history, exam in progress)? Settings are kept. This cannot be undone.',
   'set.resetDone': 'Progress erased.',
 
   // Mock exam
@@ -154,7 +154,7 @@ Object.assign(L.ui,{
   'exam.prev': '← Previous', 'exam.next': 'Next →',
   'exam.keys': 'Keys: A–{last} select · ←/→ move · M flag',
   'exam.navSummary': 'Question map · Fully answered {answered}/{n} · Flagged {flags}',
-  'exam.navPartial': ' · Incomplete selection {n} (dashed border)',
+  'exam.navPartial': ' · Not enough options selected: {n} (dashed border)',
   'exam.submit': 'Submit exam', 'exam.quit': 'Cancel exam',
   'exam.cUnanswered': '{n} {n?question is:questions are} unanswered. ', 'exam.cPartial': '{n} multiple-response {n?question does:questions do} not have enough options selected. ',
   'exam.cFlagged': '{n} {n?question is:questions are} flagged. ', 'exam.cSubmit': 'Submit the exam?',
@@ -197,5 +197,42 @@ Object.assign(L.ui,{
   'rec.title': '⚠️ The app hit an error while rendering',
   'rec.p1': 'The progress data in this browser may be corrupted (for example after importing a file in the wrong format).',
   'rec.detail': 'Details:', 'rec.retry': 'Try the home page again', 'rec.export': 'Download a copy of the current data',
-  'rec.reset': 'Erase data and start over', 'rec.confirm': 'Erase all progress data in this browser?'
+  'rec.reset': 'Erase data and start over', 'rec.confirm': 'Erase all progress data in this browser?',
+
+  // Dùng chung · Common · 共通
+  'common.domain': 'Domain {d}',
+  'common.task': 'Task {t}',
+  'common.back': 'Go back',
+  'task.colTask': 'Task',
+  'session.freeNote': 'This session uses the separate Free practice schedule and does not affect your Today schedule.',
+  'session.freeMore': 'Continue free practice',
+  'home.howtoMode': '🔤 Go to <a href="#/settings">Settings</a> to switch the language mode: <i>Bilingual</i> → <i>English first</i> → <i>English only</i>.',
+  'review.title': 'Today\'s review',
+  'review.freeNote': 'Free practice uses a separate schedule and does not affect this one.',
+
+  // Không có gì để luyện · Nothing to practice · 演習なし
+  'empty.title': '✅ Nothing to practice right now',
+  'empty.body': '<b>{title}</b>: there are no new questions left, and none of the studied ones are due yet.',
+  'empty.bodyFree': '<b>{title}</b>: there are no new cards left, and none of the studied ones are due yet on the Free practice schedule.',
+  'empty.nextDue': 'The next item in this set is due: <b>{when}</b>',
+  'empty.freeNote': 'Free practice has its own schedule, so extra practice there does not throw off your Today schedule.',
+
+  // Luyện tập tự do · Free practice · 自由演習
+  'free.title': 'Free practice · {scope}',
+  'free.otherScope': 'Choose another scope',
+  'free.avail': '<b>{av}/{total}</b> cards available now',
+  'free.kindQ': '{n} {n?question:questions}',
+  'free.kindS': '{n} {n?service:services}',
+  'free.kindV': '{n} {n?keyword:keywords}',
+  'free.nextDue': '⏳ Next card due: {when}',
+  'free.intro': 'Practice as much as you like on a <b>separate schedule</b>: it does not change your Today schedule and does not count toward your new cards per day. Cards practiced here are also spaced out by SRS and only come back when they are due on this separate schedule.',
+  'free.allSub': 'All 4 domains + exam keywords',
+  'free.nextDueAll': 'Next free-practice card due: <b>{when}</b>.',
+  'free.scopeNote': 'A domain includes its questions and service cards; exam keywords are only in “Mix everything”.',
+
+  // Quiz bài học · Lesson quiz · レッスンの演習
+  'lesson.quizLeft': 'The other {n} {n?question has:questions have} been studied and {n?is:are} not due yet.',
+  'lesson.quizNone': 'All {n} {n?question:questions} in this lesson {n?has:have} been studied and {n?is:are} not due yet.',
+  'lesson.quizNext': 'Next one due: <b>{when}</b>.',
+  'lesson.quizFree': 'For more practice: <a href="#/review/free">Free practice</a>.'
 });})();

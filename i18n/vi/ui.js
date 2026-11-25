@@ -27,7 +27,7 @@ Object.assign(L.ui,{
   'session.done': '🎉 Xong phiên “{title}”',
   'session.summary': 'Đã ôn <b>{n}</b> lượt.',
   'session.summaryQ': 'Đã ôn <b>{n}</b> lượt · Câu hỏi: <b>{right}</b> đúng / <b>{wrong}</b> sai.',
-  'session.note': 'Thẻ trả lời sai sẽ quay lại sớm. Thẻ đúng sẽ giãn dần khoảng cách ôn.',
+  'session.note': 'Thẻ trả lời sai sẽ quay lại sau 10 phút (khi đến hạn). Thẻ đúng sẽ giãn dần khoảng cách ôn.',
   'btn.home': 'Về trang chủ', 'btn.morePractice': 'Luyện tập thêm',
 
   // Câu hỏi
@@ -56,9 +56,9 @@ Object.assign(L.ui,{
   'home.course': '📚 Khóa học: <b>{done}/{total}</b> bài', 'home.next': 'Tiếp theo: {id}. {title}',
   'home.weakTasks': '🎯 Task cần ôn nhiều nhất', 'home.practiceNow': 'Luyện ngay', 'home.fullStats': 'Xem thống kê đầy đủ →',
   'home.byDomain': 'Tiến độ theo domain', 'home.howto': 'Cách dùng',
-  'home.howto1': '📅 <b>Ôn hôm nay</b> trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ theo <b>lặp lại ngắt quãng (SRS)</b>. Thẻ trả lời sai quay lại sau 10 phút. Thẻ đúng giãn dần thành 1, 4, 10... ngày.',
+  'home.howto1': '📅 <b>Ôn hôm nay</b> trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ theo <b>lặp lại ngắt quãng (SRS)</b>. Thẻ trả lời sai quay lại sau 10 phút. Thẻ đúng giãn dần thành 1, 4, 10... ngày. Thẻ đã học chỉ xuất hiện lại khi đến hạn; muốn luyện thêm ngoài lịch thì dùng <a href="#/review/free">Luyện tập tự do</a> (lịch riêng).',
   'home.howto2': '🟨 Từ <span class="kw" tabindex="0" data-k="most cost-effective">được tô màu</span> trong đề là từ khóa quan trọng. Rê chuột hoặc chạm vào để xem nghĩa tiếng Việt và gợi ý.',
-  'home.howto3': '🌐 Vào <a href="#/settings">Cài đặt</a> để chuyển chế độ ngôn ngữ: <i>Song ngữ</i> → <i>Ưu tiên tiếng Anh</i> → <i>Chỉ tiếng Anh</i>.',
+  'home.howto3': '🌐 Vào <a href="#/settings">Cài đặt</a> để chọn ngôn ngữ (Tiếng Việt / English / 日本語). Ở bản English và 日本語, câu hỏi và đáp án luôn hiển thị bằng tiếng Anh như đề thật.',
   'home.howto4': 'Tiến độ chỉ lưu trên trình duyệt này. Dùng Cài đặt → Xuất dữ liệu để sao lưu.',
 
   // Khóa học
@@ -92,13 +92,13 @@ Object.assign(L.ui,{
   'practice.all': 'Tất cả domain', 'practice.hard': 'Câu nâng cao', 'practice.multi': 'Câu chọn nhiều đáp án',
   'practice.weak': 'Câu hay sai', 'practice.read': 'Luyện đọc đề', 'practice.mixAll': 'Trộn tất cả',
   'practice.empty': 'Chưa có câu nào ở mục này. <a href="#/practice">Quay lại</a>',
-  'practice.intro': 'Luyện câu hỏi theo domain. Kết quả vẫn được ghi vào lịch SRS.',
+  'practice.intro': 'Luyện câu hỏi theo domain. Chỉ hiện câu <b>mới</b> hoặc <b>đã đến hạn ôn</b>; kết quả được ghi vào lịch SRS (không tính vào số thẻ mới mỗi ngày). Số trên mỗi ô là <b>số câu luyện được ngay / tổng số câu</b>. Muốn luyện thêm ngoài lịch: <a href="#/review/free">Luyện tập tự do</a>.',
   'practice.domLine': '{total} câu · đúng {acc}', 'practice.nQuestions': '{n} câu',
   'practice.weakLine': '{n} câu (tỷ lệ đúng dưới 70%)', 'practice.hardLine': '{n} câu gần độ khó đề thật',
   'practice.multiLine': '{n} câu (Choose TWO/THREE)',
-  'practice.readLine': 'Tìm từ khóa quyết định trước khi xem đáp án · 15 câu dài',
+  'practice.readLine': 'Tìm từ khóa quyết định trước khi xem đáp án · tối đa 15 câu dài ({n} câu)',
   'practice.byTask': 'Theo task statement',
-  'practice.byTaskNote': 'Gộp kết quả luyện tập và thi thử. Task có tỷ lệ đúng thấp nhất được xếp lên đầu. Bấm để luyện riêng task đó.',
+  'practice.byTaskNote': 'Gộp kết quả luyện tập và thi thử. Task có tỷ lệ đúng thấp nhất được xếp lên đầu. Bấm để luyện riêng task đó (số câu luyện được ngay / tổng).',
 
   // Luyện đọc đề
   'read.step1': '📖 Bước 1/2: đọc đề và chạm vào từ khóa quyết định',
@@ -127,7 +127,7 @@ Object.assign(L.ui,{
   'set.export': 'Xuất dữ liệu (.json)', 'set.import': 'Nhập dữ liệu', 'set.reset': 'Xóa toàn bộ tiến độ',
   'set.saved': 'Đã lưu.', 'set.npdKeep': 'Giữ nguyên {n} thẻ/ngày (ô trống không hợp lệ).',
   'set.imported': '✅ Đã nhập dữ liệu.', 'set.badFile': '❌ File không hợp lệ.',
-  'set.resetConfirm': 'Xóa toàn bộ tiến độ học (thẻ SRS, thống kê, bài đã học, lịch sử thi thử, bài thi dở)? Cài đặt được giữ lại. Không thể hoàn tác.',
+  'set.resetConfirm': 'Xóa toàn bộ tiến độ học (thẻ SRS, lịch Luyện tập tự do, thống kê, bài đã học, lịch sử thi thử, bài thi dở)? Cài đặt được giữ lại. Không thể hoàn tác.',
   'set.resetDone': 'Đã xóa tiến độ.',
 
   // Thi thử
@@ -197,5 +197,42 @@ Object.assign(L.ui,{
   'rec.title': '⚠️ Ứng dụng gặp lỗi khi hiển thị',
   'rec.p1': 'Có thể dữ liệu tiến độ trên trình duyệt này bị hỏng (ví dụ do nhập file không đúng định dạng).',
   'rec.detail': 'Chi tiết:', 'rec.retry': 'Thử lại trang chủ', 'rec.export': 'Tải bản sao dữ liệu hiện tại',
-  'rec.reset': 'Xóa dữ liệu và bắt đầu lại', 'rec.confirm': 'Xóa toàn bộ dữ liệu tiến độ trên trình duyệt này?'
+  'rec.reset': 'Xóa dữ liệu và bắt đầu lại', 'rec.confirm': 'Xóa toàn bộ dữ liệu tiến độ trên trình duyệt này?',
+
+  // Dùng chung · Common · 共通
+  'common.domain': 'Domain {d}',
+  'common.task': 'Task {t}',
+  'common.back': 'Quay lại',
+  'task.colTask': 'Task',
+  'session.freeNote': 'Phiên này dùng lịch riêng của Luyện tập tự do, không ảnh hưởng lịch Ôn hôm nay.',
+  'session.freeMore': 'Luyện tập tự do tiếp',
+  'home.howtoMode': '🔤 Vào <a href="#/settings">Cài đặt</a> để chuyển chế độ ngôn ngữ: <i>Song ngữ</i> → <i>Ưu tiên tiếng Anh</i> → <i>Chỉ tiếng Anh</i>.',
+  'review.title': 'Ôn hôm nay',
+  'review.freeNote': 'Luyện tập tự do dùng lịch riêng, không ảnh hưởng lịch ôn này.',
+
+  // Không có gì để luyện · Nothing to practice · 演習なし
+  'empty.title': '✅ Chưa có câu nào cần luyện lúc này',
+  'empty.body': '<b>{title}</b>: không còn câu mới, và các câu đã học đều chưa đến hạn ôn.',
+  'empty.bodyFree': '<b>{title}</b>: không còn câu mới, và các câu đã học đều chưa đến hạn ôn theo lịch riêng của Luyện tập tự do.',
+  'empty.nextDue': 'Câu tiếp theo trong mục này đến hạn: <b>{when}</b>',
+  'empty.freeNote': 'Luyện tập tự do có lịch riêng nên luyện thêm ở đó không làm lệch lịch Ôn hôm nay.',
+
+  // Luyện tập tự do · Free practice · 自由演習
+  'free.title': 'Luyện tập tự do · {scope}',
+  'free.otherScope': 'Chọn phạm vi khác',
+  'free.avail': '<b>{av}/{total}</b> thẻ luyện được ngay',
+  'free.kindQ': '{n} câu hỏi',
+  'free.kindS': '{n} dịch vụ',
+  'free.kindV': '{n} từ vựng',
+  'free.nextDue': '⏳ Thẻ tiếp theo đến hạn: {when}',
+  'free.intro': 'Luyện thêm bao nhiêu tùy thích theo <b>lịch riêng</b>: không làm thay đổi lịch Ôn hôm nay, không tính vào số thẻ mới mỗi ngày. Thẻ đã luyện ở đây cũng giãn dần theo SRS và chỉ quay lại khi đến hạn của lịch riêng này.',
+  'free.allSub': 'Cả 4 domain + từ vựng đề thi',
+  'free.nextDueAll': 'Thẻ tự do tiếp theo đến hạn: <b>{when}</b>.',
+  'free.scopeNote': 'Domain gồm câu hỏi và thẻ dịch vụ của domain đó; từ vựng đề thi chỉ có trong “Trộn tất cả”.',
+
+  // Quiz bài học · Lesson quiz · レッスンの演習
+  'lesson.quizLeft': '{n} câu còn lại đã học và chưa đến hạn ôn.',
+  'lesson.quizNone': 'Cả {n} câu của bài này đã học và chưa đến hạn ôn.',
+  'lesson.quizNext': 'Câu tiếp theo đến hạn: <b>{when}</b>.',
+  'lesson.quizFree': 'Muốn luyện thêm: <a href="#/review/free">Luyện tập tự do</a>.'
 });})();
