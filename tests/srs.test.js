@@ -2,6 +2,7 @@
 // Usage: node tests/srs.test.js [project root]
 /* global window, location, __T */   // the app runs in this context; these are set up below as globals
 const fs = require('fs'), vm = require('vm'), path = require('path'), assert = require('assert');
+const { appBundle } = require('./lib/app.js');
 const ROOT = process.argv[2] || path.resolve(__dirname, '..');
 const KEY = 'clf-c02-study-v1';
 const MIN = 60e3, DAY = 864e5;
@@ -28,10 +29,10 @@ def('confirm', () => true);
 def('alert', () => {});
 def('innerWidth', 1000); def('innerHeight', 800);
 
-/* ── load in index.html order; expose internals of app.js without changing the file ── */
+/* ── load in index.html order; expose app internals without changing js/*.js ── */
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-const files = [...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]);
-assert.strictEqual(files[files.length - 1], 'app.js');
+const files = [...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]).filter(f => !f.startsWith('js/')).concat('APP');
+assert.ok(html.includes('<script src="js/main.js"></script>'), 'index.html loads js/main.js');
 const HOOK = `
   { const rq = renderQuestion, rf = renderFlash, rr = renderRead;
     renderQuestion = (it, h, d) => { window.__cur = it; return rq(it, h, d); };
@@ -46,8 +47,7 @@ function boot(saved) {
   location.hash = '';
   window.__cur = null;
   for (const f of files) {
-    let src = fs.readFileSync(path.join(ROOT, f), 'utf8');
-    if (f === 'app.js') { const i = src.lastIndexOf('})();'); src = src.slice(0, i) + HOOK + src.slice(i); }
+    const src = f === 'APP' ? appBundle(ROOT, HOOK) : fs.readFileSync(path.join(ROOT, f), 'utf8');
     vm.runInThisContext(src, { filename: f });
   }
   return window.__T;

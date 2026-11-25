@@ -256,7 +256,7 @@
       ["Explicit deny", "từ chối rõ ràng (luôn thắng Allow)"],
       ["Permissions boundary", "giới hạn quyền tối đa cho user/role"]
     ],
-    qids: ["d2-7", "d2-16", "d2-17", "d2-27"]
+    qids: ["d2-7", "d2-16", "d2-17", "d2-27", "d2-45"]
   },
 
   {

@@ -35,9 +35,8 @@ function boot(ui, opts = {}) {
     confirm: () => true, alert() {}, URL: { createObjectURL: () => 'blob:', revokeObjectURL() {} }, Blob: function () {}, Date, Math, JSON };
   ctx.window = ctx; vm.createContext(ctx);
   for (const s of scripts) {
-    let code = rd(s);
-    if (s === 'app.js') code = code.replace(/\}\)\(\);\s*$/, 'window.__T={route,get S(){return S},set S(v){S=v},normalize,t,UI,VI,runSession:typeof runSession!=="undefined"?runSession:null,ITEMS,showRecovery};})();');
-    vm.runInContext(code, ctx, { filename: s });
+    vm.runInContext(rd(s), ctx, { filename: s });
+    if (s === 'js/main.js') vm.runInContext('window.__T={route,get S(){return S},set S(v){S=v},normalize,t,UI,VI,runSession:typeof runSession!=="undefined"?runSession:null,ITEMS,showRecovery};', ctx, { filename: 'hook.js' });
   }
   return { ctx, els, injected, root, navSpans, store, reloaded: () => reloaded };
 }

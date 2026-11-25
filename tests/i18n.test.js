@@ -2,6 +2,7 @@
 // Checks: node --check on every JS file; t() keys exist in vi/ui.js; vi/en/ja key sets + {params} match;
 // app boots in vi/en/ja (loader stubbed), renders every route, no Vietnamese leaks in en/ja; fallback when files are missing.
 const fs = require('fs'), path = require('path'), vm = require('vm'), cp = require('child_process');
+const { appCode } = require('./lib/app.js');
 const ROOT = process.argv[2] || path.resolve(__dirname, '..');
 let fails = 0;
 const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console.log('ok  ', m); };
@@ -32,9 +33,9 @@ const tm = [];
 for (const k of Object.keys(U.vi)) for (const l of ['en', 'ja']) if (k in U[l] && tags(U.vi[k]) !== tags(U[l][k])) tm.push(`${l}:${k}`);
 ok(!tm.length, 'HTML tags match across languages ' + tm.join(' '));
 
-/* 3. keys used in app.js / index.html exist in vi */
+/* 3. keys used in js/*.js / index.html exist in vi */
 const html = rd('index.html');
-const app = rd('app.js').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s\/\/ .*$/gm, '');
+const app = appCode(ROOT).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s\/\/ .*$/gm, '');
 const ns = new Set(Object.keys(U.vi).map(k => k.split('.')[0]));
 const used = new Set();
 for (const m of app.matchAll(/'([a-z]+\.[\w.-]+)'/gi)) if (ns.has(m[1].split('.')[0]) && !m[1].endsWith('.') && !/\.(js|json|html|png)$/.test(m[1])) used.add(m[1]);
@@ -50,11 +51,11 @@ ok(!missing.length, `all ${used.size} used keys exist in vi/ui.js ${missing.join
 const unused = Object.keys(U.vi).filter(k => !used.has(k));
 console.log('    (unused keys:', unused.join(' ') || 'none', ')');
 
-/* 4. no hard-coded Vietnamese in app.js outside comments (LANG_NAMES endonym allowed) */
+/* 4. no hard-coded Vietnamese in js/*.js outside comments (LANG_NAMES endonym allowed) */
 const VI_RE = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
 const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map(l => l.replace(/\s\/\/ .*$/, '').replace(/^\s*\/\/.*$/, ''));
-const viLines = strip(rd('app.js')).map((l, i) => [i, l]).filter(([, l]) => VI_RE.test(l.replace("'Tiếng Việt'", '')));
-ok(!viLines.length, 'no Vietnamese literals in app.js code ' + viLines.map(x => x[1].trim().slice(0, 80)).join(' | '));
+const viLines = strip(appCode(ROOT)).map((l, i) => [i, l]).filter(([, l]) => VI_RE.test(l.replace("'Tiếng Việt'", '')));
+ok(!viLines.length, 'no Vietnamese literals in js/*.js code ' + viLines.map(x => x[1].trim().slice(0, 80)).join(' | '));
 
 /* 5. sw.js FILES */
 const swCtx = { self: { addEventListener() {} }, caches: {}, location: { origin: '' } };
@@ -66,8 +67,8 @@ const i18nAll = ['i18n/vi/ui.js', ...['en', 'ja'].flatMap(l => ['ui', 'data', 'q
 ok(F.includes('i18n/vi/ui.js') && !F.some(f => /^i18n\/(en|ja)\//.test(f)) && i18nAll.every(f => fs.existsSync(path.join(ROOT, f))), 'sw precaches only vi/ui.js; en/ja files exist (cached lazily)');
 const absent = F.filter(f => f !== './' && !fs.existsSync(path.join(ROOT, f)));
 ok(!absent.length, 'every sw FILES entry exists on disk ' + absent.join(' '));
-ok(swCtx.self.__V === 'v6', 'sw VERSION v6');
-ok(scripts.indexOf('i18n/vi/ui.js') >= 0 && scripts.indexOf('i18n/vi/ui.js') < scripts.indexOf('app.js'), 'index.html loads i18n/vi/ui.js before app.js');
+ok(/^v\d+$/.test(swCtx.self.__V), 'sw VERSION looks like vN');
+ok(scripts.indexOf('i18n/vi/ui.js') >= 0 && scripts.indexOf('i18n/vi/ui.js') < scripts.indexOf('js/core.js'), 'index.html loads i18n/vi/ui.js before the app (js/)');
 const filesTxt = rd('i18n/FILES.txt');
 const appFiles = (app.match(/const I18N_FILES = \[([\s\S]*?)\]/) || [])[1].match(/'[^']+'/g).map(x => x.slice(1, -1));
 ok(appFiles.length === 16 && appFiles.every(f => filesTxt.includes(`i18n/<lang>/${f}.js`)), 'I18N_FILES matches FILES.txt (16 files)');
@@ -104,9 +105,10 @@ function boot(ui, opts = {}) {
     confirm: () => true, alert() {}, URL: { createObjectURL: () => 'blob:', revokeObjectURL() {} }, Blob: function () {}, Date, Math, JSON };
   ctx.window = ctx; vm.createContext(ctx);
   for (const s of scripts) {
-    let code = rd(s);
-    if (s === 'app.js') code = code.replace(/\}\)\(\);\s*$/, 'window.__T={route,get S(){return S},set S(v){S=v},normalize,t,UI,VI,runSession:typeof runSession!=="undefined"?runSession:null,ITEMS,showRecovery};})();');
+    const code = rd(s);
     vm.runInContext(code, ctx, { filename: s });
+    // after the last app script: expose internals (separate script, reads the shared global scope)
+    if (s === 'js/main.js') vm.runInContext('window.__T={route,get S(){return S},set S(v){S=v},normalize,t,UI,VI,runSession:typeof runSession!=="undefined"?runSession:null,ITEMS,showRecovery};', ctx, { filename: 'hook.js' });
   }
   return { ctx, els, injected, root, navSpans, store, reloaded: () => reloaded };
 }

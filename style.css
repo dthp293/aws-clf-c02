@@ -176,5 +176,5 @@ table.tasks td { vertical-align: middle; }
 .empty-state .row { justify-content: center; }
 .quiz-note { margin: 10px 0 0; }
 
-/* Bản en/ja: ẩn chữ trên nav trong lúc nạp bộ ngôn ngữ (app.js bỏ class khi xong) */
+/* Bản en/ja: ẩn chữ trên nav trong lúc nạp bộ ngôn ngữ (js/main.js bỏ class khi xong) */
 html.i18n-loading #nav { visibility: hidden; }
