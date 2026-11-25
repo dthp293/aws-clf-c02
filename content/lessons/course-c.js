@@ -124,7 +124,7 @@
       ["AWS Outposts", "hạ tầng AWS đặt tại data center của khách"],
       ["AWS Wavelength Zones", "hạ tầng AWS đặt trong mạng 5G của nhà mạng"]
     ],
-    qids: ["d3-1", "d3-10", "d3-21", "d3-27", "d3-28", "d1-16", "d3-5", "d3-25"]
+    qids: ["d3-1", "d3-10", "d3-21", "d3-27", "d3-28", "d1-16", "d3-5", "d3-25", "d3-80"]
   },
 
   // ───────────────────────── 3-2 ─────────────────────────

@@ -1,6 +1,4 @@
 .DS_Store
-course/*.md
-exam/*.md
-meta/*.md
-meta/*.json
 node_modules/
+# Local notes next to content files (not published)
+content/**/*.md

@@ -4,16 +4,16 @@
  *   ở nền để lần mở sau có nội dung cập nhật (stale-while-revalidate).
  * Thêm file mới vào website → thêm vào FILES và tăng VERSION.
  */
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
-  'data.js', 'questions-2.js', 'content-3.js', 'questions-4.js',
-  'extra/extra-d2.js', 'extra/extra-d3.js', 'extra/extra-d4.js',
-  'extra/more-d1.js', 'extra/more-d2.js', 'extra/more-d3.js', 'extra/more-d4.js',
-  'meta/tags-a.js', 'meta/tags-b.js',
-  'exam/exam-d1.js', 'exam/exam-d2.js', 'exam/exam-d3.js', 'exam/exam-d4.js', 'exam/exam-e.js',
-  'course/course-a.js', 'course/course-b.js', 'course/course-c.js', 'course/course-d.js', 'course/course-e.js', 'course/course-f.js',
+  // Nội dung (thứ tự giống index.html)
+  'content/domains.js', 'content/glossary.js', 'content/services.js', 'content/quick-summary.js',
+  'content/lessons/course-a.js', 'content/lessons/course-b.js', 'content/lessons/course-c.js', 'content/lessons/course-d.js',
+  'content/lessons/course-e.js', 'content/lessons/course-f.js', 'content/questions/d1.js', 'content/questions/d2.js',
+  'content/questions/d3.js', 'content/questions/d4.js', 'content/exam/d1.js', 'content/exam/d2.js',
+  'content/exam/d3.js', 'content/exam/d4.js', 'content/tags.js',
   // Bản English / 日本語 (i18n/en, i18n/ja) KHÔNG cache sẵn: app.js chỉ nạp ngôn ngữ đang chọn và fetch bên dưới tự
   // cache các file đó. Nhờ vậy người dùng tiếng Việt không phải tải thêm ~2,4 MB, và một file dịch lỗi không làm hỏng việc cài đặt.
   'i18n/vi/ui.js',
