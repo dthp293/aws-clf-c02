@@ -336,7 +336,7 @@ L.course["3-12"]={title:"AI and Machine Learning on AWS",goals:["Understand in p
 <ul>
 <li><b>Amazon Q Business</b>: connects to the company's data sources (wikis, policies, document repositories, SaaS applications) so employees can <b>ask questions in natural language</b>, summarize and create content.</li>
 <li><b>Amazon Q Developer</b>: helps <b>developers</b>: suggests and writes code, explains code, troubleshoots errors, and answers questions about AWS.</li>
-<li><i>Current status (does not affect exam content): Amazon Q Business is no longer accepting new customers (AWS suggests moving to Amazon Quick); the Amazon Q Developer IDE plugins reach end of support on April 30, 2027, replaced by <b>Kiro</b>. The exam still asks according to the descriptions above.</i></li>
+<li><i>Current status (does not affect exam content): Amazon Q Business is no longer accepting new customers (AWS suggests moving to Amazon Quick, now AWS Quick); the Amazon Q Developer IDE plugins reach end of support on April 30, 2027, replaced by <b>Kiro</b>. The exam still asks according to the descriptions above.</i></li>
 </ul></li>
 </ul>
 <p>These services are often <b>chained together</b>. For example, a scanned insurance form in Spanish: Textract (get the text) → Translate (translate to English) → Comprehend (sentiment, key phrases). Or a call center: Transcribe (speech → text) → Translate → Polly (read the answer aloud). "Choose THREE" questions love this pattern: break the problem into "input → output" steps.</p>
@@ -377,7 +377,7 @@ L.course["3-12"]={title:"AI and Machine Learning on AWS",goals:["Understand in p
 L.course["3-13"]={title:"Data analytics: Athena, Kinesis, Glue, EMR, Redshift, Quick",goals:["Understand the data pipeline: collect → store → transform → analyze → visualize","Know which step each of Kinesis, S3, Glue, Athena, EMR, Redshift and Quick belongs to","Know that OpenSearch Service is for search and log analytics; tell Data Streams and Data Firehose apart","Pick the right service from the keywords in the question"],html:`
 <h3>1. What is a data pipeline?</h3>
 <p>A business produces a lot of data: orders, clicks on the website, customer reviews. Raw data says nothing by itself. To turn it into an answer such as "which cake sells best in Tokyo in summer", the data has to pass through a series of steps called a <b>data pipeline</b>.</p>
-<div class="flow"><span>Collect (Kinesis)</span><span>Store (S3)</span><span>Transform (Glue / EMR)</span><span>Analyze (Athena / Redshift)</span><span>Visualize (Quick)</span></div>
+<div class="flow"><span>Collect (Kinesis)</span><span>Store (S3)</span><span>Transform (Glue / EMR)</span><span>Analyze (Athena / Redshift)</span><span>Visualize (AWS Quick)</span></div>
 <div class="box idea"><b>🧠 In plain terms</b><p>It is like making orange juice: <b>pick the oranges</b> from the orchard (collect), <b>stack them in the storeroom</b> (store), <b>wash, peel and squeeze</b> (transform), <b>taste and measure the sweetness</b> (analyze), then <b>pour it into a nice glass</b> for the customer (visualize).</p></div>
 <p>A concept you will meet often: a <b>data lake</b> is a place that holds every kind of raw data in its original form, at low cost. On AWS, a data lake is usually built on <b>Amazon S3</b>.</p>
 <p>Why split it into several steps? Because each step needs a different kind of tool. A tool that is good at "catching" continuously flowing data is not necessarily good at long-term storage; a tool that runs heavy analysis is not necessarily easy for business people to use. AWS has a separate service for each step, and the exam usually describes a need and asks which service fits. Tip: before reading the options, ask yourself "which step of the pipeline does this need belong to?".</p>
@@ -403,7 +403,7 @@ L.course["3-13"]={title:"Data analytics: Athena, Kinesis, Glue, EMR, Redshift, Q
 <h4>Amazon Redshift</h4>
 <p><b>Redshift</b> is a <b>data warehouse</b> (you met it in the database lesson): data is loaded and organized in advance to run complex, frequent analytical queries on very large amounts of data, for business reporting.</p>
 <h4>Amazon Quick</h4>
-<p><b>Amazon Quick</b> (the name used in the Exam Guide's service list; formerly Amazon QuickSight, and older practice exams often use that name) is a <b>BI</b> (Business Intelligence) tool that helps non-technical users create <b>dashboards</b> (screens of charts and key numbers) and interactive charts from data.</p>
+<p><b>Amazon Quick</b> (the name used in the Exam Guide's service list; renamed <b>AWS Quick</b> on November 9, 2026; formerly Amazon QuickSight, and older practice exams often use that name) is a <b>BI</b> (Business Intelligence) tool that helps non-technical users create <b>dashboards</b> (screens of charts and key numbers) and interactive charts from data.</p>
 <h4>Amazon OpenSearch Service</h4>
 <p><b>OpenSearch Service</b> is used for <b>full-text search</b> (for example the product search box on a website) and <b>near real-time log analytics</b>, with interactive dashboards (OpenSearch Dashboards) to spot spikes in errors. This service used to be called Amazon Elasticsearch Service.</p>
 <h4>A few other analytics services (outside the Exam Guide's list; just know the names so you don't get confused)</h4>
@@ -426,7 +426,7 @@ L.course["3-13"]={title:"Data analytics: Athena, Kinesis, Glue, EMR, Redshift, Q
 <tr><td>Transform</td><td>Amazon EMR</td><td>Apache Spark, Hadoop, big data frameworks</td></tr>
 <tr><td>Analyze</td><td>Amazon Athena</td><td>SQL queries directly on S3, serverless</td></tr>
 <tr><td>Analyze</td><td>Amazon Redshift</td><td>data warehouse, petabyte, complex analytics</td></tr>
-<tr><td>Visualize</td><td>Amazon Quick</td><td>dashboards, visualizations, BI</td></tr>
+<tr><td>Visualize</td><td>AWS Quick (formerly Amazon Quick; the Exam Guide and exam questions may still say Amazon Quick)</td><td>dashboards, visualizations, BI</td></tr>
 <tr><td>Search, logs</td><td>Amazon OpenSearch Service</td><td>full-text search, log analytics</td></tr>
 </table>
 <div class="box exam"><b>🎯 What the exam asks</b><ul>
@@ -437,7 +437,7 @@ L.course["3-13"]={title:"Data analytics: Athena, Kinesis, Glue, EMR, Redshift, Q
 <li>"serverless data integration, ETL, data catalog", "scheduled transform, no clusters, least operational overhead" → <b>Glue</b></li>
 <li>"Apache Spark, Apache Hadoop" → <b>EMR</b></li>
 <li>"complex analytical queries on petabytes" → <b>Redshift</b></li>
-<li>"business users create interactive dashboards" → <b>Quick</b></li>
+<li>"business users create interactive dashboards" → <b>AWS Quick</b> (Amazon Quick)</li>
 </ul></div>
 `,summary:["Data pipeline: collect → store → transform → analyze → visualize.","Kinesis Data Streams collects streaming data (you write the consumer); Data Firehose loads streaming data into S3/Redshift by itself; S3 usually serves as the data lake.","Glue = serverless ETL + Data Catalog, least operational effort; EMR = runs Spark/Hadoop on a cluster for big data.","Athena = SQL directly on S3, serverless; Redshift = data warehouse for large-scale analysis.","Quick (formerly QuickSight) = BI dashboards; OpenSearch Service = search and log analytics."],terms:[["Data pipeline","the series of steps data passes through, from collection to insight"],["Data lake","a low-cost store for all kinds of raw data in its original form"],["Streaming data","data that flows in continuously"],["Real-time","processed as it happens, with almost no delay"],["Clickstream","the trail of clicks a user makes"],["ETL (Extract, Transform, Load)","pull data from a source, reshape it, load it where it is needed"],["Data catalog","an index of what data exists, where it is and its structure"],["Big data","data sets too large for ordinary tools"],["Data warehouse","a database organized for large analytical queries"],["Business Intelligence (BI)","turning business data into reports and insights"],["Dashboard","a screen of charts and key numbers"],["Log analytics","analyzing log records to find problems and trends"],["Consumer application","an application that reads and processes a data stream"]]};
 L.course["3-14"]={title:"Management and governance: Organizations, Control Tower, Systems Manager, Trusted Advisor…",goals:["Understand why businesses use multiple AWS accounts and how to manage them with Organizations, SCPs and Control Tower","Know what Service Catalog, Service Quotas, Systems Manager and CloudFormation are for","Tell the recommendation tools apart: Trusted Advisor, Compute Optimizer, Well-Architected Tool","Know AWS Health Dashboard, License Manager and AWS RAM"],html:`
