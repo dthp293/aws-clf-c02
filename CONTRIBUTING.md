@@ -89,15 +89,23 @@ Never commit directly to `main`. Every change goes through a pull request.
 
 ## 3. Pull request titles
 
-- English, sentence case, imperative mood, at most 70 characters.
-- **No** `type(scope):` prefix. The title describes the outcome for the learner or the content as a whole.
-- Join two main changes with `;` rather than "and" when they are independent.
+Same format as a commit message, so the PR list can be sorted by area at a glance:
+
+```
+<type>(<scope>): <summary>
+```
+
+- **Type and scope:** use the same lists as for commits (section 1). Pick the type of the PR's main change, using this priority: `feat` > `fix` > `content` > `i18n` > `refactor` > `test` > `chore` > `docs` > `style`. The scope names the area most affected, for example `srs`, `i18n`, `questions`, `ci`.
+- **Summary:** English, imperative, lowercase first word, no trailing period. The whole title is at most 72 characters.
+- **Two independent changes:** join them with `;` rather than "and".
 
 Examples:
 
-- `Add English and Japanese editions with official AWS terminology`
-- `SRS: never show cards before due; add free practice with its own schedule`. A short area label followed by a colon is fine when it helps.
-- `Update support plans to the 2026 lineup`
+- `feat(srs): never show learned cards early; add free-practice schedule`
+- `feat(i18n): add English and Japanese editions with official AWS terms`
+- `chore(repo): add contribution conventions; run ESLint and tests in CI`
+- `content(questions): update support plans to the 2026 lineup`
+- `fix(exam): keep the timer running after switching tabs`
 
 ## 4. Pull request descriptions
 

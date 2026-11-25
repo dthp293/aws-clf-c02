@@ -1,4 +1,4 @@
-<!-- Title: English, imperative, sentence case, ≤ 70 chars, no type(scope) prefix. See CONTRIBUTING.md. -->
+<!-- Title: <type>(<scope>): <summary>, the same format as a commit (e.g. feat(srs): …, content(questions): …), English, ≤ 72 chars. See CONTRIBUTING.md. -->
 
 ## Summary
 
