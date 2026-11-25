@@ -12,12 +12,12 @@ window.CLF.questions.push(
   },
   {
     id: "d1-7", d: 1,
-    en: "Which pillar of the AWS Well-Architected Framework includes the design principle “perform operations as code”?",
-    vi: "Trụ cột nào của Well-Architected Framework có nguyên tắc thiết kế “thực hiện vận hành bằng code”?",
+    en: "Which pillar of the AWS Well-Architected Framework includes the design principle “safely automate where possible”?",
+    vi: "Trụ cột nào của Well-Architected Framework có nguyên tắc thiết kế “tự động hóa một cách an toàn khi có thể”?",
     opts: [["Operational Excellence", "Vận hành xuất sắc"], ["Reliability", "Độ tin cậy"], ["Performance Efficiency", "Hiệu quả hiệu năng"], ["Security", "Bảo mật"]],
     ans: [0],
-    exp: "Operational Excellence gồm: perform operations as code, thay đổi nhỏ và thường xuyên, học từ sự cố. (Framework hiện tại đổi tên thành “Safely automate where possible”, vẫn thuộc Operational Excellence.)",
-    why: ["Đúng: “perform operations as code” là nguyên tắc thiết kế của Operational Excellence.", "Sai: Reliability có nguyên tắc như tự động phục hồi, scale ngang.", "Sai: Performance Efficiency có nguyên tắc như dùng serverless, go global in minutes.", "Sai: Security có nguyên tắc như least privilege, bật traceability."]
+    exp: "Operational Excellence gồm: safely automate where possible, make frequent, small, reversible changes, learn from all operational events and metrics. (Tài liệu cũ gọi nguyên tắc này là “perform operations as code”, vẫn thuộc Operational Excellence.)",
+    why: ["Đúng: “safely automate where possible” (tên cũ: perform operations as code) là nguyên tắc thiết kế của Operational Excellence.", "Sai: Reliability có nguyên tắc như tự động phục hồi, scale ngang.", "Sai: Performance Efficiency có nguyên tắc như build scalable architectures, deploy workloads closer to your customers.", "Sai: Security có nguyên tắc như strong identity foundation, maintain traceability."]
   },
   {
     id: "d1-8", d: 1,
@@ -187,7 +187,7 @@ window.CLF.questions.push(
     id: "d2-16", d: 2,
     en: "A company wants to grant users only the permissions they need to perform their jobs. Which security principle is this?",
     vi: "Công ty muốn chỉ cấp cho người dùng đúng những quyền cần thiết để làm việc. Đây là nguyên tắc bảo mật nào?",
-    opts: [["Principle of least privilege", "Nguyên tắc đặc quyền tối thiểu"], ["Shared responsibility model", "Mô hình trách nhiệm chia sẻ"], ["Defense in depth (layered security)", "Phòng thủ nhiều lớp (defense in depth)"], ["Enable traceability", "Bật khả năng truy vết (traceability)"]],
+    opts: [["Principle of least privilege", "Nguyên tắc đặc quyền tối thiểu"], ["Shared responsibility model", "Mô hình trách nhiệm chia sẻ"], ["Defense in depth (layered security)", "Phòng thủ nhiều lớp (defense in depth)"], ["Maintain traceability", "Duy trì khả năng truy vết (traceability)"]],
     ans: [0],
     exp: "Least privilege là một nguyên tắc cốt lõi của IAM.",
     why: ["Đúng: least privilege là chỉ cấp đúng quyền cần thiết để thực hiện công việc.", "Sai: nói về phân chia trách nhiệm bảo mật giữa AWS và khách hàng.", "Sai: defense in depth là áp dụng bảo mật ở nhiều lớp (mạng, instance, ứng dụng), không phải giới hạn quyền.", "Sai: traceability là ghi log và giám sát hành động để truy vết, không quyết định cấp bao nhiêu quyền."]
