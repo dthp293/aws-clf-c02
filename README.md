@@ -33,7 +33,7 @@ A self-study website for the **AWS Certified Cloud Practitioner (CLF-C02)** exam
 2. Study **one new lesson** under **Lessons**, then press **"✍️ Practice this lesson’s N questions"** at the end of it.
 3. Press **"✓ Mark as done"** so the app tracks your progress.
 
-**When are you ready?** When the **"🎯 Ready for the exam"** card lights up. That means **≥ 80% on 3 fresh mock exams in a row**; only exams where at least half the questions were new to you count. You should also do well on AWS's free official question set on Skill Builder. The real pass mark is 700/1000 (scaled), so aiming for 80% leaves a safety margin.
+**When are you ready?** When the **"🎯 Ready for the exam"** card lights up. It estimates your score on the real exam (with an 80% interval) from your **first** answer to each mock-exam pool question, weighted by domain; you are ready with at least 100 such answers, a lower bound of ≥ 75% overall, and at least 8 answers with a lower bound of ≥ 65% in every domain. You should also do well on AWS's free official question set on Skill Builder. The real pass mark is 700/1000 (scaled), so aiming for 80% leaves a safety margin.
 
 ---
 
@@ -55,7 +55,10 @@ Mixes questions, exam vocabulary and AWS service cards. After each card, grade y
 
 - **Scheduling:**
   - A wrong answer brings the card back after **10 minutes**.
-  - A right answer spaces it further apart each time (1 → 4 → 10… days).
+  - A right answer spaces it further apart each time (1 → 4 → 10… days). A correct question is scheduled **Good** as soon as you press Check; press Hard or Easy to change it.
+  - The schedule is an SM-2 variant: mistakes while a card is new aren't penalized; a forgotten card keeps about 25% of its old interval once relearned; a late review that you still remember is spaced from the days you actually remembered it.
+  - New cards put questions before vocabulary and service cards, follow the exam's domain weights, prefer weak tasks and questions from finished lessons, and keep questions of the same task apart.
+  - With an **exam date** in Settings, every card is due again before the exam, and the home page suggests a daily new-card limit if the current one is too low (keeping the last 7 days for review).
   - Each session shows **due** cards first, then **new** cards up to the daily limit.
 - **Daily new-card limit:** adjustable in **Settings** (default 15).
   - Only new cards learned in **Today** count toward the limit.
@@ -83,7 +86,7 @@ When you've cleared your reviews and want more, open **Today → Free practice**
   - You see only the English question and tap the words that decide the answer (e.g. *MOST cost-effective*, *cannot be interrupted*), against a timer.
   - The app then shows the key terms and only then the options.
   - Aim for about **80 seconds per question** in the exam.
-- **Task-statement table (1.1 → 4.3):** combines practice and mock-exam results, lists the weakest tasks first, and has a practice button for each task.
+- **Task-statement table (1.1 → 4.3):** combines practice and mock-exam results, lists the weakest tasks first, and has a practice button for each task. Accuracy uses the last 3 answers to each question; a **weak question** is one you got wrong last time or right fewer than 2 of the last 3 times.
 
 ### 📝 Mock exam
 
@@ -94,6 +97,8 @@ When you've cleared your reviews and want more, open **Today → Free practice**
   - Questions come from the **separate pool**. They **never appear in practice**, so your score reflects what you know, not what you remember.
   - The app prefers questions you haven't seen.
   - The Mock exam page shows how many **completely fresh exams** the pool still has. Each exam uses up its new questions, so **save fresh exams for the last 1–2 weeks** to measure readiness.
+  - When time runs out, the exam is submitted if you answered at least half of it; an abandoned exam (for example, a closed tab you come back to later) is discarded. A cancelled or discarded exam is not scored, but the questions you saw no longer count as new.
+  - After an exam, **Practice the tasks you missed** opens practice questions from the tasks of your wrong answers.
 - **During the exam:**
   - You can flag questions and move freely between them.
   - **Shortcuts:** A–F to choose, ←/→ to move, **M** to flag.
