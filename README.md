@@ -44,10 +44,21 @@ Website tự học cá nhân để ôn thi **AWS Certified Cloud Practitioner (C
 Trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ AWS. Sau mỗi thẻ, tự chấm **Lại / Khó / Tốt / Dễ**:
 - Trả lời sai thì thẻ quay lại sau **10 phút**.
 - Trả lời đúng thì khoảng cách ôn giãn dần (1 → 4 → 10… ngày).
-- Số thẻ mới mỗi ngày chỉnh được trong **Cài đặt** (mặc định 15). Chỉ thẻ mới học trong **Ôn hôm nay** mới tính vào hạn mức này; luyện tập tự do không làm giảm số thẻ mới.
+- Mỗi phiên gồm các thẻ **đến hạn** trước, rồi tới thẻ **mới** (tối đa theo hạn mức mỗi ngày).
+- Số thẻ mới mỗi ngày chỉnh được trong **Cài đặt** (mặc định 15). Chỉ thẻ mới học trong **Ôn hôm nay** mới tính vào hạn mức này; câu mới làm ở tab Luyện tập, quiz cuối bài học hay Luyện tập tự do không làm giảm số thẻ mới.
+- **Thẻ đã học không bao giờ hiện lại trước giờ đến hạn**, ở mọi chế độ. Thẻ chấm **Lại** hẹn 10 phút: nếu phiên đang ôn kết thúc sớm hơn, thẻ sẽ chờ tới phiên sau.
 - Ngày học được tính sang ngày mới lúc **4 giờ sáng** (giống Anki), nên ôn khuya sau 0 giờ vẫn tính cho hôm trước.
 
+#### 🔁 Luyện tập tự do (lịch riêng)
+Khi đã ôn xong mà vẫn muốn luyện thêm, mở **Ôn hôm nay → Luyện tập tự do** (`#/review/free`) rồi chọn **Domain 1–4** hoặc **Trộn tất cả**.
+- Chế độ này có **lịch SRS riêng** (cùng quy tắc Lại / Khó / Tốt / Dễ), **tách hẳn** khỏi lịch chính: không làm thay đổi thẻ đến hạn của Ôn hôm nay, không tính vào số thẻ mới mỗi ngày, không đổi con số trên trang chủ.
+- Thẻ chưa từng luyện ở chế độ tự do thì luyện được ngay, kể cả khi lịch chính chưa đến hạn. Thẻ đã luyện ở đây cũng chỉ quay lại khi **đến hạn của lịch tự do**.
+- Phạm vi: mỗi **Domain** gồm câu hỏi + thẻ dịch vụ AWS của domain đó; **Trộn tất cả** gồm mọi câu hỏi, thẻ dịch vụ và **từ vựng đề thi** (từ vựng không thuộc domain nào nên chỉ có ở đây). Câu của kho thi thử không bao giờ xuất hiện.
+- Mỗi ô hiện **số thẻ luyện được ngay / tổng số** và giờ thẻ tiếp theo đến hạn. Tỷ lệ đúng/sai vẫn được cộng vào thống kê theo domain và task.
+
 ### ✍️ Luyện tập
+- Tab Luyện tập và quiz cuối bài học dùng **chung lịch chính** với Ôn hôm nay: chỉ hiện câu **mới** hoặc **đã đến hạn**. Làm câu đến hạn là ôn thẻ đó; làm câu mới thì câu đó vào lịch SRS (không tính hạn mức thẻ mới).
+- Mỗi ô hiện **số câu luyện được ngay / tổng số câu**. Khi một mục không còn câu mới hay đến hạn, app báo giờ câu tiếp theo đến hạn và dẫn sang **Luyện tập tự do**.
 - Luyện theo **domain**, **trộn tất cả**, **câu hay sai**, **🔥 câu nâng cao**, **☑️ câu chọn nhiều đáp án** (Choose TWO/THREE).
 - **📖 Luyện đọc đề:** chỉ hiện đề tiếng Anh, bạn chạm vào các từ khóa quyết định đáp án (ví dụ *MOST cost-effective*, *cannot be interrupted*), có đồng hồ đếm giây. Sau đó app hiện từ khóa gợi ý, bản dịch rồi mới đến các lựa chọn. Khi thi, mục tiêu là khoảng **80 giây/câu**.
 - **Bảng theo task statement (1.1 → 4.3):** gộp kết quả luyện tập và thi thử, xếp task yếu nhất lên đầu, có nút luyện riêng từng task.
@@ -98,7 +109,7 @@ Rồi mở http://localhost:8766. Service worker (offline) chỉ chạy trên `l
 ### Cấu trúc thư mục
 | Đường dẫn | Nội dung |
 |---|---|
-| `index.html`, `app.js`, `style.css` | Giao diện và logic (SRS, luyện tập, thi thử, thống kê, luyện đọc đề) |
+| `index.html`, `app.js`, `style.css` | Giao diện và logic (SRS, luyện tập, thi thử, thống kê, luyện đọc đề). Tiến độ lưu trong `localStorage`: `cards` = lịch SRS chính, `free` = lịch riêng của Luyện tập tự do |
 | `course/course-a.js` … `course-f.js` | Bài học: nền tảng + D1, D2, D3 (2 file), D4, thực hành |
 | `data.js` | Domain, câu hỏi gốc, từ vựng, thẻ dịch vụ, bảng tóm tắt nhanh |
 | `questions-2.js`, `content-3.js`, `questions-4.js`, `extra/*.js` | Câu hỏi luyện tập (và từ vựng, thẻ dịch vụ bổ sung) |
