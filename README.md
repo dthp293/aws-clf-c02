@@ -104,12 +104,16 @@ Tiến độ học **chỉ lưu trong trình duyệt/thiết bị đang dùng**,
 
 ## 4. Dành cho người duy trì nội dung
 
+> Quy tắc viết commit message, đặt tên branch, tên PR và mô tả PR (bằng tiếng Anh) nằm ở [CONTRIBUTING.md](CONTRIBUTING.md). Mẫu mô tả PR GitHub tự điền từ `.github/pull_request_template.md`. Để dùng mẫu commit, chạy `git config commit.template .gitmessage` một lần.
+
 ### Chạy trên máy
 Website là file tĩnh, không cần build:
 ```bash
 python3 -m http.server 8766
 ```
 Rồi mở http://localhost:8766. Service worker (offline) chỉ chạy trên `localhost` hoặc HTTPS.
+
+Kiểm tra trước khi tạo PR (giống CI trên GitHub): `npm install` một lần, rồi `npm run check` (ESLint + toàn bộ test trong `tests/`). npm chỉ dùng cho lint và test; website vẫn không cần build.
 
 ### Cấu trúc thư mục
 | Đường dẫn | Nội dung |
@@ -123,6 +127,7 @@ Rồi mở http://localhost:8766. Service worker (offline) chỉ chạy trên `l
 | `i18n/vi/ui.js` | Chuỗi giao diện tiếng Việt (luôn tải, làm dự phòng) |
 | `i18n/en/`, `i18n/ja/` | Bản English / 日本語: `ui.js` (giao diện), `data.js` (domain, từ vựng, dịch vụ, tóm tắt nhanh), `q-1.js` … `q-8.js` (giải thích câu hỏi), `course-a.js` … `course-f.js` (bài học). Chi tiết: `i18n/FILES.txt` |
 | `manifest.webmanifest`, `sw.js`, `icons/` | PWA và chế độ offline |
+| `tests/`, `eslint.config.js`, `package.json` | Kiểm tra tự động (`npm run check`), chạy trên GitHub Actions ở mỗi PR (`.github/workflows/ci.yml`). Website không dùng tới |
 
 ### Thêm câu hỏi
 Mỗi câu là một object:

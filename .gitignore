@@ -3,3 +3,4 @@ course/*.md
 exam/*.md
 meta/*.md
 meta/*.json
+node_modules/
