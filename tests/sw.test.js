@@ -3,6 +3,7 @@
 // - en/ja translation files are network-first: a stale cached copy is never served while the network works
 // - offline (or a very slow network) falls back to the cached copy
 // - other files are cache-first and refreshed in the background
+// - the cache write of a fresh copy is kept alive with waitUntil (not cut off when the worker stops)
 // - activate keeps cached en/ja files from the previous version and deletes old caches
 // Usage: node tests/sw.test.js [project root]
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -16,7 +17,9 @@ function makeEnv({ network }) {
   const stores = new Map();
   const open = name => { if (!stores.has(name)) stores.set(name, new Map()); const m = stores.get(name);
     return {
-      match: async r => m.get(key(r)), put: async (r, res) => { m.set(key(r), res); }, keys: async () => [...m.keys()].map(p => ({ url: 'https://site.test' + p })),
+      match: async r => m.get(key(r)),
+      // a cache write takes a moment, like a real one: it is only done if the worker is kept alive (waitUntil) until then
+      put: async (r, res) => { await new Promise(t => setImmediate(t)); m.set(key(r), res); }, keys: async () => [...m.keys()].map(p => ({ url: 'https://site.test' + p })),
       addAll: async reqs => { for (const r of reqs) { const res = await network(r); if (!res || !res.ok) throw new Error('addAll failed ' + key(r)); m.set(key(r), res); } }
     }; };
   const caches = { open: async n => open(n), keys: async () => [...stores.keys()], delete: async n => stores.delete(n) };
@@ -54,7 +57,7 @@ function makeEnv({ network }) {
   let r = await env.fetchEv('i18n/en/course-c.js');
   ok(r.body === 'new:/i18n/en/course-c.js', 'online: en file comes from the network even when an older copy is cached');
   ok(seen.some(([p, c]) => p === '/i18n/en/course-c.js' && c === 'no-cache'), 'en file is requested with cache: no-cache (skips a stale browser HTTP cache)');
-  ok((await store.match('i18n/en/course-c.js')).body === 'new:/i18n/en/course-c.js', 'the fresh en file replaces the cached copy');
+  ok((await store.match('i18n/en/course-c.js')).body === 'new:/i18n/en/course-c.js', 'the fresh en file replaces the cached copy (the cache write is kept alive with waitUntil)');
 
   // offline: fall back to the cached copy
   env = makeEnv({ network: async () => { throw new Error('offline'); } });
@@ -83,7 +86,7 @@ function makeEnv({ network }) {
   await s4.put('js/core.js', new Res('cached:core'));
   r = await env.fetchEv('js/core.js');
   ok(r.body === 'cached:core', 'app files are served from the cache first (and refreshed in the background)');
-  ok((await s4.match('js/core.js')).body === 'new:/js/core.js', 'the background refresh stores the new copy for next time');
+  ok((await s4.match('js/core.js')).body === 'new:/js/core.js', 'the background refresh stores the new copy for next time (kept alive with waitUntil)');
 
   // activate: carry cached en/ja files over from the old version, delete old caches
   env = makeEnv({ network: online });
