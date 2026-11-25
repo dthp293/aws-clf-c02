@@ -1,5 +1,5 @@
 {
- "about": "Facts in the study content checked against official AWS pages. checks=2: confirmed by a second checker with a verbatim quote; checks=1: confirmed by one checker against the topic pages listed. result: confirmed | fixed | indirect (only indirect official support). Covers sentences with concrete values (numbers, limits, dates, names, plan features) and the answer keys that blind solvers flagged; all other statements (concepts, comparisons, service-to-use-case mappings) were screened by four reviewers in full and only the flagged or uncertain ones were verified online (entries concept:…). deny = outdated values that must not come back (checked by tests/facts.test.js).",
+ "about": "Facts in the study content checked against official AWS pages. checks=2: confirmed by a second checker with a verbatim quote; checks=1: confirmed by one checker against the topic pages listed. result: confirmed | fixed | indirect (only indirect official support). Covers sentences with concrete values (numbers, limits, dates, names, plan features) and the answer keys that blind solvers flagged; all other statements (concepts, comparisons, service-to-use-case mappings) were screened by four reviewers in full and only the flagged or uncertain ones were verified online (entries concept:…). deny = outdated values that must not come back (checked by tests/facts.test.js). watch = exact terms that must stay on the first source page (used when the quote summarizes a list); scripts/facts-watch.js checks quotes and watch terms weekly.",
  "checked": "2026-11-25",
  "deny": [
   {
@@ -55,7 +55,7 @@
    "result": "confirmed",
    "note": "'Safely automate where possible' is a current Operational Excellence design principle (operations as code with guardrails).",
    "sources": [
-    "https://docs.aws.amazon.com/wellarchitected/latest/framework/oe-design-principles.html"
+    "https://docs.aws.amazon.com/wellarchitected/latest/framework/ops-design-principles.html"
    ],
    "checks": 2
   },
@@ -183,7 +183,14 @@
    "sources": [
     "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor-check-reference.html"
    ],
-   "checks": 2
+   "checks": 2,
+   "watch": [
+    "EBS Public Snapshots",
+    "RDS Public Snapshots",
+    "S3 Bucket Permissions",
+    "MFA on Root Account",
+    "Specific Ports Unrestricted"
+   ]
   },
   {
    "id": "F104",
@@ -483,7 +490,19 @@
    "sources": [
     "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html"
    ],
-   "checks": 2
+   "checks": 2,
+   "watch": [
+    "t3.micro",
+    "t3.small",
+    "t4g.micro",
+    "t4g.small",
+    "t8i.micro",
+    "t8i.small",
+    "t9g.micro",
+    "t9g.small",
+    "c7i-flex.large",
+    "m7i-flex.large"
+   ]
   },
   {
    "id": "F3",
@@ -4910,6 +4929,12 @@
    "note": "DataSync and Snow Family are absent from the in-scope list (and from the out-of-scope list), so 'not in the current in-scope list' is accurate. All the other tools named are in scope.",
    "sources": [
     "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-in-scope-services.html"
+   ],
+   "watch": [
+    "Application Discovery Service",
+    "Migration Evaluator",
+    "Migration Hub",
+    "Schema Conversion Tool"
    ]
   },
   {
@@ -4922,6 +4947,10 @@
    "note": "Wavelength is explicitly out of scope. Outposts is in scope (Compute). Local Zones is not a listed service, and the text makes no scope claim about it.",
    "sources": [
     "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-out-of-scope-services.html"
+   ],
+   "watch": [
+    "Wavelength",
+    "Copilot"
    ]
   },
   {
@@ -4934,6 +4963,12 @@
    "note": "None of CodeDeploy, CodeArtifact, Transfer Family (explicitly out of scope), CodeCommit, Cloud9, CodeStar, Snow Family or DataSync is on the in-scope list.",
    "sources": [
     "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-in-scope-services.html"
+   ],
+   "watch": [
+    "AWS CLI",
+    "CodeBuild",
+    "CodePipeline",
+    "X-Ray"
    ]
   },
   {
@@ -4946,6 +4981,9 @@
    "note": "FSx for Lustre is explicitly out of scope. Amazon FSx (generic), EFS and S3 are in scope (Storage).",
    "sources": [
     "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/clf-02-out-of-scope-services.html"
+   ],
+   "watch": [
+    "FSx for Lustre"
    ]
   }
  ]
