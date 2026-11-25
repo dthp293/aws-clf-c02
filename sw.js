@@ -54,16 +54,21 @@ self.addEventListener('message', e => { if (e.data === 'skipWaiting') self.skipW
 // khi đã có bản cache, thì dùng bản cache.
 const LANG_FILE = /\/i18n\/(en|ja)\//;
 const NET_WAIT = 4000;
-function networkFirst(e, cache) {
+
+// Tải file từ mạng; nếu OK thì lưu một bản vào cache. Trang nhận response ngay, còn việc ghi cache được giữ bằng
+// waitUntil để trình duyệt không dừng service worker giữa chừng (kể cả khi trang đã nhận bản cache vì mạng chậm).
+function fetchAndStore(e, cache, init) {
   const req = e.request;
+  const got = fetch(req, init).then(res => [res, res && res.ok ? res.clone() : null]).catch(() => [null, null]);
+  e.waitUntil(got.then(([, copy]) => copy && cache.put(req, copy)).catch(() => {}));
+  return got.then(([res]) => res);
+}
+
+function networkFirst(e, cache) {
   // no-cache: hỏi lại server (không dùng bản trong HTTP cache của trình duyệt, vốn cũng có thể là bản cũ)
-  const fresh = fetch(req, { cache: 'no-cache' }).then(res => {
-    if (res && res.ok) cache.put(req, res.clone());
-    return res && res.ok ? res : null;
-  }).catch(() => null);
-  return cache.match(req, { ignoreSearch: true }).then(cached => {
+  const fresh = fetchAndStore(e, cache, { cache: 'no-cache' }).then(res => (res && res.ok ? res : null));
+  return cache.match(e.request, { ignoreSearch: true }).then(cached => {
     if (!cached) return fresh.then(res => res || Response.error());
-    e.waitUntil(fresh);   // vẫn lưu bản mới vào cache kể cả khi đã trả bản cache vì mạng chậm
     const slow = new Promise(r => setTimeout(() => r(null), NET_WAIT));
     return Promise.race([fresh, slow]).then(res => res || cached);
   });
@@ -75,11 +80,8 @@ self.addEventListener('fetch', e => {
   if (LANG_FILE.test(new URL(req.url).pathname)) { e.respondWith(caches.open(CACHE).then(cache => networkFirst(e, cache))); return; }
   e.respondWith(caches.open(CACHE).then(async cache => {
     const cached = await cache.match(req, { ignoreSearch: true });
-    const fresh = fetch(req).then(res => {
-      if (res && res.ok) cache.put(req, res.clone());
-      return res;
-    }).catch(() => null);
-    if (cached) { e.waitUntil(fresh); return cached; }
+    const fresh = fetchAndStore(e, cache);   // cập nhật ngầm cho lần mở sau
+    if (cached) return cached;
     const res = await fresh;
     if (res) return res;
     // Offline và chưa có trong cache: với trang HTML thì trả về trang chính
