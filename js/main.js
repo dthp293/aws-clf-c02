@@ -37,6 +37,12 @@ function showRecovery(err) {
   };
 }
 addEventListener('hashchange', route);
+// Mở app ở nhiều tab: tab khác vừa lưu tiến độ → đọc lại dữ liệu và vẽ lại trang hiện tại, để tab này không ghi đè lên
+// tiến độ mới bằng dữ liệu cũ trong bộ nhớ (một phiên ôn đang dở ở tab này sẽ bắt đầu lại từ dữ liệu mới).
+addEventListener('storage', e => {
+  if (e.key !== KEY && e.key !== LOG_KEY && e.key !== null) return;
+  S = load(); clearInterval(examTimer); examTimer = null; curSession = null; route();
+});
 // Bấm vào liên kết trỏ tới đúng trang đang mở (ví dụ "Ôn hôm nay" khi đang ở #/review) → vẽ lại trang đó
 document.addEventListener('click', e => {
   const a = e.target.closest && e.target.closest('a[href^="#"]');
