@@ -4,7 +4,7 @@
  *   ở nền để lần mở sau có nội dung cập nhật (stale-while-revalidate).
  * Thêm file mới vào website → thêm vào FILES và tăng VERSION.
  */
-const VERSION = 'v7';
+const VERSION = 'v8';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
