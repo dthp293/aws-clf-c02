@@ -12,8 +12,9 @@ function domStats(d) {
 function viewHome() {
   const due = dueItems().length;
   const nl = Math.min(newLeft(), ITEMS.filter(i => !S.cards[i.id]).length);
-  const learned = Object.keys(S.cards).length;
+  const learned = ITEMS.filter(i => S.cards[i.id]).length;   // chỉ thẻ còn trong ngân hàng (bỏ thẻ của mục đã đổi tên)
   const ex = S.settings.examDate ? Math.round((new Date(S.settings.examDate + 'T00:00').getTime() - calStart(Date.now())) / DAY) : null;
+  const rd = readiness(), pace = paceAdvice();
   const domains = D.domains.map(d => {
     const s = domStats(d.id);
     return `<div class="card dom"><div class="row" style="justify-content:space-between"><h3>D${d.id}. ${esc(domName(d))}</h3><span class="tag">${t('home.weight', { w: d.weight })}</span></div>
@@ -30,13 +31,15 @@ function viewHome() {
       <div class="card stat"><b>${learned}/${ITEMS.length}</b><span class="muted small">${t('home.learned')}</span></div>
       <div class="card stat"><b>🔥 ${streak()}</b><span class="muted small">${t('home.streak')}</span></div>
       ${ex !== null ? `<div class="card stat"><b>${ex >= 0 ? ex : '—'}</b><span class="muted small">${t('home.daysToExam')}</span></div>` : ''}
-      ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b class="v-${verdict(pct(S.exams[0]))[0]}">${pct(S.exams[0])}%</b><span class="muted small">${t('home.lastExam', { ok: readiness().ok })}</span></a>` : ''}
+      ${(S.exams || []).length ? `<a class="card stat" style="text-decoration:none" href="#/exam/r0"><b class="v-${verdict(pct(S.exams[0]))[0]}">${pct(S.exams[0])}%</b><span class="muted small">${rd.n ? t('home.lastExam', { lo: pct100(rd.lo), hi: pct100(rd.hi) }) : t('home.lastExamNoEst')}</span></a>` : ''}
       ${S.exam ? `<a class="card stat" style="text-decoration:none" href="#/exam"><b>⏱</b><span class="muted small">${t('home.examInProgress')}</span></a>` : ''}
     </div>
     <div class="card row" style="justify-content:space-between">
       <div>${due + nl ? t('home.todayN', { n: due + nl }) : t('home.todayDone')}</div>
       <a class="btn primary" href="#/review">${due + nl ? t('home.startReview') : t('home.viewSchedule')}</a>
     </div>
+    ${pace ? `<div class="card row" style="justify-content:space-between"><div class="small">${t('home.pace', pace)}</div>
+      <button class="btn" id="pace">${t('home.paceApply', { n: pace.n })}</button></div>` : ''}
     ${(() => {
       const nl = nextLesson(); if (!COURSE.length) return '';
       const dn = COURSE.filter(l => isDone(l.id)).length;
@@ -60,4 +63,16 @@ function viewHome() {
       <p>${t('home.howto3')}</p>
       <p class="muted">${t('home.howto4')}</p>
     </div>`;
+  const pb = document.getElementById('pace');
+  if (pb) pb.onclick = () => { S.settings.newPerDay = pace.n; save(); viewHome(); };
+}
+
+/* Gợi ý số thẻ mới mỗi ngày để học hết thẻ mới trước ngày thi, chừa PACE_REVIEW ngày cuối chỉ để ôn.
+   Chỉ hiện khi mức hiện tại không kịp. */
+const PACE_REVIEW = 7;
+function paceAdvice() {
+  const left = daysToExam(); if (!left) return null;
+  const remain = ITEMS.filter(i => !S.cards[i.id]).length; if (!remain) return null;
+  const days = Math.max(1, left - PACE_REVIEW), n = Math.min(100, Math.ceil(remain / days));
+  return n > S.settings.newPerDay ? { n, remain, days, cur: S.settings.newPerDay } : null;
 }
