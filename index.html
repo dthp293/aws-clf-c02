@@ -14,18 +14,20 @@
   <meta name="apple-mobile-web-app-title" content="CLF-C02">
   <title>CLF-C02 Study</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Bản English/日本語: ẩn chữ trên thanh điều hướng cho tới khi app.js nạp xong bộ ngôn ngữ (tránh nháy chữ tiếng Việt) -->
+  <script>try { var s = JSON.parse(localStorage.getItem('clf-c02-study-v1') || '{}'); if (s && s.settings && (s.settings.ui === 'en' || s.settings.ui === 'ja')) document.documentElement.classList.add('i18n-loading'); } catch (e) {}</script>
 </head>
 <body>
   <header class="top">
     <a class="brand" href="#/">☁️ CLF-C02 <span>Study</span></a>
     <nav id="nav">
-      <a href="#/" data-r="">Trang chủ</a>
-      <a href="#/review" data-r="review">Ôn hôm nay <b id="dueBadge" class="badge"></b></a>
-      <a href="#/practice" data-r="practice">Luyện tập</a>
-      <a href="#/exam" data-r="exam">Thi thử</a>
-      <a href="#/learn" data-r="learn">Bài học</a>
-      <a href="#/glossary" data-r="glossary">Từ vựng</a>
-      <a href="#/settings" data-r="settings">Cài đặt</a>
+      <a href="#/" data-r=""><span data-i18n="nav.home">Trang chủ</span></a>
+      <a href="#/review" data-r="review"><span data-i18n="nav.review">Ôn hôm nay</span> <b id="dueBadge" class="badge"></b></a>
+      <a href="#/practice" data-r="practice"><span data-i18n="nav.practice">Luyện tập</span></a>
+      <a href="#/exam" data-r="exam"><span data-i18n="nav.exam">Thi thử</span></a>
+      <a href="#/learn" data-r="learn"><span data-i18n="nav.learn">Bài học</span></a>
+      <a href="#/glossary" data-r="glossary"><span data-i18n="nav.glossary">Từ vựng</span></a>
+      <a href="#/settings" data-r="settings"><span data-i18n="nav.settings">Cài đặt</span></a>
     </nav>
   </header>
   <main id="app"></main>
@@ -54,6 +56,8 @@
   <script src="exam/exam-e.js"></script>
   <script src="meta/tags-a.js"></script>
   <script src="meta/tags-b.js"></script>
+  <!-- Chuỗi giao diện tiếng Việt (luôn tải, dùng làm dự phòng). Bản en/ja do app.js tự nạp từ i18n/<lang>/ theo Cài đặt. -->
+  <script src="i18n/vi/ui.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
