@@ -28,16 +28,16 @@ function viewPractice(arg) {
   }
   const cnt = qs => `<b>${availQs(qs).length}/${qs.length}</b>`;
   const set = a => practiceSet(a).qs;
+  const tile = (arg, head, sub) => `<a class="card dom" style="text-decoration:none" href="#/practice/${arg}"><h3>${head}</h3><span class="muted small">${sub}</span></a>`;
   $app.innerHTML = `<h1>${t('nav.practice')}</h1>
     <p class="muted">${t('practice.intro')}</p>
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
-    ${D.domains.map(d => { const s = domStats(d.id); return `<a class="card dom" style="text-decoration:none" href="#/practice/${d.id}">
-      <h3>D${d.id}. ${esc(domName(d))}</h3><span class="muted small">${t('practice.domLine', { total: cnt(set(String(d.id))), acc: s.acc === null ? '—' : s.acc + '%' })}</span></a>`; }).join('')}
-    <a class="card dom" style="text-decoration:none" href="#/practice/all"><h3>🔀 ${t('practice.mixAll')}</h3><span class="muted small">${t('practice.nQuestions', { n: cnt(set('all')) })}</span></a>
-    <a class="card dom" style="text-decoration:none" href="#/practice/weak"><h3>🎯 ${t('practice.weak')}</h3><span class="muted small">${t('practice.weakLine', { n: cnt(set('weak')) })}</span></a>
-    <a class="card dom" style="text-decoration:none" href="#/practice/hard"><h3>🔥 ${t('practice.hard')}</h3><span class="muted small">${t('practice.hardLine', { n: cnt(set('hard')) })}</span></a>
-    <a class="card dom" style="text-decoration:none" href="#/practice/multi"><h3>☑️ ${t('practice.multi')}</h3><span class="muted small">${t('practice.multiLine', { n: cnt(set('multi')) })}</span></a>
-    ${qTranslated() ? '' : `<a class="card dom" style="text-decoration:none" href="#/practice/read"><h3>📖 ${t('practice.read')}</h3><span class="muted small">${t('practice.readLine', { n: cnt(set('read')) })}</span></a>`}
+    ${D.domains.map(d => { const s = domStats(d.id); return tile(d.id, `D${d.id}. ${esc(domName(d))}`, t('practice.domLine', { total: cnt(set(String(d.id))), acc: s.acc === null ? '—' : s.acc + '%' })); }).join('')}
+    ${tile('all', '🔀 ' + t('practice.mixAll'), t('practice.nQuestions', { n: cnt(set('all')) }))}
+    ${tile('weak', '🎯 ' + t('practice.weak'), t('practice.weakLine', { n: cnt(set('weak')) }))}
+    ${tile('hard', '🔥 ' + t('practice.hard'), t('practice.hardLine', { n: cnt(set('hard')) }))}
+    ${tile('multi', '☑️ ' + t('practice.multi'), t('practice.multiLine', { n: cnt(set('multi')) }))}
+    ${qTranslated() ? '' : tile('read', '📖 ' + t('practice.read'), t('practice.readLine', { n: cnt(set('read')) }))}
     </div>
     <h2>${t('practice.byTask')}</h2>
     <p class="muted small">${t('practice.byTaskNote')}</p>
@@ -45,6 +45,9 @@ function viewPractice(arg) {
 }
 
 /* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử) */
+// Task yếu nhất: tỷ lệ đúng < 80%, có ít nhất minA lượt trả lời; stats = { task: { a, c } }
+const weakTasksOf = (stats, minA, limit) => Object.entries(stats).filter(([, r]) => r.a >= minA)
+  .map(([k, r]) => ({ t: k, ...r, p: Math.round(r.c / r.a * 100) })).filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, limit);
 function taskStats() {
   const out = {};
   Object.keys(TASKS).forEach(k => { out[k] = { a: 0, c: 0, total: 0 }; });

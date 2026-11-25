@@ -45,9 +45,7 @@ function viewHome() {
         <a class="btn" href="${nl ? '#/lesson/' + esc(nl.id) : '#/learn'}">${nl ? (dn ? t('learn.continue') : t('learn.start')) : t('learn.review')}</a></div>`;
     })()}
     ${(() => {
-      const ts = taskStats();
-      const weak = Object.keys(TASKS).map(k => ({ t: k, ...ts[k] })).filter(r => r.a >= 5).map(r => ({ ...r, p: Math.round(r.c / r.a * 100) }))
-        .filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, 3);
+      const weak = weakTasksOf(taskStats(), 5, 3);
       return weak.length ? `<div class="card"><b>${t('home.weakTasks')}</b><ul class="small" style="margin:6px 0 0">${weak.map(r =>
         `<li>${t('common.task', { t: r.t })} ${esc(taskName(r.t))}: <b class="${r.p >= 70 ? 'v-warn' : 'v-no'}">${r.p}%</b> · <a href="#/practice/t-${r.t}">${t('home.practiceNow')}</a></li>`).join('')}</ul>
         <div class="small" style="margin-top:6px"><a href="#/practice">${t('home.fullStats')}</a></div></div>` : '';

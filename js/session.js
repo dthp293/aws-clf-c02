@@ -123,7 +123,7 @@ function renderQuestion(it, header, done) {
 function renderFlash(it, header, done) {
   let flipped = false;
   const r = it.ref, isV = it.type === 'v', isNew = !deck()[it.id];
-  const example = isV && !qTranslated() ? D.questions.find(q => q.en.toLowerCase().includes(r.term.toLowerCase())) : null;
+  const example = isV && !qTranslated() ? ITEMS.find(i => i.type === 'q' && i.ref.en.toLowerCase().includes(r.term.toLowerCase()))?.ref : null;
   draw();
   function draw() {
     const back = isV

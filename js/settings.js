@@ -36,12 +36,7 @@ function viewSettings() {
     st.newPerDay = Math.max(0, Math.min(100, v)); e.target.value = st.newPerDay; save(); msg(t('set.saved'));
   };
   document.getElementById('exam').onchange = e => { st.examDate = e.target.value; save(); msg(t('set.saved')); };
-  document.getElementById('exp').onclick = () => {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }));
-    a.download = `clf-c02-progress-${today()}.json`; a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  };
+  document.getElementById('exp').onclick = () => downloadJson(`clf-c02-progress-${today()}.json`, JSON.stringify(S, null, 2));
   document.getElementById('imp').onchange = e => {
     const input = e.target, f = input.files[0]; if (!f) return;
     f.text().then(text => {

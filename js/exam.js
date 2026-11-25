@@ -103,11 +103,13 @@ function viewExam(arg) {
 
 // Thứ tự lựa chọn hợp lệ = hoán vị đầy đủ các chỉ số lựa chọn của câu
 const validOrder = (q, o) => Array.isArray(o) && o.length === q.opts.length && q.opts.every((_, i) => o.includes(i));
+// Thứ tự lựa chọn bị lệch (ví dụ câu đã đổi số lựa chọn) → về thứ tự gốc
+const fixOrders = E => E.ids.forEach(id => { const q = QBY.get(id); if (!validOrder(q, E.order[id])) E.order[id] = q.opts.map((_, i) => i); });
 // Bỏ câu không còn trong ngân hàng (ví dụ sau khi cập nhật nội dung) và sửa thứ tự lựa chọn bị lệch
 function cleanExamIds(E) {
   E.order = E.order || {}; E.ans = E.ans || {}; E.flag = (E.flag || []).filter(id => QBY.has(id));
   E.ids = (E.ids || []).filter(id => QBY.has(id));
-  E.ids.forEach(id => { const q = QBY.get(id); if (!validOrder(q, E.order[id])) E.order[id] = q.opts.map((_, i) => i); });
+  fixOrders(E);
   return E.ids.length;
 }
 const partialIds = E => E.ids.filter(x => { const a = E.ans[x] || []; return a.length > 0 && a.length < QBY.get(x).ans.length; });
@@ -228,7 +230,7 @@ function examSubmit(auto) {
     if (POOL_IDS.has(id)) { const st = S.examStats[id] || (S.examStats[id] = { a: 0, c: 0 }); st.a++; if (sameAns(QBY.get(id), E.ans[id] || [])) st.c++; }
   });
   S.exam = null;
-  S.activity[today()] = (S.activity[today()] || 0) + n;
+  logActivity(n);
   save();
   if (location.hash === '#/exam/r0') route(); else location.hash = '#/exam/r0';
 }
@@ -238,14 +240,15 @@ function examResult(i) {
   if (!R) { $app.innerHTML = `<div class="card">${t('exam.notFound')}</div>`; return; }
   R.ids = (R.ids || []).filter(id => QBY.has(id));   // bỏ câu đã bị xóa khỏi ngân hàng
   R.order = R.order || {}; R.ans = R.ans || {}; R.flag = R.flag || []; R.per = R.per || {};
-  R.ids.forEach(id => { const q = QBY.get(id); if (!validOrder(q, R.order[id])) R.order[id] = q.opts.map((_, j) => j); });
+  fixOrders(R);
   const p100 = pct(R), v = verdict(p100);
   let filter = 'all', showVi = false;
-  const wrongIds = R.ids.filter(id => !sameAns(QBY.get(id), R.ans[id] || []));
+  const isRight = new Map(R.ids.map(id => [id, sameAns(QBY.get(id), R.ans[id] || [])]));
+  const wrongIds = R.ids.filter(id => !isRight.get(id));
   const drillIds = wrongIds.filter(id => !POOL_IDS.has(id));   // chỉ câu luyện tập mới đưa vào ôn
   const tk = {};
-  R.ids.forEach(id => { const q = QBY.get(id); if (!q.t) return; const r = tk[q.t] || (tk[q.t] = { c: 0, n: 0 }); r.n++; if (sameAns(q, R.ans[id] || [])) r.c++; });
-  const weakTasks = Object.entries(tk).map(([t, r]) => ({ t, ...r, p: Math.round(r.c / r.n * 100) })).filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, 5);
+  R.ids.forEach(id => { const q = QBY.get(id); if (!q.t) return; const r = tk[q.t] || (tk[q.t] = { c: 0, a: 0 }); r.a++; if (isRight.get(id)) r.c++; });
+  const weakTasks = weakTasksOf(tk, 1, 5);
   const domRows = D.domains.filter(d => R.per[d.id]).map(d => {
     const p = R.per[d.id], pc = Math.round(p.c / p.t * 100);
     return `<tr><td>D${d.id}. ${esc(domName(d))}</td><td>${p.c}/${p.t}</td><td style="width:40%"><div class="bar"><i style="width:${pc}%;background:${pc >= 70 ? 'var(--ok)' : 'var(--bad)'}"></i></div></td><td><b>${pc}%</b></td></tr>`;
@@ -254,7 +257,7 @@ function examResult(i) {
   function draw() {
     const ids = R.ids.map((id, k) => [id, k]).filter(([id]) => filter === 'all' || (filter === 'wrong' ? wrongIds.includes(id) : R.flag.includes(id)));
     const list = ids.map(([id, k]) => {
-      const q = QBY.get(id), a = R.ans[id] || [], ok = sameAns(q, a);
+      const q = QBY.get(id), a = R.ans[id] || [], ok = isRight.get(id);
       const opts = R.order[id].map((oi, j) => {
         const right = q.ans.includes(oi), picked = a.includes(oi);
         return `<li class="opt ${right ? 'right' : picked ? 'wrong' : ''}"><span class="mark">${right ? '✓' : picked ? '✗' : String.fromCharCode(65 + j)}</span>
@@ -280,7 +283,7 @@ function examResult(i) {
       ${i === 0 ? readyCard(readiness()) : ''}
       <h2>${t('res.byDomain')}</h2>
       <div class="card scroll-x"><table>${domRows}</table><p class="note">${t('res.domainNote')}</p>
-        ${weakTasks.length ? `<h3 style="margin:14px 0 6px">${t('res.weakTasks')}</h3><ul class="small">${weakTasks.map(r => `<li><b>${t('common.task', { t: r.t })}</b> ${esc(taskName(r.t))}: ${t('res.taskLine', { c: r.c, n: r.n, p: r.p })} · <a href="#/practice/t-${r.t}">${t('res.practiceTask')}</a></li>`).join('')}</ul>` : ''}</div>
+        ${weakTasks.length ? `<h3 style="margin:14px 0 6px">${t('res.weakTasks')}</h3><ul class="small">${weakTasks.map(r => `<li><b>${t('common.task', { t: r.t })}</b> ${esc(taskName(r.t))}: ${t('res.taskLine', { c: r.c, n: r.a, p: r.p })} · <a href="#/practice/t-${r.t}">${t('res.practiceTask')}</a></li>`).join('')}</ul>` : ''}</div>
       <h2>${t('res.review')}</h2>
       <div class="row" style="margin-bottom:12px">
         <div class="tabs" style="margin:0">

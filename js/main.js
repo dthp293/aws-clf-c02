@@ -28,9 +28,7 @@ function showRecovery(err) {
       <button class="btn" id="rcReset" style="color:var(--bad)">${t('rec.reset')}</button></div></div>`;
   document.getElementById('rcExp').onclick = () => {
     let raw = ''; try { raw = localStorage.getItem(KEY) || ''; } catch (e) { /* ignore */ }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
-    a.download = `clf-c02-backup-${today()}.json`; a.click();
+    downloadJson(`clf-c02-backup-${today()}.json`, raw);
   };
   document.getElementById('rcReset').onclick = () => {
     if (!confirm(t('rec.confirm'))) return;

@@ -55,9 +55,11 @@ function grade(id, g) {
     if (S.newLog.date !== today()) S.newLog = { date: today(), count: 0 };
     S.newLog.count++;
   }
-  S.activity[today()] = (S.activity[today()] || 0) + 1;
+  logActivity();
   save();
 }
+// Lượt học trong ngày (dùng cho chuỗi ngày liên tiếp): mỗi thẻ ôn, bài đánh dấu đã học, câu trong đề thi thử
+const logActivity = (n = 1) => { S.activity[today()] = (S.activity[today()] || 0) + n; };
 // "Luyện được lúc này" trong một lịch = chưa học (mới) hoặc đã đến hạn
 const availIn = (dk, id) => !dk[id] || dk[id].due <= Date.now();
 const isAvail = id => availIn(S.cards, id);

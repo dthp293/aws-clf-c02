@@ -12,6 +12,13 @@ const startOfDay = t => { const d = studyDate(t); d.setHours(ROLL_H, 0, 0, 0); r
 const calStart = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const dom = id => D.domains.find(d => d.id === id);
+// Tải một file JSON xuống máy (xuất dữ liệu, sao lưu khi lỗi)
+function downloadJson(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
 let onKey = null;
 document.addEventListener('keydown', e => {
   if (onKey && !e.target.matches('input, textarea, select') && !e.metaKey && !e.ctrlKey && !e.altKey) onKey(e);

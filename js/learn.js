@@ -92,7 +92,7 @@ function viewLesson(id) {
     const b = e.target.closest('[data-a]'); if (!b) return;
     if (b.dataset.a === 'done') {
       S.done = S.done || {};
-      if (S.done[l.id]) delete S.done[l.id]; else { S.done[l.id] = Date.now(); S.activity[today()] = (S.activity[today()] || 0) + 1; }
+      if (S.done[l.id]) delete S.done[l.id]; else { S.done[l.id] = Date.now(); logActivity(); }
       save(); draw();
     }
     if (b.dataset.a === 'quiz') startPractice(qs, t('lesson.quizTitle', { id: l.id }), {}, '#/lesson/' + l.id);
