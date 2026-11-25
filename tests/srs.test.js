@@ -22,7 +22,8 @@ def('document', { getElementById: id => (id === 'app' || id === 'tip' || id === 
   addEventListener() {}, querySelectorAll: () => [], createElement: () => el('tmp'), body: { appendChild() {} } });
 function appHas(id) { return el('app').innerHTML.includes(`id="${id}"`); }
 def('location', { hash: '', protocol: 'file:', hostname: '' });
-def('addEventListener', () => {});
+const winListeners = {};   // window listeners of the last booted app (e.g. 'storage')
+def('addEventListener', (type, fn) => { winListeners[type] = fn; });
 def('scrollTo', () => {});
 def('matchMedia', () => ({ matches: false }));
 def('confirm', () => true);
@@ -712,6 +713,33 @@ test('exam: draws follow the task mix in every exam; an exam submitted on return
   assert.strictEqual(T.S.exams[0].n, 65, 'scored over the whole exam');
   assert.strictEqual(Object.keys(T.S.examFirst).length, 33, 'unviewed questions stay fresh');
   assert.strictEqual(T.S.exams[0].fresh, 65);
+});
+
+/* ───── 18. several tabs ───── */
+test('another tab saving: this tab reloads progress instead of overwriting it; a running exam finished elsewhere stops', () => {
+  T = boot();
+  assert.strictEqual(typeof winListeners.storage, 'function', 'storage listener registered');
+  go('#/review');
+  assert(inSession());
+  T.save();
+  // the other tab learns a card and changes a setting, then saves
+  const other = JSON.parse(store[KEY]);
+  other.cards['v:region'] = card(NOW + 5 * DAY); other.settings.newPerDay = 7;
+  store[KEY] = JSON.stringify(other);
+  winListeners.storage({ key: 'unrelated' });
+  assert.strictEqual(T.S.settings.newPerDay, 15, 'other keys are ignored');
+  winListeners.storage({ key: KEY });
+  assert.strictEqual(T.S.settings.newPerDay, 7, 'reloaded'); assert(T.S.cards['v:region']);
+  T.S.settings.kw = false; T.save();
+  assert(JSON.parse(store[KEY]).cards['v:region'], 'saving in this tab keeps the other tab\'s progress');
+  // exam running here, submitted in the other tab
+  go('#/exam'); el('start').onclick();
+  assert(T.S.exam);
+  const done = JSON.parse(store[KEY]); done.exam = null; done.exams = [{ date: NOW, n: 65, ids: [], ans: {}, correct: 50 }];
+  store[KEY] = JSON.stringify(done);
+  winListeners.storage({ key: KEY });
+  assert.strictEqual(T.S.exam, null); assert.strictEqual(T.S.exams.length, 1);
+  assert(!/data-a="submit"/.test(app().innerHTML), 'the exam screen is replaced');
 });
 
 Date.now = RealNow;
