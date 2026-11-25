@@ -5,7 +5,8 @@
 function domStats(d) {
   const qs = D.questions.filter(q => q.d === d);
   let a = 0, c = 0, seen = 0;
-  qs.forEach(q => { const s = S.stats[q.id]; if (s) { a += s.a; c += s.c; } if (S.cards['q:' + q.id]) seen++; });
+  // tỷ lệ đúng theo 3 lần trả lời gần nhất của mỗi câu (giống bảng theo task)
+  qs.forEach(q => { const s = S.stats[q.id]; if (s && s.a) { const r = recentOf(s); a += r.a; c += r.c; } if (S.cards['q:' + q.id]) seen++; });
   return { total: qs.length, seen, acc: a ? Math.round(c / a * 100) : null };
 }
 
@@ -38,7 +39,7 @@ function viewHome() {
       <div>${due + nl ? t('home.todayN', { n: due + nl }) : t('home.todayDone')}</div>
       <a class="btn primary" href="#/review">${due + nl ? t('home.startReview') : t('home.viewSchedule')}</a>
     </div>
-    ${pace ? `<div class="card row" style="justify-content:space-between"><div class="small">${t('home.pace', pace)}</div>
+    ${pace ? `<div class="card row" style="justify-content:space-between"><div class="small">${t('home.pace', pace)}${pace.over ? ' ' + t('home.paceOver') : ''}</div>
       <button class="btn" id="pace">${t('home.paceApply', { n: pace.n })}</button></div>` : ''}
     ${(() => {
       const nl = nextLesson(); if (!COURSE.length) return '';
@@ -68,11 +69,11 @@ function viewHome() {
 }
 
 /* Gợi ý số thẻ mới mỗi ngày để học hết thẻ mới trước ngày thi, chừa PACE_REVIEW ngày cuối chỉ để ôn.
-   Chỉ hiện khi mức hiện tại không kịp. */
+   Chỉ hiện khi mức hiện tại không kịp; trong PACE_REVIEW ngày cuối thì không gợi ý thêm thẻ mới. */
 const PACE_REVIEW = 7;
 function paceAdvice() {
-  const left = daysToExam(); if (!left) return null;
+  const left = daysToExam(); if (!left || left <= PACE_REVIEW) return null;
   const remain = ITEMS.filter(i => !S.cards[i.id]).length; if (!remain) return null;
-  const days = Math.max(1, left - PACE_REVIEW), n = Math.min(100, Math.ceil(remain / days));
-  return n > S.settings.newPerDay ? { n, remain, days, cur: S.settings.newPerDay } : null;
+  const days = left - PACE_REVIEW, need = Math.ceil(remain / days), n = Math.min(100, need);
+  return n > S.settings.newPerDay ? { n, remain, days, cur: S.settings.newPerDay, over: need > 100 } : null;
 }

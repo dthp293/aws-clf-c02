@@ -18,6 +18,9 @@ const TASKS = Object.fromEntries(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3
   });
 })();
 const KEY = 'clf-c02-study-v1';
+const LOG_KEY = KEY + '-log';   // nhật ký ôn lưu riêng: không phải ghi lại mỗi lần lưu tiến độ
+const LOG_MAX = 5000;          // số dòng nhật ký ôn giữ lại
+const RECENT = 3;              // số lần trả lời gần nhất dùng để đánh giá câu yếu / task
 const MIN = 60e3, DAY = 864e5;
 const $app = document.getElementById('app');
 const tip = document.getElementById('tip');
@@ -53,7 +56,7 @@ function normalize(s) {
   const ac = v => {
     if (!isObj(v)) return undefined;
     const o = { a: num(v.a), c: num(v.c) };
-    if (Array.isArray(v.r)) o.r = v.r.map(x => (x ? 1 : 0)).slice(-3);
+    if (Array.isArray(v.r)) o.r = v.r.map(x => (x ? 1 : 0)).slice(-RECENT);
     return o;
   };
   // Câu của kho thi thử không bao giờ được nằm trong lịch SRS (kể cả khi file nhập có chứa)
@@ -61,7 +64,10 @@ function normalize(s) {
   const cardMap = v => {
     const o = objMap(v, c => {
       if (!isObj(c)) return undefined;
-      return { ...c, ef: Math.max(1.3, num(c.ef, 2.5)), reps: num(c.reps), ivl: num(c.ivl), lapses: num(c.lapses), due: num(c.due, Date.now()), last: num(c.last) };
+      const o = { ...c, ef: Math.max(1.3, num(c.ef, 2.5)), reps: Math.max(0, num(c.reps)), ivl: Math.max(0, num(c.ivl)), lapses: Math.max(0, num(c.lapses)), due: num(c.due, Date.now()), last: num(c.last) };
+      if (num(c.post) > 0) o.post = num(c.post); else delete o.post;
+      if (c.early) o.early = 1; else delete o.early;
+      return o;
     });
     Object.keys(o).forEach(k => { if (poolKeys.has(k)) delete o[k]; });
     return o;
@@ -99,15 +105,16 @@ function normalize(s) {
     };
   }).filter(Boolean).slice(0, 20);
   out.log = (Array.isArray(s.log) ? s.log : []).filter(l => Array.isArray(l) && l.length >= 3 && typeof l[1] === 'string')
-    .map(l => [num(l[0]), l[1], num(l[2]), l[3] ? 1 : 0]).slice(-5000);
+    .map(l => [num(l[0]), l[1], num(l[2]), l[3] ? 1 : 0]).slice(-LOG_MAX);
   out.examFirst = isObj(s.examFirst) ? objMap(s.examFirst, v => Array.isArray(v) ? [v[0] ? 1 : 0, num(v[1])] : undefined) : firstFromHistory(out);
   if (isObj(s.exam) && Array.isArray(s.exam.ids)) {
     const E = s.exam;
     out.exam = { ids: ids(E.ids), order: ordMap(E.order), ans: ansMap(E.ans), flag: ids(E.flag),
       cur: Math.max(0, Math.floor(num(E.cur))), start: num(E.start, Date.now()), dur: num(E.dur, 90 * MIN), seen: ids(E.seen) };
   }
-  // Giữ lại các khóa mà bản này chưa biết (do bản mới hơn của app ghi), để một bản cũ còn trong cache không xóa mất chúng
-  Object.keys(s).forEach(k => { if (!(k in out)) out[k] = s[k]; });
+  // Dữ liệu do bản app MỚI HƠN ghi (v lớn hơn): giữ các khóa bản này chưa biết, để một bản cũ còn trong cache không
+  // xóa mất chúng. Dữ liệu khác (kể cả file nhập) chỉ giữ các khóa đã biết.
+  if (num(s.v) > STATE_V) Object.keys(s).forEach(k => { if (!(k in out) && !['__proto__', 'constructor', 'prototype'].includes(k)) out[k] = s[k]; });
   out.v = Math.max(STATE_V, num(s.v));
   return out;
 }
@@ -123,13 +130,23 @@ function firstFromHistory(st) {
   Object.entries(st.examStats).forEach(([id, x]) => { if (pool.has(id) && !first[id] && x.a === 1) first[id] = [x.c ? 1 : 0, 0]; });
   return first;
 }
+// Chữ ký của nhật ký (số dòng + dòng cuối): chỉ ghi lại LOG_KEY khi nhật ký thay đổi
+let logSig = '';
+const sigOf = l => l.length + ':' + JSON.stringify(l[l.length - 1] || null);
 let S = load();
 function load() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { /* ignore */ }
-  return normalize(s);
+  // nhật ký lưu riêng: vẫn giữ kể cả khi dữ liệu tiến độ chính bị mất / hỏng (để không bị ghi đè)
+  try { const l = JSON.parse(localStorage.getItem(LOG_KEY)); if (Array.isArray(l)) s = { ...(isObj(s) ? s : {}), log: l }; } catch (e) { /* ignore */ }
+  const out = normalize(s);
+  logSig = sigOf(out.log);
+  return out;
 }
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
+  const { log, ...rest } = S;
+  try { localStorage.setItem(KEY, JSON.stringify(rest)); } catch (e) { /* ignore */ }
+  const sig = sigOf(log || []);
+  if (sig !== logSig) { try { localStorage.setItem(LOG_KEY, JSON.stringify(log || [])); logSig = sig; } catch (e) { /* ignore */ } }
   try { updateBadge(); } catch (e) { /* ignore */ }
 }

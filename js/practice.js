@@ -8,15 +8,17 @@ function practiceSet(arg) {
   if (arg === 'all') return { qs: D.questions, title: t('practice.all') };
   if (arg === 'hard') return { qs: D.questions.filter(q => q.lvl === 2), title: t('practice.hard') };
   if (arg === 'multi') return { qs: D.questions.filter(q => q.ans.length > 1), title: t('practice.multi') };
-  if (arg === 'weak') return { qs: weakQs(), title: t('practice.weak') };
+  // Câu hay sai chạy trên lịch Luyện tập tự do: câu sai ở đó hay khi thi thử vẫn luyện được ngay, không phải chờ đến
+  // hạn ở lịch chính (và không làm đổi lịch chính)
+  if (arg === 'weak') return { qs: weakQs(), title: t('practice.weak'), opt: { free: true } };
   if (arg === 'read') return { qs: readQs(), title: t('practice.read'), opt: { read: true }, max: 15 };
   if (arg.startsWith('t-')) { const k = arg.slice(2); return { qs: D.questions.filter(q => q.t === k), title: t('common.task', { t: k }) + ' · ' + (TASKS[k] ? taskName(k) : '') }; }
   return { qs: D.questions.filter(q => q.d === +arg), title: t('common.domain', { d: arg }) };
 }
 // Bắt đầu một phiên luyện câu hỏi trên lịch chính: bỏ câu đã học mà chưa đến hạn
 function startPractice(qs, title, opt = {}, back = '#/practice', max = Infinity) {
-  const av = availQs(qs);
-  if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), {}, back);
+  const av = qs.filter(q => availIn(deckOf(opt), 'q:' + q.id));
+  if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), opt, back);
   runSession(spaceOut(shuffle(av).slice(0, max).map(q => qItem(q.id))), title, opt);
 }
 
@@ -26,7 +28,7 @@ function viewPractice(arg) {
     if (!p.qs.length) { $app.innerHTML = `<div class="card">${t('practice.empty')}</div>`; return; }
     return startPractice(p.qs, p.title, p.opt, '#/practice', p.max);
   }
-  const cnt = qs => `<b>${availQs(qs).length}/${qs.length}</b>`;
+  const cnt = (qs, opt) => `<b>${qs.filter(q => availIn(deckOf(opt), 'q:' + q.id)).length}/${qs.length}</b>`;
   const set = a => practiceSet(a).qs;
   const tile = (arg, head, sub) => `<a class="card dom" style="text-decoration:none" href="#/practice/${arg}"><h3>${head}</h3><span class="muted small">${sub}</span></a>`;
   $app.innerHTML = `<h1>${t('nav.practice')}</h1>
@@ -34,7 +36,7 @@ function viewPractice(arg) {
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
     ${D.domains.map(d => { const s = domStats(d.id); return tile(d.id, `D${d.id}. ${esc(domName(d))}`, t('practice.domLine', { total: cnt(set(String(d.id))), acc: s.acc === null ? '—' : s.acc + '%' })); }).join('')}
     ${tile('all', '🔀 ' + t('practice.mixAll'), t('practice.nQuestions', { n: cnt(set('all')) }))}
-    ${tile('weak', '🎯 ' + t('practice.weak'), t('practice.weakLine', { n: cnt(set('weak')) }))}
+    ${tile('weak', '🎯 ' + t('practice.weak'), t('practice.weakLine', { n: cnt(set('weak'), { free: true }) }))}
     ${tile('hard', '🔥 ' + t('practice.hard'), t('practice.hardLine', { n: cnt(set('hard')) }))}
     ${tile('multi', '☑️ ' + t('practice.multi'), t('practice.multiLine', { n: cnt(set('multi')) }))}
     ${qTranslated() ? '' : tile('read', '📖 ' + t('practice.read'), t('practice.readLine', { n: cnt(set('read')) }))}

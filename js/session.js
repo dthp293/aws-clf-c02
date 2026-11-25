@@ -98,7 +98,7 @@ function renderQuestion(it, header, done) {
     if (answered || sel.size !== need) return;
     answered = true;
     ok = q.ans.every(i => sel.has(i));
-    recordAnswer(q.id, ok);
+    recordAnswer(q.id, ok, S.stats, !isRelearn(prev));
     // Đúng thì xếp lịch "Tốt" ngay (rời trang lúc này vẫn được tính); bấm Khó/Dễ sẽ chấm lại từ trạng thái trước
     grade(it.id, ok ? 3 : 1);
     draw();

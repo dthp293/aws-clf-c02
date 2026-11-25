@@ -10,8 +10,6 @@ const ITEMS = [
   ...D.services.map(s => ({ id: 's:' + s.name, type: 's', d: s.d, ref: s }))
 ];
 const ITEM_BY = new Map(ITEMS.map(i => [i.id, i]));
-const LOG_MAX = 5000;   // số dòng nhật ký ôn giữ lại
-const RECENT = 3;       // số lần trả lời gần nhất dùng để đánh giá câu yếu / task
 const qItem = qid => ITEM_BY.get('q:' + qid);
 
 /* ───────── SRS: biến thể SM-2 ─────────
@@ -22,23 +20,35 @@ const qItem = qid => ITEM_BY.get('q:' + qid);
    - Trả lời đúng một thẻ quá hạn: tính khoảng cách từ số ngày thực sự đã nhớ được (không chỉ khoảng đã hẹn).
    - Tốt (Good) cộng nhẹ ease khi ease < 2.5 (SM-2 gốc giữ nguyên, nên ease chỉ giảm dần).
    - Khoảng ≥ 7 ngày được xê dịch ±5% (cố định theo thẻ và ngày) để các thẻ học cùng ngày không dồn vào một ngày.
-   - Có ngày thi: không hẹn quá ngày trước ngày thi, để mọi thẻ được ôn lại trước khi thi. */
+   - Có ngày thi: hẹn ôn không muộn hơn ngày trước ngày thi, để mọi thẻ được ôn lại trước khi thi. Chỉ dời ngày đến
+     hạn, không đổi khoảng cách (ivl); lần ôn sớm đó trả lời đúng thì giữ nguyên ivl, không tăng mà cũng không mất. */
 const daysBetween = (a, b) => Math.max(0, Math.round((startOfDay(b) - startOfDay(a)) / DAY));
-const hashStr = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return (h >>> 0) / 4294967296; };
-// Số ngày từ hôm nay đến ngày thi (null nếu chưa đặt hoặc đã qua)
+// Số giả ngẫu nhiên 0–1 cố định theo chuỗi (FNV-1a + bước trộn cuối của MurmurHash3, để các chuỗi gần giống nhau như
+// "q:d1-1", "q:d1-2" vẫn cho kết quả rải đều)
+const hashStr = s => {
+  let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+};
+// Số ngày học từ hôm nay đến ngày thi (null nếu chưa đặt hoặc đã qua). Tính theo ngày học (chuyển lúc 04:00) giống
+// lịch ôn: học lúc 1 giờ sáng vẫn thuộc ngày hôm trước.
 function daysToExam(now = Date.now()) {
   const ed = typeof S !== 'undefined' && S.settings && S.settings.examDate;
   if (!ed) return null;
-  const n = Math.round((new Date(ed + 'T00:00').getTime() - calStart(now)) / DAY);
+  const n = Math.round((new Date(ed + 'T00:00').getTime() + ROLL_H * 3600e3 - startOfDay(now)) / DAY);
   return n > 0 ? n : null;
 }
+// Đợt ôn cuối trước kỳ thi được rải đều trên FINAL_DAYS ngày cuối (không dồn hết vào ngày trước kỳ thi)
+const FINAL_DAYS = 7;
 function nextCard(c, g, now = Date.now(), id = '') {
   c = c ? { ...c } : { ef: 2.5, reps: 0, ivl: 0, lapses: 0 };
   if (g === 1) {
     if (c.reps > 0) {   // quên một thẻ đã nhớ
       c.lapses = (c.lapses || 0) + 1;
       c.ef = Math.max(1.3, c.ef - 0.2);
-      c.post = Math.max(1, Math.round(c.ivl * 0.25));
+      // giữ ~25% khoảng đã thực sự nhớ được (thẻ bị dời sớm vì ngày thi: tính theo số ngày đã qua, không theo ivl)
+      const held = c.last ? daysBetween(c.last, now) : c.ivl;
+      c.post = Math.max(1, Math.round((c.early ? Math.min(c.ivl, held) : c.ivl) * 0.25));
     }
     c.reps = 0; c.ivl = 0;
     c.due = now + 10 * MIN;
@@ -47,17 +57,26 @@ function nextCard(c, g, now = Date.now(), id = '') {
     // Số ngày thực sự đã nhớ: khi trả lời trễ hơn hẹn, dùng số ngày đó (Khó thì không thưởng phần trễ)
     const held = c.last ? daysBetween(c.last, now) : 0;
     const base = g === 2 ? c.ivl : Math.max(c.ivl, held);
-    if (c.reps === 0) { c.ivl = Math.max(g === 4 ? 3 : 1, c.post || 0); delete c.post; }
+    // Ôn sớm hơn khoảng đã hẹn vì bị dời lên trước ngày thi: giữ nguyên khoảng cách và ease
+    const keep = c.reps > 0 && c.early && held < c.ivl;
+    // mức sàn: khoảng cách sau khi trả lời đúng không bao giờ ngắn hơn mức này (kể cả sau khi xê dịch ±5%)
+    let floor = c.ivl;
+    if (keep) { /* c.ivl giữ nguyên */ }
+    else if (c.reps === 0) { c.ivl = floor = Math.max(g === 4 ? 3 : 1, c.post || 0); delete c.post; }
     // Không để khoảng cách ngắn lại khi trả lời đúng: Khó ≥ khoảng hiện tại, Tốt/Dễ > khoảng hiện tại
     // (ví dụ Dễ → 3 ngày rồi Khó → vẫn 3 ngày, không tụt về 2).
-    else if (c.reps === 1) c.ivl = Math.max(g === 2 ? base : base + 1, g === 2 ? 2 : g === 3 ? 4 : 7);
-    else c.ivl = Math.max(c.ivl + 1, Math.round(base * (g === 2 ? 1.2 : g === 3 ? c.ef : c.ef * 1.3)));
-    if (wasReview) c.ef = Math.max(1.3, g === 2 ? c.ef - 0.14 : g === 4 ? c.ef + 0.1 : c.ef < 2.5 ? Math.min(2.5, c.ef + 0.05) : c.ef);
-    if (c.ivl >= 7) c.ivl = Math.max(7, Math.round(c.ivl * (0.95 + 0.1 * hashStr(id + ymd(studyDate(now))))));
+    else if (c.reps === 1) { floor = g === 2 ? c.ivl : c.ivl + 1; c.ivl = Math.max(g === 2 ? base : base + 1, g === 2 ? 2 : g === 3 ? 4 : 7); }
+    else { floor = c.ivl + 1; c.ivl = Math.max(floor, Math.round(base * (g === 2 ? 1.2 : g === 3 ? c.ef : c.ef * 1.3))); }
+    if (wasReview && !keep) c.ef = Math.max(1.3, g === 2 ? c.ef - 0.14 : g === 4 ? c.ef + 0.1 : c.ef < 2.5 ? Math.min(2.5, c.ef + 0.05) : c.ef);
+    if (c.ivl >= 7 && !keep) c.ivl = Math.max(7, floor, Math.round(c.ivl * (0.95 + 0.1 * hashStr(id + ymd(studyDate(now))))));
+    // Có ngày thi: hẹn không muộn hơn một ngày trong FINAL_DAYS ngày cuối (chọn cố định theo thẻ), để đợt ôn cuối
+    // được rải đều thay vì dồn cả bộ thẻ vào ngày trước kỳ thi.
     const left = daysToExam(now);
-    if (left && left > 1) c.ivl = Math.min(c.ivl, left - 1);
+    const last = left && left > 1 ? left - 1 - Math.floor(hashStr('final:' + id) * Math.min(FINAL_DAYS, left - 1)) : null;
+    const wait = last ? Math.min(c.ivl, Math.max(1, last)) : c.ivl;
+    if (wait < c.ivl) c.early = 1; else delete c.early;   // early: ngày ôn bị dời lên trước ngày thi
     c.reps++;
-    c.due = startOfDay(now) + c.ivl * DAY;
+    c.due = startOfDay(now) + wait * DAY;
   }
   c.last = now;
   return c;
@@ -105,30 +124,43 @@ function nextDueIn(dk, ids) {
   return m === Infinity ? null : m;
 }
 const fmtWhen = ms => new Date(ms).toLocaleString(LOCALE, { dateStyle: 'medium', timeStyle: 'short' });
-// Thống kê câu hỏi: tổng số lượt (a), số lượt đúng (c) và kết quả 3 lần gần nhất (r, 1 = đúng) để đánh giá theo hiện tại
-function recordAnswer(qid, ok, stats = S.stats) {
+// Thống kê câu hỏi: tổng số lượt (a), số lượt đúng (c) và kết quả 3 lần gần nhất (r, 1 = đúng) để đánh giá theo hiện tại.
+// recent = false: không đưa vào r (lần làm lại ngay sau khi sai, khi đáp án vẫn còn nhớ, không cho biết đã nắm được).
+function recordAnswer(qid, ok, stats = S.stats, recent = true) {
   const s = stats[qid] || (stats[qid] = { a: 0, c: 0, r: [] });
   s.a++; if (ok) s.c++;
-  s.r = [...(s.r || []), ok ? 1 : 0].slice(-RECENT);
+  if (recent) s.r = [...(s.r || []), ok ? 1 : 0].slice(-RECENT);
 }
+// Thẻ đang ở bước học lại ngay sau một lần sai (hẹn 10 phút)
+const isRelearn = c => !!c && c.reps === 0 && c.ivl === 0 && !!c.last;
 // Tỷ lệ đúng gần đây của một câu: 3 lần gần nhất (dữ liệu cũ chưa có r thì dùng tổng)
 const recentOf = s => s.r && s.r.length ? { a: s.r.length, c: s.r.reduce((x, y) => x + y, 0) } : { a: s.a, c: s.c };
 // Câu yếu: lần gần nhất sai, hoặc đúng dưới 2 trong 3 lần gần nhất
 const isWeakStat = s => { if (!s || !s.a) return false; if (!s.r || !s.r.length) return s.c / s.a < 0.7; const r = recentOf(s); return !s.r[s.r.length - 1] || (r.a >= 3 && r.c < 2); };
 const isDue = id => S.cards[id] && S.cards[id].due <= Date.now();
-const dueItems = () => ITEMS.filter(i => isDue(i.id)).sort((a, b) => S.cards[a.id].due - S.cards[b.id].due);
+// Đến hạn sớm trước; cùng ngày thì thẻ yếu trước (quên nhiều lần, ease thấp), để dừng giữa chừng vẫn đã ôn thẻ khó
+const dayOf = c => startOfDay(c.due);
+const dueItems = () => ITEMS.filter(i => isDue(i.id)).sort((a, b) => { const x = S.cards[a.id], y = S.cards[b.id];
+  return dayOf(x) - dayOf(y) || (y.lapses || 0) - (x.lapses || 0) || x.ef - y.ef || x.due - y.due; });
 const newLeft = () => Math.max(0, S.settings.newPerDay - (S.newLog.date === today() ? S.newLog.count : 0));
 /* Thẻ mới tiếp theo:
    - Câu hỏi được ưu tiên hơn thẻ từ vựng/dịch vụ (mẫu q, q, từ vựng, q, q, dịch vụ).
    - Câu hỏi mới chia theo tỷ trọng domain trong đề thật (domain 3 = 34% có nhiều câu mới hơn domain 4 = 12%); trong
      một domain, task đang yếu được ưu tiên và câu của bài học đã học xong được ưu tiên gấp 3.
-   - Câu cùng task không đứng gần nhau (xem spaceOut). Thứ tự cố định trong ngày, nên số liệu và phiên học khớp nhau. */
+   - Câu cùng task không đứng gần nhau (xem spaceOut).
+   - Thứ tự câu hỏi được tính một lần mỗi ngày (và khi đánh dấu thêm bài đã học), nên mở phiên nhiều lần trong ngày
+     vẫn đi tiếp đúng thứ tự; mẫu q/q/từ vựng/q/q/dịch vụ tiếp tục từ số thẻ mới đã học hôm nay. */
+let newOrder = { key: '', ids: [] };
 function newItems(n) {
   const fresh = ITEMS.filter(i => !S.cards[i.id]);
-  const qs = rankNewQuestions(fresh.filter(i => i.type === 'q'));
+  const key = today() + '|' + Object.keys(S.done || {}).length;
+  if (newOrder.key !== key) newOrder = { key, ids: rankNewQuestions(fresh.filter(i => i.type === 'q')).map(i => i.id) };
+  const qs = newOrder.ids.filter(id => !S.cards[id]).map(id => ITEM_BY.get(id));
+  const known = new Set(qs.map(i => i.id));
+  qs.push(...rankNewQuestions(fresh.filter(i => i.type === 'q' && !known.has(i.id))));   // (an toàn: câu chưa có trong thứ tự đã lưu)
   const pools = { q: qs, v: fresh.filter(i => i.type === 'v'), s: fresh.filter(i => i.type === 's') };
   const PATTERN = ['q', 'q', 'v', 'q', 'q', 's'];
-  const out = []; let k = 0;
+  const out = []; let k = S.newLog.date === today() ? S.newLog.count : 0;
   while (out.length < n && (pools.q.length || pools.v.length || pools.s.length)) {
     const p = pools[PATTERN[k % PATTERN.length]]; if (p.length) out.push(p.shift()); k++;
   }
@@ -150,7 +182,9 @@ function rankNewQuestions(items) {
   });
   byDom.forEach(l => l.sort((a, b) => b.k - a.k));
   // Giữa các domain: lần lượt lấy domain đang "thiếu" nhất so với tỷ trọng đề thật
+  // took: số câu mỗi domain đã đưa vào học (tính cả các ngày trước), để hạn mức nhỏ mỗi ngày vẫn chia đúng tỷ trọng
   const weight = d => (dom(d) || {}).weight || 25, took = {}, out = [];
+  ITEMS.forEach(i => { if (i.type === 'q' && S.cards[i.id]) took[i.d] = (took[i.d] || 0) + 1; });
   while (out.length < items.length) {
     let best = null;
     byDom.forEach((l, d) => { if (l.length && (best === null || ((took[d] || 0) + 1) / weight(d) < ((took[best] || 0) + 1) / weight(best))) best = d; });
