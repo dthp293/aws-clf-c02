@@ -7,9 +7,11 @@ const fs = require('fs'), path = require('path');
 const R = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tests', 'facts.json'), 'utf8'));
 const out = process.argv.includes('--report') ? process.argv[process.argv.indexOf('--report') + 1] : null;
 
-const decode = s => s.replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  .replace(/&quot;|&#34;/g, '"').replace(/&#39;|&apos;|&rsquo;|&lsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
-  .replace(/&ndash;|&mdash;/g, '-').replace(/&#(\d+);/g, (m, n) => String.fromCodePoint(+n));
+// &amp; last, so "&amp;lt;" stays "&lt;"
+const decode = s => s.replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  .replace(/&quot;/g, '"').replace(/&apos;|&rsquo;|&lsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
+  .replace(/&ndash;|&mdash;/g, '-').replace(/&#(\d+);/g, (m, n) => String.fromCodePoint(+n))
+  .replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCodePoint(parseInt(h, 16))).replace(/&amp;/g, '&');
 // Compare text loosely: lower case, unify quotes/dashes, collapse whitespace and table separators
 const norm = s => decode(s).toLowerCase().replace(/[“”„"]/g, '"').replace(/[‘’`]/g, "'").replace(/[–—−]/g, '-')
   .replace(/[|•·]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -61,4 +63,10 @@ async function get(url) {
   console.log(report);
   if (out) fs.writeFileSync(out, report + '\n');
   process.exit(down.length || missing.length ? 1 : 0);
-})();
+})().catch(e => {
+  // Still write a report, so the workflow can open an issue instead of failing without one
+  const report = `The check script failed before finishing: ${e && e.stack || e}`;
+  console.log(report);
+  if (out) fs.writeFileSync(out, report + '\n');
+  process.exit(2);
+});

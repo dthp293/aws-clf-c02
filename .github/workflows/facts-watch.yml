@@ -39,7 +39,7 @@ jobs:
           gh label create facts-watch --color FBCA04 --description "AWS source pages changed; re-check content" 2>/dev/null || true
           issue=$(gh issue list --label facts-watch --state open --json number --jq '.[0].number')
           if [ "$STATUS" != "0" ]; then
-            { echo "The weekly check of the AWS pages behind \`tests/facts.json\` found changes ([run]($RUN_URL))."; echo; cat report.md; } > body.md
+            { echo "The weekly check of the AWS pages behind \`tests/facts.json\` found changes ([run]($RUN_URL))."; echo; cat report.md 2>/dev/null || echo "The check script wrote no report; see the run log."; } > body.md
             if [ -n "$issue" ]; then gh issue edit "$issue" --body-file body.md
             else gh issue create --title "Facts watch: AWS source pages changed" --label facts-watch --body-file body.md; fi
           elif [ -n "$issue" ]; then
