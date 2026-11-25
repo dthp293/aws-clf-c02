@@ -2,7 +2,7 @@
 'use strict';
 
 /* ───────── Luyện tập (lịch chính): chỉ câu mới hoặc đã đến hạn ───────── */
-const weakQs = () => D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; });
+const weakQs = () => D.questions.filter(q => isWeakStat(S.stats[q.id]));
 const readQs = () => qTranslated() ? [] : D.questions.filter(q => q.en.length >= 160);
 function practiceSet(arg) {
   if (arg === 'all') return { qs: D.questions, title: t('practice.all') };
@@ -17,7 +17,7 @@ function practiceSet(arg) {
 function startPractice(qs, title, opt = {}, back = '#/practice', max = Infinity) {
   const av = availQs(qs);
   if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), {}, back);
-  runSession(shuffle(av).slice(0, max).map(q => qItem(q.id)), title, opt);
+  runSession(spaceOut(shuffle(av).slice(0, max).map(q => qItem(q.id))), title, opt);
 }
 
 function viewPractice(arg) {
@@ -44,17 +44,22 @@ function viewPractice(arg) {
     ${taskTable()}`;
 }
 
-/* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử) */
+/* Thống kê theo task statement: gộp S.stats (luyện tập) + S.examStats (thi thử).
+   Tỷ lệ đúng (c/a) tính theo 3 lần trả lời gần nhất của mỗi câu, để tiến bộ gần đây được phản ánh;
+   n = tổng số lượt trả lời (chỉ để hiển thị). */
 // Task yếu nhất: tỷ lệ đúng < 80%, có ít nhất minA lượt trả lời; stats = { task: { a, c } }
 const weakTasksOf = (stats, minA, limit) => Object.entries(stats).filter(([, r]) => r.a >= minA)
   .map(([k, r]) => ({ t: k, ...r, p: Math.round(r.c / r.a * 100) })).filter(r => r.p < 80).sort((a, b) => a.p - b.p).slice(0, limit);
 function taskStats() {
   const out = {};
-  Object.keys(TASKS).forEach(k => { out[k] = { a: 0, c: 0, total: 0 }; });
-  D.questions.forEach(q => { if (!q.t) return; out[q.t].total++; const s = S.stats[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
-  (D.examPool || []).forEach(q => { if (!q.t) return; const s = (S.examStats || {})[q.id]; if (s) { out[q.t].a += s.a; out[q.t].c += s.c; } });
+  Object.keys(TASKS).forEach(k => { out[k] = { a: 0, c: 0, n: 0, total: 0 }; });
+  const add = (q, s) => { if (!s || !s.a) return; const r = recentOf(s); out[q.t].a += r.a; out[q.t].c += r.c; out[q.t].n += s.a; };
+  D.questions.forEach(q => { if (!q.t) return; out[q.t].total++; add(q, S.stats[q.id]); });
+  (D.examPool || []).forEach(q => { if (q.t) add(q, (S.examStats || {})[q.id]); });
   return out;
 }
+// Mức thành thạo từng task (0–1, theo các lần trả lời gần đây); null = chưa có dữ liệu
+const taskMastery = () => Object.fromEntries(Object.entries(taskStats()).map(([k, r]) => [k, r.a ? r.c / r.a : null]));
 function taskTable() {
   const ts = taskStats(), av = {};
   D.questions.forEach(q => { if (q.t && isAvail('q:' + q.id)) av[q.t] = (av[q.t] || 0) + 1; });
@@ -62,7 +67,7 @@ function taskTable() {
     .sort((x, y) => (x.acc === null) - (y.acc === null) || (x.acc ?? 0) - (y.acc ?? 0) || x.t.localeCompare(y.t));
   return `<div class="card scroll-x"><table class="tasks"><tr><th>${t('task.colTask')}</th><th>${t('task.colTopic')}</th><th>${t('task.colAcc')}</th><th style="width:30%"></th><th></th></tr>
     ${rows.map(r => `<tr><td><b>${r.t}</b></td><td>${esc(taskName(r.t))}</td>
-      <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${t('task.attempts', { n: r.a })}</div></td>
+      <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${t('task.attempts', { n: r.n })}</div></td>
       <td><div class="bar"><i style="width:${r.acc || 0}%;background:${r.acc === null ? 'var(--line)' : r.acc >= 80 ? 'var(--ok)' : r.acc >= 70 ? '#c98a00' : 'var(--bad)'}"></i></div></td>
       <td>${r.total ? `<a class="btn" href="#/practice/t-${r.t}">${t('task.practiceN', { n: (av[r.t] || 0) + '/' + r.total })}</a>` : ''}</td></tr>`).join('')}</table></div>`;
 }

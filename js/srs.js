@@ -10,24 +10,52 @@ const ITEMS = [
   ...D.services.map(s => ({ id: 's:' + s.name, type: 's', d: s.d, ref: s }))
 ];
 const ITEM_BY = new Map(ITEMS.map(i => [i.id, i]));
+const LOG_MAX = 5000;   // số dòng nhật ký ôn giữ lại
+const RECENT = 3;       // số lần trả lời gần nhất dùng để đánh giá câu yếu / task
 const qItem = qid => ITEM_BY.get('q:' + qid);
 
 /* ───────── SRS: biến thể SM-2 ─────────
-   grade: 1 = Lại (Again), 2 = Khó (Hard), 3 = Tốt (Good), 4 = Dễ (Easy) */
-function nextCard(c, g, now = Date.now()) {
+   grade: 1 = Lại (Again), 2 = Khó (Hard), 3 = Tốt (Good), 4 = Dễ (Easy)
+   - Thẻ đang học (chưa từng nhớ được: reps = 0) trả lời sai không bị trừ ease, không tính là quên (lapse):
+     sai khi mới gặp hoặc khi làm lại trong cùng phiên là chuyện bình thường.
+   - Quên một thẻ đã nhớ (reps > 0): trừ ease, và khi nhớ lại thì giữ ~25% khoảng cách cũ (không về hẳn 1 ngày).
+   - Trả lời đúng một thẻ quá hạn: tính khoảng cách từ số ngày thực sự đã nhớ được (không chỉ khoảng đã hẹn).
+   - Tốt (Good) cộng nhẹ ease khi ease < 2.5 (SM-2 gốc giữ nguyên, nên ease chỉ giảm dần).
+   - Khoảng ≥ 7 ngày được xê dịch ±5% (cố định theo thẻ và ngày) để các thẻ học cùng ngày không dồn vào một ngày.
+   - Có ngày thi: không hẹn quá ngày trước ngày thi, để mọi thẻ được ôn lại trước khi thi. */
+const daysBetween = (a, b) => Math.max(0, Math.round((startOfDay(b) - startOfDay(a)) / DAY));
+const hashStr = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return (h >>> 0) / 4294967296; };
+// Số ngày từ hôm nay đến ngày thi (null nếu chưa đặt hoặc đã qua)
+function daysToExam(now = Date.now()) {
+  const ed = typeof S !== 'undefined' && S.settings && S.settings.examDate;
+  if (!ed) return null;
+  const n = Math.round((new Date(ed + 'T00:00').getTime() - calStart(now)) / DAY);
+  return n > 0 ? n : null;
+}
+function nextCard(c, g, now = Date.now(), id = '') {
   c = c ? { ...c } : { ef: 2.5, reps: 0, ivl: 0, lapses: 0 };
   if (g === 1) {
-    c.reps = 0; c.ivl = 0; c.lapses = (c.lapses || 0) + 1;
-    c.ef = Math.max(1.3, c.ef - 0.2);
+    if (c.reps > 0) {   // quên một thẻ đã nhớ
+      c.lapses = (c.lapses || 0) + 1;
+      c.ef = Math.max(1.3, c.ef - 0.2);
+      c.post = Math.max(1, Math.round(c.ivl * 0.25));
+    }
+    c.reps = 0; c.ivl = 0;
     c.due = now + 10 * MIN;
   } else {
-    if (c.reps === 0) c.ivl = g === 4 ? 3 : 1;
+    const wasReview = c.reps > 0;
+    // Số ngày thực sự đã nhớ: khi trả lời trễ hơn hẹn, dùng số ngày đó (Khó thì không thưởng phần trễ)
+    const held = c.last ? daysBetween(c.last, now) : 0;
+    const base = g === 2 ? c.ivl : Math.max(c.ivl, held);
+    if (c.reps === 0) { c.ivl = Math.max(g === 4 ? 3 : 1, c.post || 0); delete c.post; }
     // Không để khoảng cách ngắn lại khi trả lời đúng: Khó ≥ khoảng hiện tại, Tốt/Dễ > khoảng hiện tại
     // (ví dụ Dễ → 3 ngày rồi Khó → vẫn 3 ngày, không tụt về 2).
-    else if (c.reps === 1) c.ivl = Math.max(g === 2 ? c.ivl : c.ivl + 1, g === 2 ? 2 : g === 3 ? 4 : 7);
-    else c.ivl = Math.max(c.ivl + 1, Math.round(c.ivl * (g === 2 ? 1.2 : g === 3 ? c.ef : c.ef * 1.3)));
-    const q = g + 1; // 3..5 theo thang SM-2
-    c.ef = Math.max(1.3, c.ef + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+    else if (c.reps === 1) c.ivl = Math.max(g === 2 ? base : base + 1, g === 2 ? 2 : g === 3 ? 4 : 7);
+    else c.ivl = Math.max(c.ivl + 1, Math.round(base * (g === 2 ? 1.2 : g === 3 ? c.ef : c.ef * 1.3)));
+    if (wasReview) c.ef = Math.max(1.3, g === 2 ? c.ef - 0.14 : g === 4 ? c.ef + 0.1 : c.ef < 2.5 ? Math.min(2.5, c.ef + 0.05) : c.ef);
+    if (c.ivl >= 7) c.ivl = Math.max(7, Math.round(c.ivl * (0.95 + 0.1 * hashStr(id + ymd(studyDate(now))))));
+    const left = daysToExam(now);
+    if (left && left > 1) c.ivl = Math.min(c.ivl, left - 1);
     c.reps++;
     c.due = startOfDay(now) + c.ivl * DAY;
   }
@@ -45,16 +73,22 @@ const fmtIvl = c => c.ivl === 0 ? t('ivl.10min') : c.ivl < 30 ? t('ivl.days', { 
 let curSession = null;
 const deckOf = opt => opt && opt.free ? S.free : S.cards;
 const deck = () => deckOf(curSession);
-function grade(id, g) {
+// redo = { prev }: chấm lại thẻ vừa chấm (ví dụ câu đúng đã được tự chấm "Tốt", người học bấm Khó/Dễ):
+// tính lại từ trạng thái trước đó, không đếm thêm lượt học / thẻ mới.
+function grade(id, g, redo) {
   if (!ITEM_BY.has(id)) return;   // chỉ thẻ thuộc ITEMS; câu kho thi thử không bao giờ vào lịch
   const free = !!(curSession && curSession.free);
   const dk = free ? S.free : S.cards;
-  const isNew = !dk[id];
-  dk[id] = nextCard(dk[id], g);
-  if (!free && isNew && curSession && curSession.review) {
+  const prev = redo ? redo.prev : dk[id];
+  dk[id] = nextCard(prev, g, Date.now(), id);
+  if (redo) { const l = S.log[S.log.length - 1]; if (l && l[1] === id) l[2] = g; save(); return; }
+  if (!free && !prev && curSession && curSession.review) {
     if (S.newLog.date !== today()) S.newLog = { date: today(), count: 0 };
     S.newLog.count++;
   }
+  // Nhật ký ôn (thời điểm, thẻ, điểm, lịch): dữ liệu cho việc tinh chỉnh lịch ôn sau này (ví dụ FSRS)
+  S.log.push([Date.now(), id, g, free ? 1 : 0]);
+  if (S.log.length > LOG_MAX) S.log.splice(0, S.log.length - LOG_MAX);
   logActivity();
   save();
 }
@@ -71,18 +105,71 @@ function nextDueIn(dk, ids) {
   return m === Infinity ? null : m;
 }
 const fmtWhen = ms => new Date(ms).toLocaleString(LOCALE, { dateStyle: 'medium', timeStyle: 'short' });
-function recordAnswer(qid, ok) {
-  const s = S.stats[qid] || (S.stats[qid] = { a: 0, c: 0 });
+// Thống kê câu hỏi: tổng số lượt (a), số lượt đúng (c) và kết quả 3 lần gần nhất (r, 1 = đúng) để đánh giá theo hiện tại
+function recordAnswer(qid, ok, stats = S.stats) {
+  const s = stats[qid] || (stats[qid] = { a: 0, c: 0, r: [] });
   s.a++; if (ok) s.c++;
+  s.r = [...(s.r || []), ok ? 1 : 0].slice(-RECENT);
 }
+// Tỷ lệ đúng gần đây của một câu: 3 lần gần nhất (dữ liệu cũ chưa có r thì dùng tổng)
+const recentOf = s => s.r && s.r.length ? { a: s.r.length, c: s.r.reduce((x, y) => x + y, 0) } : { a: s.a, c: s.c };
+// Câu yếu: lần gần nhất sai, hoặc đúng dưới 2 trong 3 lần gần nhất
+const isWeakStat = s => { if (!s || !s.a) return false; if (!s.r || !s.r.length) return s.c / s.a < 0.7; const r = recentOf(s); return !s.r[s.r.length - 1] || (r.a >= 3 && r.c < 2); };
 const isDue = id => S.cards[id] && S.cards[id].due <= Date.now();
 const dueItems = () => ITEMS.filter(i => isDue(i.id)).sort((a, b) => S.cards[a.id].due - S.cards[b.id].due);
 const newLeft = () => Math.max(0, S.settings.newPerDay - (S.newLog.date === today() ? S.newLog.count : 0));
+/* Thẻ mới tiếp theo:
+   - Câu hỏi được ưu tiên hơn thẻ từ vựng/dịch vụ (mẫu q, q, từ vựng, q, q, dịch vụ).
+   - Câu hỏi mới chia theo tỷ trọng domain trong đề thật (domain 3 = 34% có nhiều câu mới hơn domain 4 = 12%); trong
+     một domain, task đang yếu được ưu tiên và câu của bài học đã học xong được ưu tiên gấp 3.
+   - Câu cùng task không đứng gần nhau (xem spaceOut). Thứ tự cố định trong ngày, nên số liệu và phiên học khớp nhau. */
 function newItems(n) {
-  // xen kẽ: câu hỏi → từ vựng → dịch vụ
-  const pools = ['q', 'v', 's'].map(t => ITEMS.filter(i => i.type === t && !S.cards[i.id]));
+  const fresh = ITEMS.filter(i => !S.cards[i.id]);
+  const qs = rankNewQuestions(fresh.filter(i => i.type === 'q'));
+  const pools = { q: qs, v: fresh.filter(i => i.type === 'v'), s: fresh.filter(i => i.type === 's') };
+  const PATTERN = ['q', 'q', 'v', 'q', 'q', 's'];
   const out = []; let k = 0;
-  while (out.length < n && pools.some(p => p.length)) { const p = pools[k % 3]; if (p.length) out.push(p.shift()); k++; }
+  while (out.length < n && (pools.q.length || pools.v.length || pools.s.length)) {
+    const p = pools[PATTERN[k % PATTERN.length]]; if (p.length) out.push(p.shift()); k++;
+  }
+  return out;
+}
+function rankNewQuestions(items) {
+  if (!items.length) return items;
+  const mastery = taskMastery();
+  // câu thuộc một bài đã học xong (một câu có thể nằm trong quiz của nhiều bài)
+  const inDone = new Set(); (D.course || []).forEach(l => { if (S.done[l.id]) (l.qids || []).forEach(q => inDone.add(q)); });
+  const day = today();
+  // Trong mỗi domain: chọn ngẫu nhiên có trọng số (Efraimidis–Spirakis, khóa = u^(1/w), u cố định theo thẻ và ngày)
+  const byDom = new Map();
+  items.forEach(i => {
+    const m = mastery[i.ref.t];
+    const w = (1.5 - (m == null ? 0.5 : m)) * (inDone.has(i.ref.id) ? 3 : 1);
+    if (!byDom.has(i.d)) byDom.set(i.d, []);
+    byDom.get(i.d).push({ i, k: Math.pow(Math.max(1e-9, hashStr(i.id + day)), 1 / w) });
+  });
+  byDom.forEach(l => l.sort((a, b) => b.k - a.k));
+  // Giữa các domain: lần lượt lấy domain đang "thiếu" nhất so với tỷ trọng đề thật
+  const weight = d => (dom(d) || {}).weight || 25, took = {}, out = [];
+  while (out.length < items.length) {
+    let best = null;
+    byDom.forEach((l, d) => { if (l.length && (best === null || ((took[d] || 0) + 1) / weight(d) < ((took[best] || 0) + 1) / weight(best))) best = d; });
+    out.push(byDom.get(best).shift().i); took[best] = (took[best] || 0) + 1;
+  }
+  return spaceOut(out);
+}
+// Xếp lại một danh sách thẻ để hai câu cùng task (thường giống nhau, có khi cùng đáp án) cách nhau ít nhất GAP thẻ,
+// giữ thứ tự gốc nhiều nhất có thể.
+const GAP = 3;
+const spaceKey = i => i.type === 'q' && i.ref.t ? 't' + i.ref.t : i.id;
+function spaceOut(items) {
+  const rest = items.slice(), out = [];
+  while (rest.length) {
+    const recent = out.slice(-GAP).map(spaceKey);
+    let j = rest.findIndex(i => !recent.includes(spaceKey(i)));
+    if (j < 0) j = 0;
+    out.push(rest.splice(j, 1)[0]);
+  }
   return out;
 }
 function streak() {

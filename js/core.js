@@ -33,9 +33,13 @@ const DEFAULTS = {
   done: {},           // lessonId → thời điểm đánh dấu đã học
   examSeen: {},       // questionId → số lần xuất hiện trong thi thử
   examStats: {},      // questionId (kho thi thử) → { a, c }
+  examFirst: {},      // questionId (kho thi thử) → [1 đúng / 0 sai, thời điểm] của lần gặp đầu tiên (dùng ước tính mức sẵn sàng)
+  log: [],            // nhật ký ôn: [thời điểm, thẻ, điểm 1–4, 1 nếu là Luyện tập tự do] (giữ tối đa LOG_MAX dòng)
   exam: null,         // bài thi thử đang làm dở
-  exams: []           // lịch sử thi thử (mới nhất trước)
+  exams: [],          // lịch sử thi thử (mới nhất trước)
+  v: 2                // phiên bản cấu trúc dữ liệu
 };
+const STATE_V = 2;
 const clone = o => JSON.parse(JSON.stringify(o));
 const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
 const num = (v, d = 0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
@@ -46,7 +50,12 @@ function normalize(s) {
   if (!isObj(s)) s = {};
   const out = clone(DEFAULTS);
   const objMap = (v, f) => { const o = {}; if (isObj(v)) Object.keys(v).forEach(k => { const x = f(v[k]); if (x !== undefined) o[k] = x; }); return o; };
-  const ac = v => isObj(v) ? { a: num(v.a), c: num(v.c) } : undefined;
+  const ac = v => {
+    if (!isObj(v)) return undefined;
+    const o = { a: num(v.a), c: num(v.c) };
+    if (Array.isArray(v.r)) o.r = v.r.map(x => (x ? 1 : 0)).slice(-3);
+    return o;
+  };
   // Câu của kho thi thử không bao giờ được nằm trong lịch SRS (kể cả khi file nhập có chứa)
   const poolKeys = new Set((D.examPool || []).map(q => 'q:' + q.id));
   const cardMap = v => {
@@ -89,12 +98,30 @@ function normalize(s) {
       per: objMap(r.per, p => isObj(p) && num(p.t) > 0 ? { c: num(p.c), t: num(p.t) } : undefined)
     };
   }).filter(Boolean).slice(0, 20);
+  out.log = (Array.isArray(s.log) ? s.log : []).filter(l => Array.isArray(l) && l.length >= 3 && typeof l[1] === 'string')
+    .map(l => [num(l[0]), l[1], num(l[2]), l[3] ? 1 : 0]).slice(-5000);
+  out.examFirst = isObj(s.examFirst) ? objMap(s.examFirst, v => Array.isArray(v) ? [v[0] ? 1 : 0, num(v[1])] : undefined) : firstFromHistory(out);
   if (isObj(s.exam) && Array.isArray(s.exam.ids)) {
     const E = s.exam;
     out.exam = { ids: ids(E.ids), order: ordMap(E.order), ans: ansMap(E.ans), flag: ids(E.flag),
-      cur: Math.max(0, Math.floor(num(E.cur))), start: num(E.start, Date.now()), dur: num(E.dur, 90 * MIN) };
+      cur: Math.max(0, Math.floor(num(E.cur))), start: num(E.start, Date.now()), dur: num(E.dur, 90 * MIN), seen: ids(E.seen) };
   }
+  // Giữ lại các khóa mà bản này chưa biết (do bản mới hơn của app ghi), để một bản cũ còn trong cache không xóa mất chúng
+  Object.keys(s).forEach(k => { if (!(k in out)) out[k] = s[k]; });
+  out.v = Math.max(STATE_V, num(s.v));
   return out;
+}
+// Dữ liệu cũ (trước khi có examFirst): lấy kết quả lần gặp đầu từ lịch sử thi thử (cũ nhất trước); câu chỉ làm một lần
+// mà đề đã bị cắt khỏi lịch sử thì lấy từ examStats.
+function firstFromHistory(st) {
+  const first = {}, pool = new Map((D.examPool || []).map(q => [q.id, q]));
+  st.exams.slice().reverse().forEach(r => r.ids.forEach(id => {
+    const q = pool.get(id); if (!q || first[id]) return;
+    const a = r.ans[id] || [];
+    first[id] = [a.length === q.ans.length && q.ans.every(i => a.includes(i)) ? 1 : 0, r.date];
+  }));
+  Object.entries(st.examStats).forEach(([id, x]) => { if (pool.has(id) && !first[id] && x.a === 1) first[id] = [x.c ? 1 : 0, 0]; });
+  return first;
 }
 let S = load();
 function load() {
