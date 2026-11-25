@@ -137,6 +137,17 @@ npm run check
   - en/ja translation coverage and shape against the Vietnamese source
   - render of every screen in en/ja
   - SRS rules
+  - Vietnamese content consistency (`content-vi.test.js`): answer keys, "(Choose TWO.)" markers, a "Đúng"/"Sai" reason per option, tags, lesson links
+  - the fact register (`facts.test.js`): every fact in `tests/facts.json` cites an official AWS page, and the outdated values listed under `deny` never come back
+
+### Checking content accuracy
+
+When AWS changes something, or before a large content release:
+
+1. **Blind solve.** Give two different models only the English stems and options (no key, no explanations), and let each answer every question. Any question where a solver disagrees with the key, or is unsure, is then checked against official AWS pages. The full run in November 2026 had 552/552 and 551/552 agreement; all 12 flagged questions were confirmed.
+2. **Facts.** Check numbers, limits, dates and plan names in lessons and explanations against `docs.aws.amazon.com` / `aws.amazon.com`, and get a second opinion with a verbatim quote before changing anything.
+3. **Everything else.** Have reviewers read all remaining text (lessons, explanations, glossary, service cards) and flag only statements they believe are wrong or outdated, then verify just those online.
+4. **Record.** Add what you confirmed or fixed to `tests/facts.json`, with `checks` (1 or 2) and `result` (`confirmed`, `fixed` or `indirect`) saying how strong the evidence is. When a value changes (for example Lambda's timeout going from 15 to 30 minutes), add a `deny` rule for the old value.
 
 There is no formatter. Keep the existing style of the file you edit.
 
