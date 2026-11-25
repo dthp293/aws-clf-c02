@@ -576,7 +576,7 @@
 
 <h3>Trusted Advisor: chuyên gia tư vấn tự động</h3>
 <p><b>AWS Trusted Advisor</b> kiểm tra tài khoản của bạn và đưa ra khuyến nghị theo nhiều nhóm: tối ưu chi phí, hiệu năng, <b>bảo mật</b>, khả năng chịu lỗi, giới hạn dịch vụ (service quotas) và vận hành.</p>
-<p>Một số kiểm tra bảo mật tiêu biểu: bucket S3 có quyền truy cập mở, security group mở các port nhạy cảm ra toàn Internet, root user chưa bật MFA, chưa dùng IAM, snapshot EBS/RDS để công khai. Các <b>kiểm tra bảo mật cốt lõi</b> (core security checks) như security group mở port không giới hạn, root chưa bật MFA, quyền bucket S3, việc dùng IAM, snapshot công khai <b>miễn phí cho mọi tài khoản, kể cả gói Basic Support</b>. Bộ kiểm tra đầy đủ phụ thuộc gói AWS Support (nên xem trang chính thức để biết chi tiết).</p>
+<p>Một số kiểm tra bảo mật tiêu biểu: bucket S3 có quyền truy cập mở, security group mở các port nhạy cảm ra toàn Internet, root user chưa bật MFA, chưa dùng IAM, snapshot EBS/RDS để công khai. Các <b>kiểm tra bảo mật cốt lõi</b> (core security checks) như security group mở port không giới hạn, root chưa bật MFA, quyền bucket S3, snapshot EBS/RDS công khai <b>miễn phí cho mọi tài khoản, kể cả gói Basic Support</b>. Bộ kiểm tra đầy đủ phụ thuộc gói AWS Support (nên xem trang chính thức để biết chi tiết).</p>
 
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
 <li>\"Uses ML to analyze CloudTrail, VPC Flow Logs, DNS logs to detect threats\" → <b>Amazon GuardDuty</b></li>

@@ -779,7 +779,7 @@
       ["Amazon Comprehend", "Amazon Comprehend"],
     ],
     ans: [0],
-    exp: "Trợ lý generative AI cho doanh nghiệp, trả lời dựa trên dữ liệu nội bộ, không tự huấn luyện → Amazon Q Business. Trạng thái 11/2026: Amazon Q Business không còn nhận khách hàng mới (AWS gợi ý Amazon Quick cho nhu cầu tương tự), nhưng exam guide CLF-C02 vẫn liệt kê Amazon Q nên đề có thể hỏi theo mô tả này.",
+    exp: "Trợ lý generative AI cho doanh nghiệp, trả lời dựa trên dữ liệu nội bộ, không tự huấn luyện → Amazon Q Business. Trạng thái 11/2026: Amazon Q Business không còn nhận khách hàng mới (AWS gợi ý Amazon Quick (nay là AWS Quick) cho nhu cầu tương tự), nhưng exam guide CLF-C02 vẫn liệt kê Amazon Q nên đề có thể hỏi theo mô tả này.",
     why: [
       "Đúng: Amazon Q Business kết nối nguồn dữ liệu doanh nghiệp và trả lời câu hỏi bằng generative AI.",
       "Sai: Lex dùng để tự xây chatbot với intent và luồng hội thoại; không tự trả lời từ kho tài liệu.",

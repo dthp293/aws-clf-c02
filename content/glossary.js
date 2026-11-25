@@ -100,7 +100,7 @@
   { term: "scanned documents", vi: "tài liệu scan", hint: "Amazon Textract" },
   { term: "streaming data", vi: "dữ liệu luồng liên tục", hint: "Amazon Kinesis" },
   { term: "real-time", vi: "thời gian thực", hint: "Kinesis" },
-  { term: "dashboards", vi: "bảng điều khiển trực quan", hint: "Amazon Quick (trước đây là QuickSight), CloudWatch" },
+  { term: "dashboards", vi: "bảng điều khiển trực quan", hint: "Amazon Quick (nay là AWS Quick, trước đây là QuickSight), CloudWatch" },
   { term: "event bus", vi: "kênh trung chuyển sự kiện", hint: "Amazon EventBridge" },
   { term: "contact center", vi: "tổng đài chăm sóc khách hàng", hint: "Amazon Connect" },
   { term: "virtual Windows and Linux desktops", vi: "máy tính để bàn ảo", hint: "Amazon WorkSpaces" },
