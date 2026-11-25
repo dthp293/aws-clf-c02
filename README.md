@@ -70,8 +70,13 @@ Khi đã ôn xong mà vẫn muốn luyện thêm, mở **Ôn hôm nay → Luyệ
 - Có thể đánh dấu câu, chuyển qua lại giữa các câu. Phím tắt: A–F chọn đáp án, ←/→ chuyển câu, **M** đánh dấu. Câu chọn nhiều đáp án mà chọn chưa đủ sẽ hiện viền nét đứt và được nhắc khi nộp bài.
 - Kết quả gồm: **% đúng**, phân tích theo domain, **task cần ôn thêm**, số câu mới gặp lần đầu, và xem lại từng câu kèm giải thích (bật được tiếng Việt).
 
+### 🌐 Ngôn ngữ giao diện (Tiếng Việt / English / 日本語)
+- Chọn ở **Cài đặt → Ngôn ngữ giao diện**. Trang sẽ tải lại; tiến độ học giữ nguyên và dùng chung cho mọi ngôn ngữ.
+- Ở bản **English** và **日本語**: câu hỏi và đáp án **chỉ hiển thị bằng tiếng Anh** (như đề thật); giao diện, phần giải thích từng đáp án, bài học, tóm tắt nhanh, từ vựng, thẻ dịch vụ và tooltip từ khóa dùng ngôn ngữ đã chọn. Bản dịch tiếng Việt của câu hỏi và 3 chế độ song ngữ bên dưới chỉ có ở bản Tiếng Việt.
+- Phần nào chưa có bản dịch (hoặc file không tải được, ví dụ khi offline lần đầu) sẽ tự hiển thị bằng tiếng Việt.
+
 ### 🔤 Hỗ trợ tiếng Anh
-- **3 chế độ ngôn ngữ** (Cài đặt): *Song ngữ* → *Ưu tiên tiếng Anh* (bấm để xem bản dịch) → *Chỉ tiếng Anh*.
+- **3 chế độ ngôn ngữ** (Cài đặt, chỉ ở bản Tiếng Việt): *Song ngữ* → *Ưu tiên tiếng Anh* (bấm để xem bản dịch) → *Chỉ tiếng Anh*.
 - **Từ khóa tô màu** trong đề: rê chuột hoặc chạm vào để xem nghĩa tiếng Việt và gợi ý dịch vụ.
 - Trang **Từ vựng**: tra cứu từ khóa đề thi và hơn 100 dịch vụ AWS, mỗi dịch vụ ghi kèm "hay nhầm với".
 
@@ -115,6 +120,8 @@ Rồi mở http://localhost:8766. Service worker (offline) chỉ chạy trên `l
 | `questions-2.js`, `content-3.js`, `questions-4.js`, `extra/*.js` | Câu hỏi luyện tập (và từ vựng, thẻ dịch vụ bổ sung) |
 | `exam/exam-d1.js` … `exam-d4.js`, `exam/exam-e.js` | **Kho đề thi thử riêng**: không gắn vào bài học hay luyện tập |
 | `meta/tags-*.js` | Gắn mỗi câu hỏi với **task statement** (1.1 → 4.3) và bài học |
+| `i18n/vi/ui.js` | Chuỗi giao diện tiếng Việt (luôn tải, làm dự phòng) |
+| `i18n/en/`, `i18n/ja/` | Bản English / 日本語: `ui.js` (giao diện), `data.js` (domain, từ vựng, dịch vụ, tóm tắt nhanh), `q-1.js` … `q-8.js` (giải thích câu hỏi), `course-a.js` … `course-f.js` (bài học). Chi tiết: `i18n/FILES.txt` |
 | `manifest.webmanifest`, `sw.js`, `icons/` | PWA và chế độ offline |
 
 ### Thêm câu hỏi
@@ -128,6 +135,13 @@ Mỗi câu là một object:
 - `why` phải có số phần tử bằng `opts` và cùng thứ tự; mỗi dòng nêu lý do, không chỉ ghi "Sai.".
 - Thêm nhãn trong `meta/tags-*.js`: `"d3-200": ["3.6", "3-6"]` (task statement, bài học). Với câu trong kho thi thử (id bắt đầu bằng `x`), bài học phải là `null`.
 - Thêm **file mới** thì phải thêm thẻ `<script>` vào `index.html` (trước `app.js`), thêm tên file vào `FILES` trong `sw.js`, và tăng `VERSION`.
+- Câu mới chưa có bản dịch thì bản English / 日本語 hiển thị giải thích tiếng Việt; thêm `"d3-200": { exp: "…", why: ["…", …] }` vào một file `i18n/<lang>/q-*.js` bất kỳ.
+
+### Đa ngôn ngữ (i18n)
+- Khi mở trang, `app.js` đọc `settings.ui` (`vi` | `en` | `ja`). Với `en`/`ja`, app chèn 16 thẻ `<script>` của `i18n/<lang>/` (danh sách `I18N_FILES` trong `app.js`, trùng với `i18n/FILES.txt`) rồi mới vẽ trang. File nào lỗi thì bỏ qua và dùng tiếng Việt.
+- Mỗi file ghi vào `window.CLF_I18N[lang]` = `{ ui, q, course, lessons, glossary, services, domains }`.
+- Chuỗi giao diện dùng `t('khóa', { tham số })`: tìm ở ngôn ngữ đang chọn → tiếng Việt → chính khóa. Cú pháp `{tên}` là tham số, `{n?một:nhiều}` chọn số ít/số nhiều. **Thêm chuỗi mới thì thêm cùng khóa vào cả 3 file** `i18n/vi|en|ja/ui.js`.
+- Đổi nội dung các file trong `i18n/` cũng phải tăng `VERSION` trong `sw.js` (các file này đã có sẵn trong `FILES`).
 
 ### Deploy
 Repo dùng **GitHub Pages** (nhánh `main`, thư mục gốc). Chỉ cần `git push` là website tự cập nhật sau khoảng 1 phút.

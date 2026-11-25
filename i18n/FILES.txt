@@ -19,6 +19,8 @@ i18n/<lang>/course-f.js  ... course/course-f.js
 
 Total per language: 16 files. The loader in app.js loads exactly these names
 (it does not matter which q-N.js file an id lives in, as long as all 552 ids exist).
+L.q[id] fields: exp, why[] (all languages); ja also has q (question stem) and opts[] (options, same order as the source opts)
+  because CLF-C02 is offered in Japanese; en shows the original English question.
 L.course[id] fields: title, goals[], html, summary[], terms[[term, meaning]]
   terms: same length/order as the VI lesson's terms; element [0] = the English term (unchanged),
   [1] = meaning in <lang> (VI has e.g. ["Server","máy chủ"]).
