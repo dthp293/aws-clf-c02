@@ -27,7 +27,8 @@
 
   /* ───────── State (localStorage) ───────── */
   const DEFAULTS = {
-    cards: {},          // id → trạng thái SRS
+    cards: {},          // id → trạng thái SRS (lịch chính: Ôn hôm nay, Luyện tập, quiz bài học)
+    free: {},           // id → trạng thái SRS của "Luyện tập tự do" (lịch riêng, tách hẳn khỏi cards)
     stats: {},          // questionId → { a: số lần trả lời, c: số lần đúng }
     settings: { lang: 'en-first', newPerDay: 15, kw: true, examDate: '', esl: false },
     newLog: { date: '', count: 0 },
@@ -48,10 +49,18 @@
     const out = clone(DEFAULTS);
     const objMap = (v, f) => { const o = {}; if (isObj(v)) Object.keys(v).forEach(k => { const x = f(v[k]); if (x !== undefined) o[k] = x; }); return o; };
     const ac = v => isObj(v) ? { a: num(v.a), c: num(v.c) } : undefined;
-    out.cards = objMap(s.cards, c => {
-      if (!isObj(c)) return undefined;
-      return { ...c, ef: Math.max(1.3, num(c.ef, 2.5)), reps: num(c.reps), ivl: num(c.ivl), lapses: num(c.lapses), due: num(c.due, Date.now()), last: num(c.last) };
-    });
+    // Câu của kho thi thử không bao giờ được nằm trong lịch SRS (kể cả khi file nhập có chứa)
+    const poolKeys = new Set((D.examPool || []).map(q => 'q:' + q.id));
+    const cardMap = v => {
+      const o = objMap(v, c => {
+        if (!isObj(c)) return undefined;
+        return { ...c, ef: Math.max(1.3, num(c.ef, 2.5)), reps: num(c.reps), ivl: num(c.ivl), lapses: num(c.lapses), due: num(c.due, Date.now()), last: num(c.last) };
+      });
+      Object.keys(o).forEach(k => { if (poolKeys.has(k)) delete o[k]; });
+      return o;
+    };
+    out.cards = cardMap(s.cards);
+    out.free = cardMap(s.free);   // dữ liệu cũ chưa có khóa này → {}
     out.stats = objMap(s.stats, ac);
     out.examStats = objMap(s.examStats, ac);
     out.activity = objMap(s.activity, v => num(v));
@@ -123,6 +132,8 @@
     ...D.glossary.map(g => ({ id: 'v:' + g.term.toLowerCase(), type: 'v', d: 0, ref: g })),
     ...D.services.map(s => ({ id: 's:' + s.name, type: 's', d: s.d, ref: s }))
   ];
+  const ITEM_BY = new Map(ITEMS.map(i => [i.id, i]));
+  const qItem = qid => ITEM_BY.get('q:' + qid);
 
   /* ───────── SRS: biến thể SM-2 ─────────
      grade: 1 = Lại (Again), 2 = Khó (Hard), 3 = Tốt (Good), 4 = Dễ (Easy) */
@@ -148,19 +159,39 @@
   }
   const fmtIvl = c => c.ivl === 0 ? '10 phút' : c.ivl < 30 ? c.ivl + ' ngày' : (c.ivl / 30).toFixed(1).replace('.0', '') + ' tháng';
 
-  // Chỉ thẻ mới được giới thiệu trong phiên "Ôn hôm nay" mới tính vào hạn mức thẻ mới/ngày.
-  // Luyện tập tự do vẫn tạo lịch SRS cho câu đó nhưng không "ăn" hạn mức.
+  /* Hai lịch SRS độc lập, cùng một luật SM-2:
+     - S.cards (lịch chính): Ôn hôm nay, tab Luyện tập, quiz cuối bài học, ôn câu sai sau thi thử.
+     - S.free  (lịch riêng): chỉ phiên "Luyện tập tự do" ({ free: true }) đọc/ghi; không đụng S.cards, không đụng newLog.
+     Quy tắc chung cho mọi chế độ: thẻ đã học (có trong lịch) không bao giờ hiện trước giờ đến hạn của lịch đó.
+     Chỉ thẻ mới được giới thiệu trong phiên "Ôn hôm nay" ({ review: true }) mới tính vào hạn mức thẻ mới/ngày;
+     câu mới trả lời ở Luyện tập / quiz bài học vẫn vào S.cards nhưng không "ăn" hạn mức. */
   let curSession = null;
+  const deckOf = opt => opt && opt.free ? S.free : S.cards;
+  const deck = () => deckOf(curSession);
   function grade(id, g) {
-    const isNew = !S.cards[id];
-    S.cards[id] = nextCard(S.cards[id], g);
-    if (isNew && curSession && curSession.review) {
+    if (!ITEM_BY.has(id)) return;   // chỉ thẻ thuộc ITEMS; câu kho thi thử không bao giờ vào lịch
+    const free = !!(curSession && curSession.free);
+    const dk = free ? S.free : S.cards;
+    const isNew = !dk[id];
+    dk[id] = nextCard(dk[id], g);
+    if (!free && isNew && curSession && curSession.review) {
       if (S.newLog.date !== today()) S.newLog = { date: today(), count: 0 };
       S.newLog.count++;
     }
     S.activity[today()] = (S.activity[today()] || 0) + 1;
     save();
   }
+  // "Luyện được lúc này" trong một lịch = chưa học (mới) hoặc đã đến hạn
+  const availIn = (dk, id) => !dk[id] || dk[id].due <= Date.now();
+  const isAvail = id => availIn(S.cards, id);
+  const availQs = qs => qs.filter(q => isAvail('q:' + q.id));
+  // Giờ đến hạn sớm nhất của các thẻ đã học-chưa-đến-hạn trong tập ids (null nếu không có)
+  function nextDueIn(dk, ids) {
+    let m = Infinity; const now = Date.now();
+    ids.forEach(id => { const c = dk[id]; if (c && c.due > now && c.due < m) m = c.due; });
+    return m === Infinity ? null : m;
+  }
+  const fmtWhen = t => new Date(t).toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' });
   function recordAnswer(qid, ok) {
     const s = S.stats[qid] || (S.stats[qid] = { a: 0, c: 0 });
     s.a++; if (ok) s.c++;
@@ -218,21 +249,31 @@
   /* ───────── Grade buttons ───────── */
   const GL = { 1: ['Lại', 'g-again'], 2: ['Khó', ''], 3: ['Tốt', ''], 4: ['Dễ', 'g-easy'] };
   const gradeBtns = (id, set) => `<div class="grades ${set.length === 3 ? 'g3' : ''}">${set.map(g =>
-    `<button class="btn ${GL[g][1]}" data-g="${g}">${GL[g][0]}<small>${fmtIvl(nextCard(S.cards[id], g))}</small></button>`).join('')}</div>`;
+    `<button class="btn ${GL[g][1]}" data-g="${g}">${GL[g][0]}<small>${fmtIvl(nextCard(deck()[id], g))}</small></button>`).join('')}</div>`;
 
   /* ───────── Session ───────── */
   function runSession(items, title, opt = {}) {
-    const st = { queue: items.filter(Boolean), i: 0, right: 0, wrong: 0, again: {} };
+    const st = { queue: items.filter(Boolean), i: 0, right: 0, wrong: 0, again: {}, retry: [], shown: 0 };
     curSession = opt;
+    const dk = () => deckOf(opt);
     next();
     function next() {
-      if (st.i >= st.queue.length) return finish();
+      // Chốt chặn chung: không bao giờ hiện thẻ đã học mà chưa đến hạn (ví dụ vừa được chấm ở tab khác)
+      while (st.i < st.queue.length && !availIn(dk(), st.queue[st.i].id)) st.queue.splice(st.i, 1);
+      if (st.i >= st.queue.length) {
+        // Thẻ chấm "Lại" hẹn 10 phút: chỉ quay lại trong phiên này nếu lúc hết hàng đợi nó đã đến hạn
+        const back = st.retry.filter(x => availIn(dk(), x.id));
+        if (!back.length) return finish();
+        st.retry = st.retry.filter(x => !back.includes(x));
+        st.queue.push(...back);
+      }
       const it = st.queue[st.i];
+      st.shown++;
       const header = `<div class="progress">${esc(title)} · ${st.i + 1}/${st.queue.length}</div>`;
       const done = (g, ok) => {
         if (ok === true) st.right++;
         if (ok === false) st.wrong++;
-        if (g === 1 && (st.again[it.id] || 0) < 2) { st.again[it.id] = (st.again[it.id] || 0) + 1; st.queue.push(it); }
+        if (g === 1 && (st.again[it.id] || 0) < 2) { st.again[it.id] = (st.again[it.id] || 0) + 1; if (!st.retry.includes(it)) st.retry.push(it); }
         st.i++; next();
       };
       if (opt.read && it.type === 'q') renderRead(it, header, done);
@@ -244,16 +285,18 @@
       const ans = st.right + st.wrong;
       $app.innerHTML = `<div class="card" style="text-align:center">
         <h1>🎉 Xong phiên “${esc(title)}”</h1>
-        <p>Đã ôn <b>${st.queue.length}</b> lượt${ans ? ` · Câu hỏi: <b>${st.right}</b> đúng / <b>${st.wrong}</b> sai` : ''}.</p>
-        <p class="muted small">Thẻ trả lời sai sẽ quay lại sớm. Thẻ đúng sẽ giãn dần khoảng cách ôn.</p>
-        <div class="row" style="justify-content:center"><a class="btn primary" href="#/">Về trang chủ</a><a class="btn" href="#/practice">Luyện tập thêm</a></div></div>`;
+        <p>Đã ôn <b>${st.shown}</b> lượt${ans ? ` · Câu hỏi: <b>${st.right}</b> đúng / <b>${st.wrong}</b> sai` : ''}.</p>
+        <p class="muted small">Thẻ trả lời sai sẽ quay lại sau 10 phút (khi đến hạn). Thẻ đúng sẽ giãn dần khoảng cách ôn.${opt.free ? ' Phiên này dùng lịch riêng của Luyện tập tự do, không ảnh hưởng lịch Ôn hôm nay.' : ''}</p>
+        <div class="row" style="justify-content:center"><a class="btn primary" href="#/">Về trang chủ</a>${opt.free
+          ? '<a class="btn" href="#/review/free">Luyện tập tự do tiếp</a>'
+          : '<a class="btn" href="#/practice">Luyện tập thêm</a><a class="btn" href="#/review/free">Luyện tập tự do</a>'}</div></div>`;
     }
   }
 
   function renderQuestion(it, header, done) {
     const q = it.ref, multi = q.ans.length > 1, need = q.ans.length;
     const order = shuffle(q.opts.map((_, i) => i));
-    const lang = S.settings.lang, isNew = !S.cards[it.id];
+    const lang = S.settings.lang, isNew = !deck()[it.id];
     let showVi = lang === 'bi', answered = false, ok = false;
     const sel = new Set();
     draw();
@@ -324,7 +367,7 @@
 
   function renderFlash(it, header, done) {
     let flipped = false;
-    const r = it.ref, isV = it.type === 'v', isNew = !S.cards[it.id];
+    const r = it.ref, isV = it.type === 'v', isNew = !deck()[it.id];
     const example = isV ? D.questions.find(q => q.en.toLowerCase().includes(r.term.toLowerCase())) : null;
     draw();
     function draw() {
@@ -408,59 +451,118 @@
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${domains}</div>
       <h2>Cách dùng</h2>
       <div class="card small">
-        <p>📅 <b>Ôn hôm nay</b> trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ theo <b>lặp lại ngắt quãng (SRS)</b>. Thẻ trả lời sai quay lại sau 10 phút. Thẻ đúng giãn dần thành 1, 4, 10... ngày.</p>
+        <p>📅 <b>Ôn hôm nay</b> trộn câu hỏi, từ vựng đề thi và thẻ dịch vụ theo <b>lặp lại ngắt quãng (SRS)</b>. Thẻ trả lời sai quay lại sau 10 phút. Thẻ đúng giãn dần thành 1, 4, 10... ngày. Thẻ đã học chỉ xuất hiện lại khi đến hạn; muốn luyện thêm ngoài lịch thì dùng <a href="#/review/free">Luyện tập tự do</a> (lịch riêng).</p>
         <p>🟨 Từ <span class="kw" tabindex="0" data-k="most cost-effective">được tô màu</span> trong đề là từ khóa quan trọng. Rê chuột hoặc chạm vào để xem nghĩa tiếng Việt và gợi ý.</p>
         <p>🌐 Vào <a href="#/settings">Cài đặt</a> để chuyển chế độ ngôn ngữ: <i>Song ngữ</i> → <i>Ưu tiên tiếng Anh</i> → <i>Chỉ tiếng Anh</i>.</p>
         <p class="muted">Tiến độ chỉ lưu trên trình duyệt này. Dùng Cài đặt → Xuất dữ liệu để sao lưu.</p>
       </div>`;
   }
 
-  function viewReview() {
+  /* Màn hình "không có gì để luyện lúc này": báo giờ đến hạn gần nhất của tập thẻ + lối sang Luyện tập tự do */
+  function emptyState(title, ids, opt = {}, back = '#/practice', backLabel = 'Quay lại') {
+    const nd = nextDueIn(deckOf(opt), ids);
+    $app.innerHTML = `<div class="card empty-state"><h1>✅ Chưa có câu nào cần luyện lúc này</h1>
+      <p><b>${esc(title)}</b>: không còn câu mới, và các câu đã học đều chưa đến hạn ôn${opt.free ? ' theo lịch riêng của Luyện tập tự do' : ''}.</p>
+      ${nd ? `<p>Câu tiếp theo trong mục này đến hạn: <b>${fmtWhen(nd)}</b></p>` : ''}
+      <div class="row">${opt.free ? '<a class="btn primary" href="#/review">Ôn hôm nay</a>' : '<a class="btn primary" href="#/review/free">Luyện tập tự do</a>'}
+        <a class="btn" href="${esc(back)}">${esc(backLabel)}</a></div>
+      ${opt.free ? '' : '<p class="muted small">Luyện tập tự do có lịch riêng nên luyện thêm ở đó không làm lệch lịch Ôn hôm nay.</p>'}</div>`;
+  }
+
+  function viewReview(arg) {
+    // #/review              → phiên Ôn hôm nay (lịch chính)
+    // #/review/free         → chọn domain cho Luyện tập tự do
+    // #/review/free/<d|all> → phiên Luyện tập tự do (lịch riêng S.free)
+    if (arg === 'free') return viewFree(location.hash.split('/')[3]);
     const q = [...dueItems(), ...newItems(newLeft())];
     if (q.length) return runSession(q, 'Ôn hôm nay', { review: true });
-    const dues = Object.values(S.cards).map(c => c.due).filter(Boolean);
-    const nextDue = dues.length ? new Date(Math.min(...dues)) : null;
+    const nd = nextDueIn(S.cards, Object.keys(S.cards));
     const remainNew = ITEMS.filter(i => !S.cards[i.id]).length;
     $app.innerHTML = `<div class="card" style="text-align:center"><h1>🎉 Hôm nay đã ôn xong!</h1>
-      <p class="muted">${nextDue ? `Thẻ tiếp theo đến hạn: <b>${nextDue.toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' })}</b>` : ''}</p>
+      <p class="muted">${nd ? `Thẻ tiếp theo đến hạn: <b>${fmtWhen(nd)}</b>` : ''}</p>
       <div class="row" style="justify-content:center">
         ${remainNew ? `<button class="btn primary" id="more">Học thêm 10 thẻ mới</button>` : ''}
-        <a class="btn" href="#/practice">Luyện tập tự do</a></div>
-      <p class="muted small">Còn ${remainNew} thẻ chưa học.</p></div>`;
+        <a class="btn" href="#/review/free">Luyện tập tự do</a></div>
+      <p class="muted small">Còn ${remainNew} thẻ chưa học. Luyện tập tự do dùng lịch riêng, không ảnh hưởng lịch ôn này.</p></div>`;
     const m = document.getElementById('more');
     if (m) m.onclick = () => runSession(newItems(10), 'Thẻ mới thêm', { review: true });
   }
 
+  /* ───────── Luyện tập tự do: lịch SRS riêng (S.free) ─────────
+     Phạm vi: Domain 1–4 = câu hỏi + thẻ dịch vụ của domain đó; "Trộn tất cả" = mọi câu hỏi + dịch vụ + từ vựng đề thi
+     (từ vựng không thuộc domain nào nên chỉ có ở "Trộn tất cả"). Câu của kho thi thử không bao giờ có mặt (ITEMS không chứa). */
+  const FREE_SCOPES = ['1', '2', '3', '4', 'all'];
+  const freeItems = sc => sc === 'all' ? ITEMS : ITEMS.filter(i => i.type !== 'v' && i.d === +sc);
+  const freeTitle = sc => 'Luyện tập tự do · ' + (sc === 'all' ? 'Trộn tất cả' : 'Domain ' + sc);
+  function viewFree(sc) {
+    if (FREE_SCOPES.includes(sc)) {
+      const items = freeItems(sc), av = items.filter(i => availIn(S.free, i.id));
+      if (!av.length) return emptyState(freeTitle(sc), items.map(i => i.id), { free: true }, '#/review/free', 'Chọn phạm vi khác');
+      return runSession(shuffle(av), freeTitle(sc), { free: true });
+    }
+    const card = (sc, head, sub) => {
+      const items = freeItems(sc), av = items.filter(i => availIn(S.free, i.id)).length;
+      const nd = nextDueIn(S.free, items.map(i => i.id));
+      const kinds = [['q', 'câu hỏi'], ['s', 'dịch vụ'], ['v', 'từ vựng']].map(([t, l]) => [items.filter(i => i.type === t).length, l]).filter(x => x[0]);
+      return `<a class="card dom" style="text-decoration:none" href="#/review/free/${sc}"><h3>${head}</h3>
+        ${sub ? `<span class="muted small">${esc(sub)}</span>` : ''}
+        <span class="small"><b>${av}/${items.length}</b> thẻ luyện được ngay</span>
+        <span class="muted small">${kinds.map(k => k[0] + ' ' + k[1]).join(' · ')}</span>
+        ${nd ? `<span class="muted small">⏳ Thẻ tiếp theo đến hạn: ${fmtWhen(nd)}</span>` : ''}</a>`;
+    };
+    const ndAll = nextDueIn(S.free, ITEMS.map(i => i.id));
+    $app.innerHTML = `<div class="crumb small"><a href="#/review">Ôn hôm nay</a> › Luyện tập tự do</div>
+      <h1>Luyện tập tự do</h1>
+      <p class="muted">Luyện thêm bao nhiêu tùy thích theo <b>lịch riêng</b>: không làm thay đổi lịch Ôn hôm nay, không tính vào số thẻ mới mỗi ngày.
+        Thẻ đã luyện ở đây cũng giãn dần theo SRS và chỉ quay lại khi đến hạn của lịch riêng này.</p>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+        ${D.domains.map(d => card(String(d.id), 'D' + d.id + '. ' + esc(d.vi), '')).join('')}
+        ${card('all', '🔀 Trộn tất cả', 'Cả 4 domain + từ vựng đề thi')}
+      </div>
+      <p class="muted small">${ndAll ? `Thẻ tự do tiếp theo đến hạn: <b>${fmtWhen(ndAll)}</b>. ` : ''}Domain gồm câu hỏi và thẻ dịch vụ của domain đó; từ vựng đề thi chỉ có trong “Trộn tất cả”.</p>`;
+  }
+
+  /* ───────── Luyện tập (lịch chính): chỉ câu mới hoặc đã đến hạn ───────── */
+  const weakQs = () => D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; });
+  const readQs = () => D.questions.filter(q => q.en.length >= 160);
+  function practiceSet(arg) {
+    if (arg === 'all') return { qs: D.questions, title: 'Tất cả domain' };
+    if (arg === 'hard') return { qs: D.questions.filter(q => q.lvl === 2), title: 'Câu nâng cao' };
+    if (arg === 'multi') return { qs: D.questions.filter(q => q.ans.length > 1), title: 'Câu chọn nhiều đáp án' };
+    if (arg === 'weak') return { qs: weakQs(), title: 'Câu hay sai' };
+    if (arg === 'read') return { qs: readQs(), title: 'Luyện đọc đề', opt: { read: true }, max: 15 };
+    if (arg.startsWith('t-')) { const t = arg.slice(2); return { qs: D.questions.filter(q => q.t === t), title: 'Task ' + t + ' · ' + (TASKS[t] || '') }; }
+    return { qs: D.questions.filter(q => q.d === +arg), title: 'Domain ' + arg };
+  }
+  // Bắt đầu một phiên luyện câu hỏi trên lịch chính: bỏ câu đã học mà chưa đến hạn
+  function startPractice(qs, title, opt = {}, back = '#/practice', max = Infinity) {
+    const av = availQs(qs);
+    if (!av.length) return emptyState(title, qs.map(q => 'q:' + q.id), {}, back);
+    runSession(shuffle(av).slice(0, max).map(q => qItem(q.id)), title, opt);
+  }
+
   function viewPractice(arg) {
     if (arg) {
-      let qs, title;
-      if (arg === 'all') { qs = D.questions; title = 'Tất cả domain'; }
-      else if (arg === 'hard') { qs = D.questions.filter(q => q.lvl === 2); title = 'Câu nâng cao'; }
-      else if (arg === 'multi') { qs = D.questions.filter(q => q.ans.length > 1); title = 'Câu chọn nhiều đáp án'; }
-      else if (arg === 'weak') { qs = D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; }); title = 'Câu hay sai'; }
-      else if (arg === 'read') {
-        const pool = D.questions.filter(q => q.en.length >= 160);
-        return runSession(shuffle(pool).slice(0, 15).map(q => ITEMS.find(i => i.id === 'q:' + q.id)), 'Luyện đọc đề', { read: true });
-      }
-      else if (arg.startsWith('t-')) { const t = arg.slice(2); qs = D.questions.filter(q => q.t === t); title = 'Task ' + t + ' · ' + (TASKS[t] || ''); }
-      else { qs = D.questions.filter(q => q.d === +arg); title = 'Domain ' + arg; }
-      if (!qs.length) { $app.innerHTML = `<div class="card">Chưa có câu nào ở mục này. <a href="#/practice">Quay lại</a></div>`; return; }
-      return runSession(shuffle(qs).map(q => ITEMS.find(i => i.id === 'q:' + q.id)), title);
+      const p = practiceSet(arg);
+      if (!p.qs.length) { $app.innerHTML = `<div class="card">Chưa có câu nào ở mục này. <a href="#/practice">Quay lại</a></div>`; return; }
+      return startPractice(p.qs, p.title, p.opt, '#/practice', p.max);
     }
-    const weak = D.questions.filter(q => { const s = S.stats[q.id]; return s && s.c / s.a < 0.7; }).length;
+    const cnt = qs => `<b>${availQs(qs).length}/${qs.length}</b>`;
+    const set = a => practiceSet(a).qs;
     $app.innerHTML = `<h1>Luyện tập</h1>
-      <p class="muted">Luyện câu hỏi theo domain. Kết quả vẫn được ghi vào lịch SRS.</p>
+      <p class="muted">Luyện câu hỏi theo domain. Chỉ hiện câu <b>mới</b> hoặc <b>đã đến hạn ôn</b>; kết quả được ghi vào lịch SRS (không tính vào số thẻ mới mỗi ngày).
+        Số trên mỗi ô là <b>số câu luyện được ngay / tổng số câu</b>. Muốn luyện thêm ngoài lịch: <a href="#/review/free">Luyện tập tự do</a>.</p>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
       ${D.domains.map(d => { const s = domStats(d.id); return `<a class="card dom" style="text-decoration:none" href="#/practice/${d.id}">
-        <h3>D${d.id}. ${esc(d.vi)}</h3><span class="muted small">${s.total} câu · đúng ${s.acc === null ? '—' : s.acc + '%'}</span></a>`; }).join('')}
-      <a class="card dom" style="text-decoration:none" href="#/practice/all"><h3>🔀 Trộn tất cả</h3><span class="muted small">${D.questions.length} câu</span></a>
-      <a class="card dom" style="text-decoration:none" href="#/practice/weak"><h3>🎯 Câu hay sai</h3><span class="muted small">${weak} câu (tỷ lệ đúng dưới 70%)</span></a>
-      <a class="card dom" style="text-decoration:none" href="#/practice/hard"><h3>🔥 Câu nâng cao</h3><span class="muted small">${D.questions.filter(q => q.lvl === 2).length} câu gần độ khó đề thật</span></a>
-      <a class="card dom" style="text-decoration:none" href="#/practice/multi"><h3>☑️ Câu chọn nhiều đáp án</h3><span class="muted small">${D.questions.filter(q => q.ans.length > 1).length} câu (Choose TWO/THREE)</span></a>
-      <a class="card dom" style="text-decoration:none" href="#/practice/read"><h3>📖 Luyện đọc đề</h3><span class="muted small">Tìm từ khóa quyết định trước khi xem đáp án · 15 câu dài</span></a>
+        <h3>D${d.id}. ${esc(d.vi)}</h3><span class="muted small">${cnt(set(String(d.id)))} câu · đúng ${s.acc === null ? '—' : s.acc + '%'}</span></a>`; }).join('')}
+      <a class="card dom" style="text-decoration:none" href="#/practice/all"><h3>🔀 Trộn tất cả</h3><span class="muted small">${cnt(set('all'))} câu</span></a>
+      <a class="card dom" style="text-decoration:none" href="#/practice/weak"><h3>🎯 Câu hay sai</h3><span class="muted small">${cnt(set('weak'))} câu (tỷ lệ đúng dưới 70%)</span></a>
+      <a class="card dom" style="text-decoration:none" href="#/practice/hard"><h3>🔥 Câu nâng cao</h3><span class="muted small">${cnt(set('hard'))} câu gần độ khó đề thật</span></a>
+      <a class="card dom" style="text-decoration:none" href="#/practice/multi"><h3>☑️ Câu chọn nhiều đáp án</h3><span class="muted small">${cnt(set('multi'))} câu (Choose TWO/THREE)</span></a>
+      <a class="card dom" style="text-decoration:none" href="#/practice/read"><h3>📖 Luyện đọc đề</h3><span class="muted small">Tìm từ khóa quyết định trước khi xem đáp án · tối đa 15 câu dài (${cnt(set('read'))} câu)</span></a>
       </div>
       <h2>Theo task statement</h2>
-      <p class="muted small">Gộp kết quả luyện tập và thi thử. Task có tỷ lệ đúng thấp nhất được xếp lên đầu. Bấm để luyện riêng task đó.</p>
+      <p class="muted small">Gộp kết quả luyện tập và thi thử. Task có tỷ lệ đúng thấp nhất được xếp lên đầu. Bấm để luyện riêng task đó (số câu luyện được ngay / tổng).</p>
       ${taskTable()}`;
   }
 
@@ -473,14 +575,15 @@
     return out;
   }
   function taskTable() {
-    const ts = taskStats();
+    const ts = taskStats(), av = {};
+    D.questions.forEach(q => { if (q.t && isAvail('q:' + q.id)) av[q.t] = (av[q.t] || 0) + 1; });
     const rows = Object.keys(TASKS).map(t => ({ t, ...ts[t], acc: ts[t].a ? Math.round(ts[t].c / ts[t].a * 100) : null }))
       .sort((x, y) => (x.acc === null) - (y.acc === null) || (x.acc ?? 0) - (y.acc ?? 0) || x.t.localeCompare(y.t));
     return `<div class="card scroll-x"><table class="tasks"><tr><th>Task</th><th>Chủ đề</th><th>Đúng</th><th style="width:30%"></th><th></th></tr>
       ${rows.map(r => `<tr><td><b>${r.t}</b></td><td>${esc(TASKS[r.t])}</td>
         <td class="${r.acc === null ? 'muted' : r.acc >= 80 ? 'v-ok' : r.acc >= 70 ? 'v-warn' : 'v-no'}"><b>${r.acc === null ? '—' : r.acc + '%'}</b><div class="muted small">${r.a} lượt</div></td>
         <td><div class="bar"><i style="width:${r.acc || 0}%;background:${r.acc === null ? 'var(--line)' : r.acc >= 80 ? 'var(--ok)' : r.acc >= 70 ? '#c98a00' : 'var(--bad)'}"></i></div></td>
-        <td>${r.total ? `<a class="btn" href="#/practice/t-${r.t}">Luyện ${r.total}</a>` : ''}</td></tr>`).join('')}</table></div>`;
+        <td>${r.total ? `<a class="btn" href="#/practice/t-${r.t}">Luyện ${av[r.t] || 0}/${r.total}</a>` : ''}</td></tr>`).join('')}</table></div>`;
   }
 
   /* Chế độ luyện đọc đề: đọc đề tiếng Anh, chạm vào từ khóa quyết định, rồi mới xem lựa chọn */
@@ -575,9 +678,10 @@
     const l = COURSE[i];
     if (!l) { $app.innerHTML = `<div class="card">Không tìm thấy bài học. <a href="#/learn">Về danh sách</a></div>`; return; }
     const prev = COURSE[i - 1], next = COURSE[i + 1];
-    const qs = (l.qids || []).filter(q => QBY.has(q));
+    const qs = (l.qids || []).filter(q => QBY.has(q) && qItem(q)).map(q => QBY.get(q));
     const draw = () => {
       const done = isDone(l.id);
+      const avail = availQs(qs).length, nd = nextDueIn(S.cards, qs.map(q => 'q:' + q.id));
       $app.innerHTML = `
         <div class="crumb small"><a href="#/learn">Bài học</a> › <a href="#/learn/${l.module}">${modName(l.module)}</a> › Bài ${esc(l.id)}</div>
         <article class="lesson-page">
@@ -591,8 +695,9 @@
           <div class="card lesson-end">
             <div class="row">
               <button class="btn ${done ? '' : 'primary'}" data-a="done">${done ? '↩︎ Bỏ đánh dấu đã học' : '✓ Đánh dấu đã học'}</button>
-              ${qs.length ? `<button class="btn ${done ? 'primary' : ''}" data-a="quiz">✍️ Luyện ${qs.length} câu của bài này</button>` : ''}
+              ${avail ? `<button class="btn ${done ? 'primary' : ''}" data-a="quiz">✍️ Luyện ${avail === qs.length ? avail : avail + '/' + qs.length} câu của bài này</button>` : ''}
             </div>
+            ${qs.length && avail < qs.length ? `<p class="muted small quiz-note">${avail ? `${qs.length - avail} câu còn lại đã học và chưa đến hạn ôn.` : `Cả ${qs.length} câu của bài này đã học và chưa đến hạn ôn.`}${nd ? ` Câu tiếp theo đến hạn: <b>${fmtWhen(nd)}</b>.` : ''} Muốn luyện thêm: <a href="#/review/free">Luyện tập tự do</a>.</p>` : ''}
             <div class="row" style="justify-content:space-between;margin-top:12px">
               ${prev ? `<a href="#/lesson/${esc(prev.id)}" class="small">← ${esc(prev.id)}. ${esc(prev.title)}</a>` : '<span></span>'}
               ${next ? `<a href="#/lesson/${esc(next.id)}" class="small" style="text-align:right">${esc(next.id)}. ${esc(next.title)} →</a>` : ''}
@@ -608,7 +713,7 @@
         if (S.done[l.id]) delete S.done[l.id]; else { S.done[l.id] = Date.now(); S.activity[today()] = (S.activity[today()] || 0) + 1; }
         save(); draw();
       }
-      if (b.dataset.a === 'quiz') runSession(shuffle(qs).map(q => ITEMS.find(it => it.id === 'q:' + q)), 'Luyện bài ' + l.id);
+      if (b.dataset.a === 'quiz') startPractice(qs, 'Luyện bài ' + l.id, {}, '#/lesson/' + l.id);
     };
   }
 
@@ -677,7 +782,7 @@
       }).catch(() => { input.value = ''; msg('❌ File không hợp lệ.'); });
     };
     document.getElementById('reset').onclick = () => {
-      if (!confirm('Xóa toàn bộ tiến độ học (thẻ SRS, thống kê, bài đã học, lịch sử thi thử, bài thi dở)? Cài đặt được giữ lại. Không thể hoàn tác.')) return;
+      if (!confirm('Xóa toàn bộ tiến độ học (thẻ SRS, lịch Luyện tập tự do, thống kê, bài đã học, lịch sử thi thử, bài thi dở)? Cài đặt được giữ lại. Không thể hoàn tác.')) return;
       const keep = S.settings; S = clone(DEFAULTS); S.settings = keep;
       clearInterval(examTimer); examTimer = null;
       save(); viewSettings(); msg('Đã xóa tiến độ.');
@@ -983,7 +1088,7 @@
     $app.onclick = e => {
       const f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; draw(); return; }
       const b = e.target.closest('[data-a="drill"]');
-      if (b) runSession(drillIds.map(id => ITEMS.find(it => it.id === 'q:' + id)).filter(Boolean), 'Ôn câu sai sau thi thử');
+      if (b) startPractice(drillIds.map(id => QBY.get(id)).filter(q => qItem(q.id)), 'Ôn câu sai sau thi thử', {}, '#/exam/r' + i);
     };
   }
 

@@ -170,3 +170,8 @@ main { padding-bottom: max(60px, env(safe-area-inset-bottom)); }
 .tok.mk { background: var(--kw); border-bottom: 2px solid var(--kw-line); }
 .read-review { border-left: 4px solid var(--accent); }
 table.tasks td { vertical-align: middle; }
+
+/* Trạng thái "chưa có gì để luyện" (Luyện tập / Luyện tập tự do) */
+.empty-state { text-align: center; }
+.empty-state .row { justify-content: center; }
+.quiz-note { margin: 10px 0 0; }
