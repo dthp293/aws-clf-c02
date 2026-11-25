@@ -150,6 +150,13 @@ Mỗi câu là một object:
 - Thêm **file mới** thì phải thêm thẻ `<script>` vào `index.html` (nội dung đặt trước `js/`), thêm tên file vào `FILES` trong `sw.js`, và tăng `VERSION`. Sửa bất kỳ file nào website nạp cũng phải tăng `VERSION` để app đã cài cập nhật.
 - Câu mới chưa có bản dịch thì bản English / 日本語 hiển thị giải thích tiếng Việt; thêm `"d3-200": { exp: "…", why: ["…", …] }` vào một file `i18n/<lang>/q-*.js` bất kỳ (bản `ja` thêm cả `q` và `opts`: đề và các lựa chọn bằng tiếng Nhật). `npm test` sẽ báo câu nào còn thiếu bản dịch.
 
+### Độ chính xác của nội dung
+
+- **Sổ kiến thức:** `tests/facts.json` ghi lại những gì đã đối chiếu với trang chính thức của AWS: mọi câu có giá trị cụ thể (con số, giới hạn, giá, ngày tháng, tên gói hoặc tính năng) và mọi đáp án bị agent giải đề mù đặt nghi vấn. Mỗi mục có URL nguồn và cho biết cách kiểm tra: `checks: 2` là đã có người kiểm tra thứ hai xác nhận kèm trích dẫn nguyên văn, `checks: 1` là một người kiểm tra theo các trang của chủ đề, `indirect` là chỉ tìm được bằng chứng gián tiếp. Các câu còn lại (khái niệm, so sánh, dịch vụ nào dùng cho việc gì) đã được 4 người đọc soát toàn bộ; chỉ những câu bị đánh dấu hoặc không chắc mới được tra web lại (mục `concept:`). `tests/facts.test.js` báo lỗi nếu một giá trị lỗi thời trong danh sách `deny` xuất hiện lại (ví dụ giới hạn 15 phút cũ của Lambda).
+- **Test nhất quán:** `tests/content-vi.test.js` kiểm tra nội dung tiếng Việt: đáp án, dấu "(Choose TWO.)", lý do cho từng lựa chọn và nhãn task.
+- **Theo dõi hằng tuần:** một GitHub Action chạy định kỳ mở lại các trang nguồn của AWS và kiểm tra câu trích dẫn còn trên trang không. Khi AWS thay đổi trang, nó mở một issue `facts-watch` liệt kê những điều cần kiểm tra lại.
+- **Cách kiểm tra lại:** xem mục "Checking content accuracy" trong CONTRIBUTING.md.
+
 ### Đa ngôn ngữ (i18n)
 - Khi mở trang, app (`js/main.js`) đọc `settings.ui` (`vi` | `en` | `ja`). Với `en`/`ja`, app chèn 16 thẻ `<script>` của `i18n/<lang>/` (danh sách `I18N_FILES` trong `js/i18n.js`, trùng với `i18n/FILES.txt`) rồi mới vẽ trang. File nào lỗi thì bỏ qua và dùng tiếng Việt.
 - Mỗi file ghi vào `window.CLF_I18N[lang]` = `{ ui, q, course, lessons, glossary, services, domains }`.

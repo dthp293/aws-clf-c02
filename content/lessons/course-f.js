@@ -356,7 +356,7 @@
 </div>
 
 <h3>Chi phí và chuẩn bị</h3>
-<p><b>Chi phí:</b> EC2 tính theo thời gian instance chạy (tùy instance type), cộng dung lượng EBS, và <b>địa chỉ IPv4 công cộng</b> (hiện AWS tính phí theo giờ cho public IPv4; Elastic IP không gắn vào máy đang chạy cũng bị tính). Một số instance type nhỏ được gắn nhãn kiểu "Free tier eligible" trong Console và có thể được ưu đãi miễn phí hoặc trừ vào credit tùy điều khoản tài khoản của bạn. Theo tài liệu EC2: tài khoản tạo từ <b>15/7/2025</b> được dùng <b>t3.micro, t3.small, t4g.micro, t4g.small, c7i-flex.large, m7i-flex.large</b>; tài khoản tạo trước đó dùng <b>t2.micro hoặc t3.micro</b> (tùy Region). Danh sách có thể đổi, nên <b>hãy tin nhãn "Free tier eligible" hiển thị trong Console</b> của chính bạn. Để giữ gần bằng 0: chọn instance nhỏ nhất có nhãn ưu đãi, dùng ổ đĩa mặc định, chạy trong thời gian ngắn và <b>terminate ngay khi xong</b>.</p>
+<p><b>Chi phí:</b> EC2 tính theo thời gian instance chạy (tùy instance type), cộng dung lượng EBS, và <b>địa chỉ IPv4 công cộng</b> (hiện AWS tính phí theo giờ cho public IPv4; Elastic IP không gắn vào máy đang chạy cũng bị tính). Một số instance type nhỏ được gắn nhãn kiểu "Free tier eligible" trong Console và có thể được ưu đãi miễn phí hoặc trừ vào credit tùy điều khoản tài khoản của bạn. Theo tài liệu EC2: tài khoản tạo từ <b>15/7/2025</b> được dùng <b>t3.micro, t3.small, t4g.micro, t4g.small, t8i.micro, t8i.small, t9g.micro, t9g.small, c7i-flex.large, m7i-flex.large</b>; tài khoản tạo trước đó dùng <b>t2.micro hoặc t3.micro</b> (tùy Region). Danh sách có thể đổi, nên <b>hãy tin nhãn "Free tier eligible" hiển thị trong Console</b> của chính bạn. Để giữ gần bằng 0: chọn instance nhỏ nhất có nhãn ưu đãi, dùng ổ đĩa mặc định, chạy trong thời gian ngắn và <b>terminate ngay khi xong</b>.</p>
 <p><b>Chuẩn bị:</b></p>
 <ul>
 <li>Đã có budget cảnh báo từ Lab 1.</li>
@@ -451,7 +451,7 @@
     html: `
 <h3>Serverless và Lambda, nói đơn giản</h3>
 <p>Ở Lab 4, bạn phải chọn máy, mở cổng, nhớ tắt máy. Với <b>AWS Lambda</b>, bạn chỉ viết một đoạn code gọi là <b>function</b> (hàm). AWS lo hết phần máy chủ: chạy code khi có sự kiện, tự mở rộng khi nhiều yêu cầu, và bạn trả tiền theo <b>số lần gọi</b> và <b>thời gian chạy</b>. Không có ai gọi thì gần như không tốn gì. Đó là ý nghĩa của <b>serverless</b> (phi máy chủ: vẫn có máy chủ, nhưng bạn không phải quản lý).</p>
-<p>Mỗi lần chạy, Lambda có giới hạn tối đa 15 phút. Việc chạy lâu hơn thế thì cần dịch vụ khác.</p>
+<p>Mỗi lần chạy, Lambda có giới hạn tối đa 30 phút. Việc chạy lâu hơn thế thì cần dịch vụ khác.</p>
 
 <div class="box idea"><b>🧠 Hiểu đơn giản</b>
 <p>EC2 giống <b>tự nuôi một đầu bếp toàn thời gian</b>: có khách hay không vẫn trả lương. Lambda giống <b>gọi đầu bếp theo đơn</b>: có đơn thì đầu bếp đến nấu, nấu xong về, bạn trả theo số món và thời gian nấu. CloudWatch Logs là <b>sổ nhật ký bếp</b>; CloudTrail là <b>camera ở cửa văn phòng</b> ghi lại ai đã ra lệnh thuê, sa thải đầu bếp.</p>
@@ -505,14 +505,14 @@
 <div class="box exam"><b>🎯 Liên hệ đề thi</b>
 <ul>
 <li>"Run code without provisioning servers, pay only for compute time" → <b>AWS Lambda</b>.</li>
-<li>"Job runs about 3 hours continuously" → <b>không</b> dùng Lambda (tối đa 15 phút).</li>
+<li>"Job runs about 3 hours continuously" → <b>không</b> dùng Lambda (tối đa 30 phút).</li>
 <li>"Which services are serverless" → Lambda, DynamoDB, Fargate…</li>
 <li>Với Lambda, khách hàng chịu trách nhiệm <b>code và quyền IAM</b> của hàm; AWS lo hạ tầng và hệ điều hành.</li>
 <li>"Who did what, when (API calls), who deleted a resource" → <b>AWS CloudTrail</b>. "Metrics, logs, alarms" → <b>Amazon CloudWatch</b>.</li>
 </ul></div>
 `,
     summary: [
-      "Lambda chạy code theo sự kiện, không quản lý máy chủ, tính tiền theo số request và thời gian chạy; tối đa 15 phút mỗi lần.",
+      "Lambda chạy code theo sự kiện, không quản lý máy chủ, tính tiền theo số request và thời gian chạy; tối đa 30 phút mỗi lần.",
       "Execution role là IAM role cho hàm; quyền mặc định đủ để ghi log vào CloudWatch Logs.",
       "Log của hàm nằm ở log group /aws/lambda/ + tên hàm, chia thành các log stream.",
       "CloudTrail Event history ghi các management event 90 ngày, bật sẵn: ai gọi API gì, lúc nào, từ đâu.",

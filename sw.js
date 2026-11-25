@@ -4,7 +4,7 @@
  *   ở nền để lần mở sau có nội dung cập nhật (stale-while-revalidate).
  * Thêm file mới vào website → thêm vào FILES và tăng VERSION.
  */
-const VERSION = 'v7';
+const VERSION = 'v8';
 const CACHE = 'clf-c02-' + VERSION;
 const FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
@@ -28,8 +28,8 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
 });
 
-// Phiên bản mới: chép các file i18n/en, i18n/ja đã cache từ bản cũ sang (để vẫn dùng được offline ngay sau khi cập nhật;
-// fetch bên dưới sẽ làm mới chúng ở lần mở tiếp theo), rồi xóa cache cũ.
+// Phiên bản mới: chép các file i18n/en, i18n/ja đã cache từ bản cũ sang (chỉ để dự phòng khi offline ngay sau khi cập
+// nhật; khi có mạng, fetch bên dưới luôn lấy bản mới của các file này trước), rồi xóa cache cũ.
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const cache = await caches.open(CACHE);
@@ -49,16 +49,39 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('message', e => { if (e.data === 'skipWaiting') self.skipWaiting(); });
 
+// File dịch en/ja: ưu tiên mạng. Bản cache có thể là bản chép từ phiên bản trước (xem activate), nên nếu trả cache trước
+// thì người dùng en/ja sẽ thấy nội dung cũ ở lần mở đầu tiên sau mỗi lần cập nhật. Mất mạng, hoặc mạng chậm quá 4 giây
+// khi đã có bản cache, thì dùng bản cache.
+const LANG_FILE = /\/i18n\/(en|ja)\//;
+const NET_WAIT = 4000;
+
+// Tải file từ mạng; nếu OK thì lưu một bản vào cache. Trang nhận response ngay, còn việc ghi cache được giữ bằng
+// waitUntil để trình duyệt không dừng service worker giữa chừng (kể cả khi trang đã nhận bản cache vì mạng chậm).
+function fetchAndStore(e, cache, init) {
+  const req = e.request;
+  const got = fetch(req, init).then(res => [res, res && res.ok ? res.clone() : null]).catch(() => [null, null]);
+  e.waitUntil(got.then(([, copy]) => copy && cache.put(req, copy)).catch(() => {}));
+  return got.then(([res]) => res);
+}
+
+function networkFirst(e, cache) {
+  // no-cache: hỏi lại server (không dùng bản trong HTTP cache của trình duyệt, vốn cũng có thể là bản cũ)
+  const fresh = fetchAndStore(e, cache, { cache: 'no-cache' }).then(res => (res && res.ok ? res : null));
+  return cache.match(e.request, { ignoreSearch: true }).then(cached => {
+    if (!cached) return fresh.then(res => res || Response.error());
+    const slow = new Promise(r => setTimeout(() => r(null), NET_WAIT));
+    return Promise.race([fresh, slow]).then(res => res || cached);
+  });
+}
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  if (LANG_FILE.test(new URL(req.url).pathname)) { e.respondWith(caches.open(CACHE).then(cache => networkFirst(e, cache))); return; }
   e.respondWith(caches.open(CACHE).then(async cache => {
     const cached = await cache.match(req, { ignoreSearch: true });
-    const fresh = fetch(req).then(res => {
-      if (res && res.ok) cache.put(req, res.clone());
-      return res;
-    }).catch(() => null);
-    if (cached) { e.waitUntil(fresh); return cached; }
+    const fresh = fetchAndStore(e, cache);   // cập nhật ngầm cho lần mở sau
+    if (cached) return cached;
     const res = await fresh;
     if (res) return res;
     // Offline và chưa có trong cache: với trang HTML thì trả về trang chính

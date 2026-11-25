@@ -209,6 +209,13 @@ Each question is an object:
   - Until then, the English/Japanese editions show the Vietnamese explanation.
   - `npm test` lists any question that is still missing a translation.
 
+### Content accuracy
+
+- **Fact register:** `tests/facts.json` records what was checked against official AWS pages: every sentence with a concrete value (number, limit, price, date, plan name or feature) and every answer key a blind solver questioned. Each entry has its source URLs and says how it was checked: `checks: 2` means a second checker confirmed it with a verbatim quote, `checks: 1` means one checker against the topic pages, and `indirect` means only indirect official support was found. All other statements (concepts, comparisons, service-to-use-case mappings) were screened in full by four reviewers; only the few they flagged or were unsure about were verified online (`concept:` entries). `tests/facts.test.js` fails if an outdated value listed under `deny` (for example Lambda's old 15-minute limit) appears again.
+- **Consistency test:** `tests/content-vi.test.js` checks the Vietnamese content: answer keys, the "(Choose TWO.)" markers, the per-option reasons and the tags.
+- **Weekly watch:** a scheduled GitHub Action re-opens the AWS source pages and checks that the quoted text is still there. When AWS changes a page, it opens a `facts-watch` issue listing the facts to re-check.
+- **How to re-check:** see CONTRIBUTING.md, "Checking content accuracy".
+
 ### Translations (i18n)
 
 - **Loading:**

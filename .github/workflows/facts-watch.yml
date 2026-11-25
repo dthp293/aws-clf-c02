@@ -1,0 +1,47 @@
+name: Facts watch
+
+# Weekly: re-open the official AWS pages behind tests/facts.json and check the quoted text is still there.
+# When something changed, open (or update) one issue labelled "facts-watch"; when everything is back to normal, close it.
+on:
+  schedule:
+    - cron: '0 1 * * 1'   # Mondays 01:00 UTC (10:00 in Japan, 08:00 in Vietnam)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: facts-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check source pages and quotes
+        id: watch
+        run: |
+          set +e
+          node scripts/facts-watch.js --report report.md
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+      - name: Open, update or close the facts-watch issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATUS: ${{ steps.watch.outputs.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create facts-watch --color FBCA04 --description "AWS source pages changed; re-check content" 2>/dev/null || true
+          issue=$(gh issue list --label facts-watch --state open --json number --jq '.[0].number')
+          if [ "$STATUS" != "0" ]; then
+            { echo "The weekly check of the AWS pages behind \`tests/facts.json\` found changes ([run]($RUN_URL))."; echo; cat report.md 2>/dev/null || echo "The check script wrote no report; see the run log."; } > body.md
+            if [ -n "$issue" ]; then gh issue edit "$issue" --body-file body.md
+            else gh issue create --title "Facts watch: AWS source pages changed" --label facts-watch --body-file body.md; fi
+          elif [ -n "$issue" ]; then
+            gh issue close "$issue" --comment "All source pages and quotes were found again ([run]($RUN_URL))."
+          fi

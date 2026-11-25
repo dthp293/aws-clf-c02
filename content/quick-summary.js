@@ -179,7 +179,7 @@
       h: `
 <table><tr><th>Dịch vụ</th><th>Khi nào dùng</th></tr>
 <tr><td>EC2</td><td>Cần toàn quyền với máy ảo</td></tr>
-<tr><td>Lambda</td><td>Serverless, chạy theo sự kiện, tối đa 15 phút mỗi lần</td></tr>
+<tr><td>Lambda</td><td>Serverless, chạy theo sự kiện, tối đa 30 phút mỗi lần</td></tr>
 <tr><td>ECS / EKS</td><td>Chạy container (EKS dùng Kubernetes)</td></tr>
 <tr><td>Fargate</td><td>Container serverless</td></tr>
 <tr><td>Elastic Beanstalk</td><td>PaaS: chỉ upload code</td></tr>
@@ -230,7 +230,7 @@
       t: "Container, batch & loại instance (Task 3.3)",
       h: `
 <ul><li><b>ECS</b>: điều phối container của AWS. <b>EKS</b>: Kubernetes. <b>ECR</b>: lưu image. <b>Fargate</b>: chạy container serverless.</li>
-<li><b>AWS Batch</b>: job theo lô. <b>Lambda</b>: function theo sự kiện (tối đa 15 phút).</li>
+<li><b>AWS Batch</b>: job theo lô. <b>Lambda</b>: function theo sự kiện (tối đa 30 phút).</li>
 <li>Loại instance: General purpose (cân bằng), Compute optimized (nặng CPU), Memory optimized (nặng RAM), Storage optimized (đọc/ghi đĩa nhiều), Accelerated computing (GPU).</li>
 <li><b>Auto Scaling</b> mang lại elasticity. <b>Load balancer</b> chia tải và kiểm tra health của target.</li></ul>`,
     },
@@ -276,7 +276,7 @@
 <tr><td>ETL serverless, data catalog</td><td>AWS Glue</td></tr>
 <tr><td>Big data (Spark, Hadoop)</td><td>Amazon EMR</td></tr>
 <tr><td>Tìm kiếm, phân tích log</td><td>Amazon OpenSearch Service</td></tr>
-<tr><td>Dashboard BI</td><td>Amazon Quick (trước đây là QuickSight)</td></tr>
+<tr><td>Dashboard BI</td><td>Amazon Quick (nay là AWS Quick, trước đây là QuickSight)</td></tr>
 <tr><td>Data warehouse</td><td>Amazon Redshift</td></tr></table>`,
     },
     {

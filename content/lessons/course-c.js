@@ -423,7 +423,7 @@
 <ul>
 <li><b>Tính tiền</b>: theo <b>số lần gọi (request)</b> và <b>thời gian chạy (duration)</b> của hàm, kèm lượng bộ nhớ bạn cấp. Không chạy thì gần như không tốn tiền.</li>
 <li><b>Tự co giãn</b>: 1 sự kiện hay 1.000 sự kiện cùng lúc, Lambda tự chạy đủ số bản sao.</li>
-<li><b>Giới hạn quan trọng</b>: mỗi lần chạy tối đa <b>15 phút</b>. Việc dài hơn thì không hợp Lambda.</li>
+<li><b>Giới hạn quan trọng</b>: mỗi lần chạy tối đa <b>30 phút</b> với function thông thường (AWS tăng từ 15 lên 30 phút ngày 19/11/2026; riêng Lambda Managed Instances cho lời gọi bất đồng bộ chạy được tới 90 phút; tài liệu và đề cũ có thể vẫn ghi 15 phút). Việc dài hơn thì không hợp Lambda.</li>
 <li><b>Trách nhiệm của bạn</b>: bảo mật code và cấp quyền IAM cho hàm. AWS lo hạ tầng, hệ điều hành, runtime.</li>
 </ul>
 <p>Lambda không phải dịch vụ serverless duy nhất. Những dịch vụ khác cũng "không phải quản lý máy chủ, tự co giãn": <b>AWS Fargate</b>, <b>Amazon DynamoDB</b> (cơ sở dữ liệu NoSQL), <b>Amazon S3</b>, <b>Amazon SQS</b>, <b>Amazon SNS</b>, <b>Amazon API Gateway</b>, <b>Amazon Aurora Serverless</b>. Ngược lại, <b>Amazon EC2</b> và <b>Amazon RDS</b> bản thường (bạn chọn instance) <b>không</b> phải serverless.</p>
@@ -434,13 +434,13 @@
 </div>
 
 <h3>AWS Batch và cách chọn dịch vụ compute</h3>
-<p><b>AWS Batch</b> dùng để chạy <b>batch job</b> (công việc xử lý theo lô): hàng trăm, hàng nghìn tác vụ tính toán chạy nền, ví dụ xử lý dữ liệu cả tháng, dựng hình, mô phỏng. Bạn gửi job vào hàng đợi, Batch tự chọn loại và số lượng máy phù hợp (có thể dùng EC2, Spot hoặc Fargate), chạy xong thì thu hồi. Khác Lambda, job của Batch có thể chạy lâu hơn 15 phút.</p>
+<p><b>AWS Batch</b> dùng để chạy <b>batch job</b> (công việc xử lý theo lô): hàng trăm, hàng nghìn tác vụ tính toán chạy nền, ví dụ xử lý dữ liệu cả tháng, dựng hình, mô phỏng. Bạn gửi job vào hàng đợi, Batch tự chọn loại và số lượng máy phù hợp (có thể dùng EC2, Spot hoặc Fargate), chạy xong thì thu hồi. Khác Lambda, job của Batch có thể chạy lâu hơn 30 phút.</p>
 <table>
 <tr><th>Lựa chọn</th><th>Bạn quản lý</th><th>Hợp khi</th></tr>
 <tr><td><b>Amazon EC2</b></td><td>Hệ điều hành, phần mềm, co giãn</td><td>Cần toàn quyền kiểm soát máy chủ, phần mềm đặc thù, chạy lâu dài</td></tr>
 <tr><td><b>ECS / EKS trên EC2</b></td><td>Container và cụm máy EC2</td><td>Ứng dụng đã đóng gói container, muốn kiểm soát máy bên dưới</td></tr>
 <tr><td><b>ECS / EKS trên Fargate</b></td><td>Chỉ container</td><td>Muốn chạy container mà không quản lý máy chủ</td></tr>
-<tr><td><b>AWS Lambda</b></td><td>Chỉ code</td><td>Tác vụ ngắn (tối đa 15 phút), chạy theo sự kiện, lưu lượng thất thường</td></tr>
+<tr><td><b>AWS Lambda</b></td><td>Chỉ code</td><td>Tác vụ ngắn (tối đa 30 phút), chạy theo sự kiện, lưu lượng thất thường</td></tr>
 <tr><td><b>AWS Batch</b></td><td>Định nghĩa job</td><td>Rất nhiều tác vụ tính toán theo lô, có thể chạy lâu</td></tr>
 </table>
 
@@ -451,7 +451,7 @@
 <li>"store and manage Docker container images" → <b>Amazon ECR</b></li>
 <li>"Kubernetes" → <b>Amazon EKS</b>; "run and scale containers on AWS" (không nhắc Kubernetes) → thường là <b>Amazon ECS</b></li>
 <li>"hundreds of thousands of batch computing jobs" → <b>AWS Batch</b></li>
-<li>Tác vụ chạy lâu hơn 15 phút (vd job 3 giờ) → <b>không</b> chọn Lambda</li>
+<li>Tác vụ chạy lâu hơn 30 phút (vd job 3 giờ) → <b>không</b> chọn Lambda</li>
 <li>"create a thumbnail each time a photo is uploaded to S3, long idle periods" → <b>Lambda + S3 event notification</b></li>
 <li>"containers, no instance types, no patching, no cluster scaling" → <b>ECS với Fargate launch type</b>; "agent on every host, choose exact instance types" → <b>ECS với EC2 launch type</b></li>
 <li>"which services are serverless" → Lambda, Fargate, DynamoDB, S3, SQS, SNS… (không phải EC2)</li>
@@ -463,7 +463,7 @@
       "Container đóng gói ứng dụng cùng thư viện, chạy giống nhau ở mọi nơi; nhẹ và khởi động nhanh hơn máy ảo.",
       "ECS = điều phối container của AWS; EKS = Kubernetes được quản lý; ECR = kho lưu container image.",
       "Fargate = chạy container serverless, dùng được với ECS và EKS; EC2 launch type khi cần tự chọn instance type hoặc cài agent trên từng máy chủ.",
-      "Serverless = không phải quản lý máy chủ; Lambda chạy code theo sự kiện, tính tiền theo số request và thời gian chạy, tối đa 15 phút.",
+      "Serverless = không phải quản lý máy chủ; Lambda chạy code theo sự kiện, tính tiền theo số request và thời gian chạy, tối đa 30 phút.",
       "AWS Batch chạy số lượng lớn job xử lý theo lô, tự cấp phát tài nguyên phù hợp.",
       "Chọn EC2 khi cần toàn quyền; container khi đã đóng gói; Lambda cho tác vụ ngắn theo sự kiện."
     ],

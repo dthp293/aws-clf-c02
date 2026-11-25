@@ -398,7 +398,7 @@ L.course["2-5"]={title:"Detecting and investigating threats: GuardDuty, Inspecto
 
 <h3>Trusted Advisor: an automated consultant</h3>
 <p><b>AWS Trusted Advisor</b> checks your account and gives recommendations in several categories: cost optimization, performance, <b>security</b>, fault tolerance, service limits (service quotas), and operations.</p>
-<p>Some typical security checks: S3 buckets with open access permissions, security groups that open sensitive ports to the whole Internet, a root user without MFA, IAM not being used, and public EBS/RDS snapshots. The <b>core security checks</b>, such as security groups with unrestricted ports, root without MFA, S3 bucket permissions, IAM use, and public snapshots, are <b>free for every account, including the Basic Support plan</b>. The full set of checks depends on your AWS Support plan (see the official page for details).</p>
+<p>Some typical security checks: S3 buckets with open access permissions, security groups that open sensitive ports to the whole Internet, a root user without MFA, IAM not being used, and public EBS/RDS snapshots. The <b>core security checks</b>, such as security groups with unrestricted ports, root without MFA, S3 bucket permissions, and public EBS/RDS snapshots, are <b>free for every account, including the Basic Support plan</b>. The full set of checks depends on your AWS Support plan (see the official page for details).</p>
 
 <div class="box exam"><b>🎯 What the exam asks</b><ul>
 <li>"Uses ML to analyze CloudTrail, VPC Flow Logs, DNS logs to detect threats" → <b>Amazon GuardDuty</b></li>

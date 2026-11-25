@@ -506,7 +506,7 @@
 <ul>
 <li><b>Amazon Q Business</b>: kết nối tới nguồn dữ liệu của công ty (wiki, chính sách, kho tài liệu, ứng dụng SaaS) để nhân viên <b>hỏi đáp bằng ngôn ngữ tự nhiên</b>, tóm tắt, tạo nội dung.</li>
 <li><b>Amazon Q Developer</b>: hỗ trợ <b>lập trình viên</b>: gợi ý và viết code, giải thích code, xử lý lỗi, trả lời câu hỏi về AWS.</li>
-<li><i>Tình trạng hiện tại (không ảnh hưởng nội dung thi): Amazon Q Business hiện không còn nhận khách hàng mới (AWS gợi ý chuyển sang Amazon Quick); các plugin IDE của Amazon Q Developer hết hỗ trợ ngày 30/4/2027, được thay bằng <b>Kiro</b>. Đề thi vẫn hỏi theo mô tả ở trên.</i></li>
+<li><i>Tình trạng hiện tại (không ảnh hưởng nội dung thi): Amazon Q Business hiện không còn nhận khách hàng mới (AWS gợi ý chuyển sang Amazon Quick (nay là AWS Quick)); các plugin IDE của Amazon Q Developer hết hỗ trợ ngày 30/4/2027, được thay bằng <b>Kiro</b>. Đề thi vẫn hỏi theo mô tả ở trên.</i></li>
 </ul></li>
 </ul>
 <p>Các dịch vụ này hay được <b>ghép thành chuỗi</b>. Ví dụ đơn bảo hiểm scan bằng tiếng Tây Ban Nha: Textract (lấy chữ) → Translate (dịch sang tiếng Anh) → Comprehend (cảm xúc, cụm từ khóa). Hay tổng đài: Transcribe (giọng nói → chữ) → Translate → Polly (đọc câu trả lời thành tiếng). Đề thi kiểu "Choose THREE" rất thích dạng này: hãy tách bài toán thành từng bước "đầu vào → đầu ra".</p>
@@ -585,7 +585,7 @@
     html: `
 <h3>1. Đường ống dữ liệu (data pipeline) là gì?</h3>
 <p>Doanh nghiệp tạo ra rất nhiều dữ liệu: đơn hàng, lượt bấm trên website, đánh giá của khách. Dữ liệu thô không tự nói lên điều gì. Muốn biến nó thành câu trả lời như "bánh nào bán chạy nhất ở Tokyo vào mùa hè", dữ liệu phải đi qua một chuỗi bước, gọi là <b>data pipeline</b> (đường ống dữ liệu).</p>
-<div class="flow"><span>Thu thập (Kinesis)</span><span>Lưu trữ (S3)</span><span>Biến đổi (Glue / EMR)</span><span>Phân tích (Athena / Redshift)</span><span>Trực quan hóa (Quick)</span></div>
+<div class="flow"><span>Thu thập (Kinesis)</span><span>Lưu trữ (S3)</span><span>Biến đổi (Glue / EMR)</span><span>Phân tích (Athena / Redshift)</span><span>Trực quan hóa (AWS Quick)</span></div>
 <div class="box idea"><b>🧠 Hiểu đơn giản</b><p>Giống làm nước cam: <b>hái cam</b> từ vườn (thu thập), <b>chất vào kho</b> (lưu trữ), <b>rửa, gọt, ép</b> (biến đổi), <b>nếm và đo độ ngọt</b> (phân tích), rồi <b>rót ra ly đẹp</b> mời khách (trực quan hóa).</p></div>
 <p>Một khái niệm hay gặp: <b>data lake</b> (hồ dữ liệu) là nơi chứa mọi loại dữ liệu thô ở dạng gốc, với chi phí rẻ. Trên AWS, data lake thường được xây trên <b>Amazon S3</b>.</p>
 <p>Vì sao phải chia thành nhiều bước? Vì mỗi bước cần một kiểu công cụ khác nhau. Công cụ giỏi "hứng" dữ liệu chảy liên tục chưa chắc giỏi lưu trữ lâu dài; công cụ chạy phân tích nặng chưa chắc dễ dùng cho người làm kinh doanh. AWS có dịch vụ riêng cho từng bước, và đề thi thường cho một mô tả nhu cầu rồi hỏi bạn dịch vụ nào phù hợp. Mẹo: trước khi đọc đáp án, hãy tự hỏi "nhu cầu này nằm ở bước nào của đường ống?".</p>
@@ -611,7 +611,7 @@
 <h4>Amazon Redshift</h4>
 <p><b>Redshift</b> là <b>data warehouse</b> (đã gặp ở bài database): dữ liệu được nạp và sắp xếp sẵn để chạy truy vấn phân tích phức tạp, thường xuyên, trên khối dữ liệu rất lớn, phục vụ báo cáo kinh doanh.</p>
 <h4>Amazon Quick</h4>
-<p><b>Amazon Quick</b> (tên dùng trong danh sách dịch vụ của Exam Guide; trước đây là Amazon QuickSight, đề luyện cũ hay dùng tên này) là công cụ <b>BI</b> (Business Intelligence, phân tích kinh doanh) giúp người dùng không chuyên kỹ thuật tạo <b>dashboard</b> (bảng điều khiển) và biểu đồ tương tác từ dữ liệu.</p>
+<p><b>Amazon Quick</b> (tên dùng trong danh sách dịch vụ của Exam Guide; từ 9/11/2026 AWS đổi tên thành <b>AWS Quick</b>; trước đây là Amazon QuickSight, đề luyện cũ hay dùng tên này) là công cụ <b>BI</b> (Business Intelligence, phân tích kinh doanh) giúp người dùng không chuyên kỹ thuật tạo <b>dashboard</b> (bảng điều khiển) và biểu đồ tương tác từ dữ liệu.</p>
 <h4>Amazon OpenSearch Service</h4>
 <p><b>OpenSearch Service</b> dùng để <b>tìm kiếm toàn văn</b> (full-text search, ví dụ ô tìm kiếm sản phẩm trên website) và <b>phân tích log gần thời gian thực</b>, có dashboard tương tác (OpenSearch Dashboards) để phát hiện lỗi tăng vọt. Trước đây dịch vụ này tên là Amazon Elasticsearch Service.</p>
 <h4>Vài dịch vụ phân tích khác (ngoài danh sách của Exam Guide, chỉ cần biết tên để không nhầm)</h4>
@@ -634,7 +634,7 @@
 <tr><td>Biến đổi</td><td>Amazon EMR</td><td>Apache Spark, Hadoop, big data frameworks</td></tr>
 <tr><td>Phân tích</td><td>Amazon Athena</td><td>SQL queries directly on S3, serverless</td></tr>
 <tr><td>Phân tích</td><td>Amazon Redshift</td><td>data warehouse, petabyte, complex analytics</td></tr>
-<tr><td>Trực quan hóa</td><td>Amazon Quick</td><td>dashboards, visualizations, BI</td></tr>
+<tr><td>Trực quan hóa</td><td>AWS Quick (trước là Amazon Quick; Exam Guide và đề thi có thể vẫn ghi Amazon Quick)</td><td>dashboards, visualizations, BI</td></tr>
 <tr><td>Tìm kiếm, log</td><td>Amazon OpenSearch Service</td><td>full-text search, log analytics</td></tr>
 </table>
 <div class="box exam"><b>🎯 Đề thi hay hỏi</b><ul>
@@ -645,7 +645,7 @@
 <li>"serverless data integration, ETL, data catalog", "scheduled transform, no clusters, least operational overhead" → <b>Glue</b></li>
 <li>"Apache Spark, Apache Hadoop" → <b>EMR</b></li>
 <li>"complex analytical queries on petabytes" → <b>Redshift</b></li>
-<li>"business users create interactive dashboards" → <b>Quick</b></li>
+<li>"business users create interactive dashboards" → <b>AWS Quick</b> (Amazon Quick)</li>
 </ul></div>
 `,
     summary: [

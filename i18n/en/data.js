@@ -101,7 +101,7 @@ Object.assign(L.glossary,{
 "scanned documents":{meaning:"paper documents turned into image files",hint:"Amazon Textract"},
 "streaming data":{meaning:"data that flows in continuously",hint:"Amazon Kinesis"},
 "real-time":{meaning:"processed immediately as it happens",hint:"Kinesis"},
-"dashboards":{meaning:"visual screens of charts and metrics",hint:"Amazon Quick (formerly QuickSight), CloudWatch"},
+"dashboards":{meaning:"visual screens of charts and metrics",hint:"Amazon Quick (now AWS Quick, formerly QuickSight), CloudWatch"},
 "event bus":{meaning:"a channel that receives events and routes them to targets",hint:"Amazon EventBridge"},
 "contact center":{meaning:"a customer service call center",hint:"Amazon Connect"},
 "virtual Windows and Linux desktops":{meaning:"desktop computers that run in the cloud",hint:"Amazon WorkSpaces"},
@@ -188,7 +188,7 @@ Object.assign(L.services,{
 "AWS Glue":{desc:"Serverless ETL and data catalog.",confuse:"EMR"},
 "Amazon EMR":{desc:"Runs big data frameworks (Spark, Hadoop).",confuse:"Glue"},
 "Amazon OpenSearch Service":{desc:"Search, log analytics, application monitoring.",confuse:""},
-"Amazon Quick":{desc:"BI: dashboards and data visualization (formerly QuickSight).",confuse:""},
+"Amazon Quick":{desc:"BI: dashboards and data visualization. Renamed AWS Quick on November 9, 2026 (earlier QuickSight); the Exam Guide still says Amazon Quick.",confuse:""},
 "Amazon EventBridge":{desc:"Serverless event bus: routes events by rules and runs jobs on a schedule.",confuse:"SNS, SQS"},
 "AWS Step Functions":{desc:"Orchestrates multi-step workflows.",confuse:"EventBridge"},
 "Amazon Connect":{desc:"Contact center in the cloud.",confuse:""},
@@ -342,7 +342,7 @@ L.lessons[3]=[
 {t:"Compute",h:`
 <table><tr><th>Service</th><th>When to use</th></tr>
 <tr><td>EC2</td><td>You need full control of the virtual machine</td></tr>
-<tr><td>Lambda</td><td>Serverless, event-driven, up to 15 minutes per run</td></tr>
+<tr><td>Lambda</td><td>Serverless, event-driven, up to 30 minutes per run</td></tr>
 <tr><td>ECS / EKS</td><td>Run containers (EKS uses Kubernetes)</td></tr>
 <tr><td>Fargate</td><td>Serverless containers</td></tr>
 <tr><td>Elastic Beanstalk</td><td>PaaS: just upload your code</td></tr>
@@ -375,7 +375,7 @@ L.lessons[3]=[
 <li>Edge locations bring content close to users (CloudFront) and speed up routing (Global Accelerator, Route 53).</li></ul>`},
 {t:"Containers, batch & instance types (Task 3.3)",h:`
 <ul><li><b>ECS</b>: AWS's own container orchestration. <b>EKS</b>: Kubernetes. <b>ECR</b>: stores images. <b>Fargate</b>: runs containers without managing servers.</li>
-<li><b>AWS Batch</b>: batch jobs. <b>Lambda</b>: event-driven functions (up to 15 minutes).</li>
+<li><b>AWS Batch</b>: batch jobs. <b>Lambda</b>: event-driven functions (up to 30 minutes).</li>
 <li>Instance types: General purpose (balanced), Compute optimized (CPU-heavy), Memory optimized (RAM-heavy), Storage optimized (heavy disk reads/writes), Accelerated computing (GPU).</li>
 <li><b>Auto Scaling</b> provides elasticity. A <b>load balancer</b> distributes load and checks the health of its targets.</li></ul>`},
 {t:"More on storage (Task 3.6)",h:`
@@ -409,7 +409,7 @@ L.lessons[3]=[
 <tr><td>Serverless ETL, data catalog</td><td>AWS Glue</td></tr>
 <tr><td>Big data (Spark, Hadoop)</td><td>Amazon EMR</td></tr>
 <tr><td>Search, log analytics</td><td>Amazon OpenSearch Service</td></tr>
-<tr><td>BI dashboards</td><td>Amazon Quick (formerly QuickSight)</td></tr>
+<tr><td>BI dashboards</td><td>Amazon Quick (now AWS Quick, formerly QuickSight)</td></tr>
 <tr><td>Data warehouse</td><td>Amazon Redshift</td></tr></table>`},
 {t:"Other service categories (Task 3.8)",h:`
 <ul><li><b>Application integration</b>: EventBridge (event bus, schedules), SNS (pub/sub notifications), SQS (queues), Step Functions (workflows).</li>

@@ -77,7 +77,7 @@
   { name: "AWS Glue", d: 3, vi: "ETL serverless và data catalog.", confuse: "EMR" },
   { name: "Amazon EMR", d: 3, vi: "Chạy big data framework (Spark, Hadoop).", confuse: "Glue" },
   { name: "Amazon OpenSearch Service", d: 3, vi: "Tìm kiếm, phân tích log, giám sát ứng dụng.", confuse: "" },
-  { name: "Amazon Quick", d: 3, vi: "BI: dashboard và trực quan hóa dữ liệu (trước đây là QuickSight).", confuse: "" },
+  { name: "Amazon Quick", d: 3, vi: "BI: dashboard và trực quan hóa dữ liệu. Từ 9/11/2026 đổi tên thành AWS Quick (trước nữa là QuickSight); Exam Guide vẫn ghi Amazon Quick.", confuse: "" },
   { name: "Amazon EventBridge", d: 3, vi: "Event bus serverless, định tuyến sự kiện theo rule, chạy job theo lịch.", confuse: "SNS, SQS" },
   { name: "AWS Step Functions", d: 3, vi: "Điều phối workflow nhiều bước.", confuse: "EventBridge" },
   { name: "Amazon Connect", d: 3, vi: "Contact center trên cloud.", confuse: "" },
